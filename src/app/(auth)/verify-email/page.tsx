@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Loader2, RefreshCw, CheckCircle } from 'lucide-react';
 import OtpInput from '@/components/ui/OtpInput';
 import { useVerifyEmail, useResendOtp } from '@/hooks/useAuth';
 
-export default function VerifyEmailPage() {
+function VerifyEmailForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get('email') || '';
@@ -97,5 +97,13 @@ export default function VerifyEmailPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<div className="skeleton h-80 w-full" />}>
+      <VerifyEmailForm />
+    </Suspense>
   );
 }

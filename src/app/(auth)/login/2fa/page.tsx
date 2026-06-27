@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Loader2, RefreshCw } from 'lucide-react';
 import OtpInput from '@/components/ui/OtpInput';
 import { useTwoFactor, useResendOtp } from '@/hooks/useAuth';
 
-export default function TwoFactorPage() {
+function TwoFactorForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get('email') || '';
@@ -95,5 +95,13 @@ export default function TwoFactorPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function TwoFactorPage() {
+  return (
+    <Suspense fallback={<div className="skeleton h-80 w-full" />}>
+      <TwoFactorForm />
+    </Suspense>
   );
 }

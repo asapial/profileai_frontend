@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -11,7 +11,7 @@ import OtpInput from '@/components/ui/OtpInput';
 import { useResetPassword } from '@/hooks/useAuth';
 import { resetPasswordSchema, type ResetPasswordFormData } from '@/validations';
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get('email') || '';
@@ -90,5 +90,13 @@ export default function ResetPasswordPage() {
         <ArrowLeft size={16} /> Back to login
       </Link>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div className="skeleton h-96 w-full" />}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }

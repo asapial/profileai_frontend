@@ -14,7 +14,7 @@ export function TestimonialsSection() {
         <div className="grid gap-4 md:grid-cols-3">
           {testimonials.map((testimonial) => (
             <Card key={testimonial.name} className="p-6">
-              <p className="text-sm leading-relaxed text-[--color-text-body]">"{testimonial.quote}"</p>
+              <p className="text-sm leading-relaxed text-[--color-text-body]">&quot;{testimonial.quote}&quot;</p>
               <div className="mt-6 flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[--color-border] bg-[--color-badge-bg] text-sm font-medium text-[--color-badge-text]">
                   {testimonial.name.split(" ").map((part) => part[0]).join("")}

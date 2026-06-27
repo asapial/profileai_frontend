@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Github, Linkedin, Twitter } from "lucide-react";
 
 const footerGroups = [
   {
@@ -45,14 +44,14 @@ export function Footer() {
             want every application to feel intentional.
           </p>
           <div className="mt-5 flex gap-2">
-            {[Twitter, Github, Linkedin].map((Icon, index) => (
+            {["X", "GH", "IN"].map((label) => (
               <a
-                key={index}
+                key={label}
                 href="#"
-                aria-label="Social profile"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 text-white/65 transition-colors hover:bg-white/10 hover:text-white"
+                aria-label={`${label} social profile`}
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 text-xs font-semibold text-white/65 transition-colors hover:bg-white/10 hover:text-white"
               >
-                <Icon size={16} />
+                {label}
               </a>
             ))}
           </div>

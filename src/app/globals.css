@@ -351,6 +351,227 @@ body {
   background: rgba(15, 52, 96, 0.45);
 }
 
+/* === ProFile AI design extensions === */
+
+/* Font family variables — populated by next/font in layout.tsx */
+:root {
+  --font-display: var(--font-fraunces, "Fraunces"), Georgia, serif;
+  --font-sans: var(--font-geist, "Geist"), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono, "Geist Mono"), ui-monospace, SFMono-Regular,
+    Menlo, monospace;
+
+  /* Fluid type scale — clamp() gives smooth scaling between breakpoints */
+  --text-h1: clamp(2.75rem, 5.5vw + 1rem, 5.25rem);
+  --text-h2: clamp(2rem, 3.5vw + 1rem, 3.75rem);
+  --text-h3: clamp(1.5rem, 2vw + 0.75rem, 2.25rem);
+  --text-eyebrow: 0.75rem;
+  --text-body-lg: clamp(1.0625rem, 0.5vw + 1rem, 1.1875rem);
+
+  /* Aurora gradients reused across dark surfaces */
+  --grad-ring: conic-gradient(
+    from 180deg at 50% 50%,
+    #a78bfa 0deg,
+    #7c3aed 120deg,
+    #0f3460 240deg,
+    #a78bfa 360deg
+  );
+  --grad-glass: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+}
+
+.dark {
+  --font-display: var(--font-fraunces, "Fraunces"), Georgia, serif;
+  --font-sans: var(--font-geist, "Geist"), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono, "Geist Mono"), ui-monospace, monospace;
+}
+
+/* Override base body font to Geist (set by next/font) — keeps Inter fallback */
+body {
+  font-family: var(--font-sans);
+}
+
+/* Display headings use Fraunces with tight optical size */
+.font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  letter-spacing: -0.02em;
+}
+
+/* Mono eyebrows / data labels */
+.font-mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@layer components {
+  /* === Surface treatments === */
+
+  /* Dark glass — translucent panel over hero/dark surfaces */
+  .glass-surface {
+    background: var(--grad-glass);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid color-mix(in srgb, var(--color-text-primary) 8%, transparent);
+    box-shadow:
+      0 1px 0 0 rgba(255, 255, 255, 0.06) inset,
+      0 24px 48px -24px rgba(13, 13, 26, 0.5);
+  }
+
+  /* Clean light card with subtle border */
+  .clean-surface {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+
+  /* === Reveal-on-scroll === */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* === Conic gradient border ring (used on featured cards) === */
+  .gradient-border {
+    position: relative;
+    isolation: isolate;
+  }
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: var(--grad-ring);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  /* === Soft glow ring (CTA accents) === */
+  .glow-ring {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-accent) 40%, transparent),
+      0 0 28px -4px color-mix(in srgb, var(--color-accent) 50%, transparent);
+  }
+
+  /* === Lift on hover === */
+  .card-hover-lift {
+    transition:
+      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .card-hover-lift:hover {
+    transform: translateY(-4px);
+  }
+
+  /* === Display headings using fluid scale === */
+  .heading-h1 {
+    font-family: var(--font-display);
+    font-size: var(--text-h1);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    font-weight: 500;
+    font-optical-sizing: auto;
+  }
+  .heading-h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    line-height: 1.08;
+    letter-spacing: -0.022em;
+    font-weight: 500;
+    font-optical-sizing: auto;
+  }
+  .heading-h3 {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    line-height: 1.15;
+    letter-spacing: -0.018em;
+    font-weight: 500;
+    font-optical-sizing: auto;
+  }
+
+  /* === Mono uppercase eyebrow === */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-accent) 90%, transparent);
+  }
+}
+
+/* === Mesh-style aurora orbs (replaces flat .orb) === */
+.orb {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  filter: blur(60px);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(circle at 30% 30%,
+      rgba(167, 139, 250, 0.55) 0%,
+      rgba(167, 139, 250, 0) 55%),
+    radial-gradient(circle at 70% 65%,
+      rgba(124, 58, 237, 0.45) 0%,
+      rgba(124, 58, 237, 0) 60%),
+    radial-gradient(circle at 50% 50%,
+      rgba(196, 181, 253, 0.35) 0%,
+      rgba(196, 181, 253, 0) 70%);
+}
+
+.orb-drift-a { animation: orb-drift-a 9s ease-in-out infinite; }
+.orb-drift-b { animation: orb-drift-b 11s ease-in-out infinite; }
+.orb-drift-c { animation: orb-drift-c 8s ease-in-out infinite; }
+.orb-drift-d { animation: orb-drift-d 10s ease-in-out infinite; }
+
+@keyframes orb-drift-a {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(40px, -30px, 0) scale(1.08); }
+  66% { transform: translate3d(-30px, 25px, 0) scale(0.95); }
+}
+@keyframes orb-drift-b {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-50px, -40px, 0) scale(1.12); }
+}
+@keyframes orb-drift-c {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  25% { transform: translate3d(35px, 30px, 0) scale(1.05); }
+  75% { transform: translate3d(-25px, -20px, 0) scale(0.92); }
+}
+@keyframes orb-drift-d {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  40% { transform: translate3d(-35px, 35px, 0) scale(1.1); }
+  80% { transform: translate3d(25px, -25px, 0) scale(0.97); }
+}
+
+/* Subtle gradient pan for hero/CTAs */
+@keyframes gradient-pan {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -358,5 +579,16 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
+  }
+  .orb,
+  .orb-drift-a,
+  .orb-drift-b,
+  .orb-drift-c,
+  .orb-drift-d {
+    animation: none !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

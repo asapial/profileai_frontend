@@ -1,6 +1,29 @@
 import type { Metadata } from 'next';
+import { Fraunces, Geist, Geist_Mono } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import './globals.css';
+
+// Display: Fraunces (variable font, with optical sizing axes)
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-fraunces',
+  display: 'swap',
+  axes: ['SOFT', 'WONK', 'opsz'],
+});
+
+// Body: Geist Sans
+const geistSans = Geist({
+  subsets: ['latin'],
+  variable: '--font-geist',
+  display: 'swap',
+});
+
+// Data / labels: Geist Mono
+const geistMono = Geist_Mono({
+  subsets: ['latin'],
+  variable: '--font-geist-mono',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: {
@@ -23,8 +46,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-[#09090b] text-zinc-100 antialiased">
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${geistSans.variable} ${geistMono.variable}`}
+    >
+      <body className="min-h-screen bg-[--color-bg-page] text-[--color-text-primary] antialiased">
         {children}
         <Toaster
           position="top-right"

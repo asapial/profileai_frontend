@@ -25,7 +25,9 @@ import { resendVerificationOtp, verifyEmail } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 const OTP_LENGTH = 6;
-const RESEND_COOLDOWN = 30; // seconds before resend is enabled
+// Email verification OTPs are not server-side rate limited, so the
+// resend button is available immediately after each request.
+const RESEND_COOLDOWN = 0;
 
 const maskEmail = (value: string): string => {
   if (!value) return "";

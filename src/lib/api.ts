@@ -58,6 +58,28 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     }),
+  put: <T>(path: string, body: unknown) =>
+    request<T>(path, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }),
+  patch: <T>(path: string, body: unknown) =>
+    request<T>(path, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }),
+  delete: <T>(path: string, body?: unknown) =>
+    request<T>(path, {
+      method: "DELETE",
+      ...(body !== undefined
+        ? {
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          }
+        : {}),
+    }),
 };
 
 // ─── Template DTO ─────────────────────────────────────

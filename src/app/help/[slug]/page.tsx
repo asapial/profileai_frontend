@@ -100,7 +100,7 @@ export default async function HelpArticlePage({
                   Still need help?
                 </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  We couldn't answer your question here? Reach out and we'll
+                  We couldn&rsquo;t answer your question here? Reach out and we&rsquo;ll
                   get back to you.
                 </p>
                 <div className="mt-4 flex flex-col gap-2 sm:flex-row">

@@ -17,15 +17,21 @@ export class ApiError extends Error {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${env.apiBaseUrl}${path}`, {
+  // Only GETs should opt-in to Next's data cache. POSTs / mutations must not
+  // be cached or they could be replayed and would also pin response bodies in
+  // shared cache entries.
+  const method = (init?.method ?? "GET").toUpperCase();
+  const fetchInit: RequestInit = {
     ...init,
     headers: {
       Accept: "application/json",
       ...(init?.headers ?? {}),
     },
-    // Public landing endpoints should be cache-friendly.
-    next: { revalidate: 300 },
-  });
+    // `next` is a Next.js extension; cast keeps the standard RequestInit
+    // type clean while still letting us opt into the data cache for GETs.
+    ...(method === "GET" ? { next: { revalidate: 300 } } : {}),
+  } as RequestInit;
+  const res = await fetch(`${env.apiBaseUrl}${path}`, fetchInit);
 
   let payload: unknown = null;
   try {

@@ -2,16 +2,16 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { LoginForm } from "./LoginForm";
+import { ResetPasswordForm } from "./ResetPasswordForm";
 
 export const metadata: Metadata = {
-  title: "Log in — ProFile AI",
+  title: "Reset password — ProFile AI",
   description:
-    "Log in to ProFile AI to keep building, tailoring, and exporting your AI-powered resume.",
+    "Enter the 6-digit code we emailed you and choose a new password for your ProFile AI account.",
   robots: { index: false, follow: false },
 };
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
   return (
     <>
       <Navbar />
@@ -19,7 +19,6 @@ export default function LoginPage() {
         id="main"
         className="relative isolate flex min-h-screen items-center justify-center overflow-hidden pt-24 pb-16"
       >
-        {/* Decorative gradient background + soft mesh grid */}
         <div className="bg-hero absolute inset-0 -z-10" aria-hidden />
         <div className="bg-mesh absolute inset-0 -z-10 opacity-60" aria-hidden />
         <div
@@ -33,7 +32,7 @@ export default function LoginPage() {
 
         <div className="mx-auto w-full max-w-md px-4 sm:px-6">
           <Suspense fallback={null}>
-            <LoginForm />
+            <ResetPasswordForm />
           </Suspense>
         </div>
       </main>

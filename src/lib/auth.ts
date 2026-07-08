@@ -6,10 +6,12 @@
 
 import { api } from "./api";
 import type {
+  ForgotPasswordRequest,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
   RegisterResponse,
+  ResetPasswordRequest,
   TwoFactorVerifyRequest,
   User,
 } from "@/types";
@@ -171,3 +173,67 @@ export const getCurrentUser = async (): Promise<CurrentUser | null> => {
  */
 export const postLoginRoute = (user: Pick<User, "role">): string =>
   user.role === "ADMIN" ? "/admin" : "/dashboard";
+
+/**
+ * Result shape for password-recovery helpers.
+ *
+ * The `forgot-password` endpoint always returns the same generic message
+ * regardless of whether the email exists, so we collapse success and
+ * "unknown email" into a single OK branch on the client.
+ */
+export type PasswordRecoveryResult = {
+  ok: boolean;
+  /** Human-readable message — server response on success, error on failure. */
+  message: string;
+};
+
+/**
+ * Request a password-reset OTP. Always returns `ok: true` from the user's
+ * perspective — the backend intentionally hides whether the email exists.
+ */
+export const requestPasswordReset = async (
+  payload: ForgotPasswordRequest
+): Promise<PasswordRecoveryResult> => {
+  try {
+    const data = await api.post<{ message: string }>(
+      "/auth/forgot-password",
+      payload
+    );
+    return { ok: true, message: data.message };
+  } catch (err) {
+    return {
+      ok: false,
+      message:
+        err instanceof Error
+          ? err.message
+          : "Could not request a password reset. Please try again.",
+    };
+  }
+};
+
+/**
+ * Reset a password using an OTP sent to the user's email.
+ *
+ * On success the backend invalidates all sessions for the account, so the
+ * caller should immediately route the user back to `/login` (e.g. with
+ * `?reset=1` to surface a success banner).
+ */
+export const resetPassword = async (
+  payload: ResetPasswordRequest
+): Promise<PasswordRecoveryResult> => {
+  try {
+    const data = await api.post<{ message: string }>(
+      "/auth/reset-password",
+      payload
+    );
+    return { ok: true, message: data.message };
+  } catch (err) {
+    return {
+      ok: false,
+      message:
+        err instanceof Error
+          ? err.message
+          : "Password reset failed. Please try again.",
+    };
+  }
+};

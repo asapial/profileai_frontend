@@ -39,6 +39,19 @@ export type TwoFactorVerifyRequest = {
   otp: string;
 };
 
+/** Payload sent to `POST /auth/forgot-password`. */
+export type ForgotPasswordRequest = {
+  email: string;
+};
+
+/** Payload sent to `POST /auth/reset-password`. */
+export type ResetPasswordRequest = {
+  email: string;
+  otp: string;
+  newPassword: string;
+  confirmPassword: string;
+};
+
 /**
  * `data` payload shape from `POST /auth/login` and `POST /auth/2fa/verify`.
  * The login endpoint may return `{ twoFactorRequired: true, email }` and skip

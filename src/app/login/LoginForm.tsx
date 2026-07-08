@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import {
   AlertCircle,
+  CheckCircle2,
   Eye,
   EyeOff,
   Loader2,
@@ -20,6 +21,10 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const justVerified = searchParams.get("verified") === "1";
+  const justReset = searchParams.get("reset") === "1";
+  const showSuccessBanner = justVerified || justReset;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -79,6 +84,26 @@ export function LoginForm() {
           ProFile <span className="text-gradient">AI</span>
         </span>
       </div>
+
+      {showSuccessBanner && (
+        <div
+          role="status"
+          className="mb-6 flex items-start gap-3 rounded-xl border border-emerald-500/30 p-4 text-sm text-emerald-300"
+          style={{ background: "rgba(16,185,129,0.08)" }}
+        >
+          <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-400" />
+          <div className="space-y-0.5">
+            <p className="font-semibold text-emerald-200">
+              {justVerified ? "Email verified" : "Password reset complete"}
+            </p>
+            <p className="text-emerald-300/80">
+              {justVerified
+                ? "Your email is confirmed. You can now log in to your account."
+                : "Your password has been updated. Please sign in with your new password."}
+            </p>
+          </div>
+        </div>
+      )}
 
       <header>
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">

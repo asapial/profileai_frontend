@@ -1,77 +1,28 @@
-import type { Metadata } from 'next';
-import { Fraunces, Geist, Geist_Mono } from 'next/font/google';
-import { Toaster } from 'react-hot-toast';
-import './globals.css';
-
-// Display: Fraunces (variable font, with optical sizing axes)
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  variable: '--font-fraunces',
-  display: 'swap',
-  axes: ['SOFT', 'WONK', 'opsz'],
-});
-
-// Body: Geist Sans
-const geistSans = Geist({
-  subsets: ['latin'],
-  variable: '--font-geist',
-  display: 'swap',
-});
-
-// Data / labels: Geist Mono
-const geistMono = Geist_Mono({
-  subsets: ['latin'],
-  variable: '--font-geist-mono',
-  display: 'swap',
-});
+import type { Metadata } from "next";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: {
-    default: 'ProFile AI — AI-Powered Resume Builder',
-    template: '%s | ProFile AI',
-  },
+  title: "ProFile AI — Build a Job-Winning Resume with AI",
   description:
-    'Create professionally formatted, ATS-optimized resumes and CVs powered by OpenAI. Build your perfect resume in minutes.',
-  keywords: ['resume builder', 'AI resume', 'ATS optimization', 'CV builder', 'career tools'],
-  authors: [{ name: 'ProFile AI' }],
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+    "Create, tailor, score, and export a professional resume in minutes. AI generation, ATS scoring, premium templates, cover letters, and application tracking.",
+  metadataBase: new URL("https://profileai.app"),
   openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    siteName: 'ProFile AI',
-    title: 'ProFile AI — AI-Powered Resume Builder',
-    description: 'Create professionally formatted, ATS-optimized resumes powered by AI.',
+    title: "ProFile AI — Build a Job-Winning Resume with AI",
+    description:
+      "Create, tailor, score, and export a professional resume in minutes.",
+    type: "website",
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html
-      lang="en"
-      className={`${fraunces.variable} ${geistSans.variable} ${geistMono.variable}`}
-    >
-      <body className="min-h-screen bg-[--color-bg-page] text-[--color-text-primary] antialiased">
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-screen bg-background font-sans antialiased">
         {children}
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#18181b',
-              color: '#f4f4f5',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '12px',
-              fontSize: '14px',
-              fontWeight: '500',
-            },
-            success: {
-              iconTheme: { primary: '#10b981', secondary: '#fff' },
-            },
-            error: {
-              iconTheme: { primary: '#ef4444', secondary: '#fff' },
-            },
-          }}
-        />
       </body>
     </html>
   );

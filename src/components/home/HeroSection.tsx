@@ -1,279 +1,190 @@
-'use client';
+import { BadgeCheck, Sparkles, Star, FileText, Briefcase } from "lucide-react";
+import { CtaButton } from "./CtaButton";
+import { cn } from "@/lib/utils";
 
-import { useEffect, useRef, useState } from 'react';
-import { PlayCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { OrbLayer } from '@/components/shared/OrbLayer';
-import { Badge } from '@/components/ui/badge';
-import { SmartCta } from '@/components/ui/smart-cta';
-import { useCountUp } from '@/hooks/use-count-up';
-
-/**
- * HeroSection — Block 2. The thesis of the whole page.
- *
- * Asymmetric 45/55 split. Left: eyebrow + Fraunces headline + body +
- * CTAs + mono trust line. Right: a floating glass resume card running a
- * 4-second live document-transformation loop:
- *
- *   1. Plain weak bullet in muted grey (1.4s)
- *   2. Accent scan-line sweeps down (0.7s)
- *   3. Bullet character-morphs into a strong, quantified line (1.0s)
- *   4. ATS score chip ticks 61 → 94, color amber → accent purple
- *   5. Hold + cross-fade back
- *
- * Two orbs behind the card at different depths with subtle mouse parallax.
- * Dark section → full orb treatment, grain overlay included.
- */
 export function HeroSection() {
   return (
-    <section
-      id="hero"
-      className="relative isolate overflow-hidden bg-[--grad-hero] pt-[88px] lg:pt-[112px]"
-    >
-      <OrbLayer
-        withGrain
-        orbs={[
-          { top: '-10%', left: '-6%', size: 460, variant: 'a', opacity: 0.55 },
-          { top: '20%', right: '8%', size: 320, variant: 'b', opacity: 0.45 },
-          { bottom: '-12%', left: '30%', size: 380, variant: 'c', opacity: 0.5 },
-        ]}
+    <section className="relative isolate overflow-hidden bg-hero pt-28 sm:pt-32 lg:pt-36">
+      {/* Floating blurred orbs */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-24 -left-16 h-80 w-80 rounded-full bg-violet-400/30 blur-3xl animate-float-slow"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-10 right-0 h-72 w-72 rounded-full bg-fuchsia-400/30 blur-3xl animate-float-slower"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-sky-400/25 blur-3xl animate-float-slow"
       />
 
-      <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-12 px-5 pb-24 pt-16 lg:grid-cols-[45fr_55fr] lg:gap-10 lg:px-8 lg:pb-32 lg:pt-20">
-        <HeroCopy />
-        <HeroDemo />
+      <div className="relative mx-auto grid max-w-7xl gap-14 px-4 pb-20 sm:px-6 lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-8 lg:pb-28">
+        {/* Left — copy + CTAs */}
+        <div className="flex flex-col items-start text-left">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-1 text-xs font-semibold text-foreground shadow-sm backdrop-blur">
+            <Sparkles className="h-3.5 w-3.5 text-violet-600" />
+            AI-powered resume builder
+          </span>
+
+          <h1 className="mt-5 text-4xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+            Build a job-winning resume{" "}
+            <span className="text-gradient">with AI.</span>
+          </h1>
+
+          <p className="mt-5 max-w-xl text-lg text-muted-foreground">
+            Create, tailor, score, and export a professional resume in minutes.
+            ProFile AI helps you beat applicant tracking systems and land more
+            interviews.
+          </p>
+
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <CtaButton
+              href="/register"
+              label="Get Started Free"
+              eventName="hero_cta_get_started"
+              className="px-6 py-3.5 text-base"
+            />
+            <CtaButton
+              href="/templates"
+              label="View Templates"
+              variant="secondary"
+              eventName="hero_cta_view_templates"
+              className="px-6 py-3.5 text-base"
+            />
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5">
+              <BadgeCheck className="h-4 w-4 text-emerald-600" />
+              No credit card required
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+              4.8 average user rating
+            </span>
+          </div>
+        </div>
+
+        {/* Right — resume preview mockup with floating AI score */}
+        <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
+          <ResumeMockup />
+          <AiScoreBadge />
+          <KeywordBadge />
+        </div>
       </div>
     </section>
   );
 }
 
-function HeroCopy() {
+function ResumeMockup() {
   return (
-    <div className="flex flex-col justify-center">
-      <Badge className="self-start">AI-Powered Resume Builder</Badge>
-
-      <h1 className="text-display mt-6 text-white">
-        Turn career <em className="not-italic text-[--color-accent]">chaos</em>
-        <br className="hidden sm:block" /> into an interview-ready
-        <br className="hidden sm:block" /> resume.
-      </h1>
-
-      <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/70">
-        Drop in your messy career facts. ProFile AI rewrites them into
-        quantified, ATS-scored bullets and lays them out in a template
-        that recruiters actually finish reading.
-      </p>
-
-      <div className="mt-8 flex flex-wrap items-center gap-3">
-        <SmartCta
-          href="/register"
-          label="Build my resume"
-          size="lg"
-          analyticsLabel="hero_primary"
-        />
-        <a
-          href="#how-it-works"
-          className="group inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-white/80 transition-colors hover:text-white"
-        >
-          <PlayCircle
-            size={20}
-            className="text-[--color-accent] transition-transform group-hover:scale-110"
-          />
-          See how it works
-        </a>
+    <div
+      className={cn(
+        "relative rounded-2xl border border-border bg-card p-6 shadow-2xl shadow-violet-500/10",
+        "ring-1 ring-black/5",
+      )}
+    >
+      {/* Window dots */}
+      <div className="mb-5 flex items-center gap-1.5">
+        <span className="h-2.5 w-2.5 rounded-full bg-rose-400" />
+        <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
+        <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
       </div>
 
-      <p className="mt-6 font-mono text-[13px] text-white/55">
-        <span className="text-white/80">12,400+</span> resumes generated ·
-        <span className="ml-2 text-white/80">+34pts</span> avg ATS lift ·
-        <span className="ml-2 text-white/80">48hrs</span> to first callback
-      </p>
-    </div>
-  );
-}
-
-function HeroDemo() {
-  // ATS score chip — counts up to 94 once the morph begins.
-  const { ref, value } = useCountUp(94, { duration: 1500, from: 61 });
-  const score = Math.round(value);
-  const scoreColor =
-    score < 70 ? 'text-amber-300' : score < 85 ? 'text-[#c4b5fd]' : 'text-[--color-accent]';
-
-  return (
-    <div className="relative flex items-center justify-center lg:justify-end">
-      <ParallaxOrbs />
-
-      <div
-        className={cn(
-          'glass-surface relative w-full max-w-[520px] -rotate-[2deg]',
-          'p-7 shadow-[0_30px_80px_-30px_rgba(124,58,237,0.55)]',
-          'transition-transform duration-500 hover:rotate-0'
-        )}
-      >
-        <div className="absolute -top-3 -right-3 z-10 flex items-center gap-2 rounded-full border border-white/10 bg-[rgba(13,13,26,0.85)] px-3 py-1.5 shadow-lg backdrop-blur-md">
-          <span className="font-mono text-[11px] uppercase tracking-wider text-white/60">
-            ATS
-          </span>
-          <span
-            ref={ref as React.Ref<HTMLSpanElement>}
-            className={cn('font-mono text-sm font-semibold transition-colors duration-300', scoreColor)}
-          >
-            {score}
-          </span>
+      <div className="space-y-4">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="h-3 w-40 rounded bg-foreground/80" />
+            <div className="mt-2 h-2.5 w-56 rounded bg-muted" />
+          </div>
+          <div className="h-12 w-12 shrink-0 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500" />
         </div>
 
-        <div className="mb-4">
-          <div className="font-display text-xl text-white">Maya Okonkwo</div>
-          <div className="text-xs text-white/55">Senior Product Designer · 6 yrs</div>
+        {/* Section */}
+        <div className="space-y-2 pt-2">
+          <div className="h-2.5 w-24 rounded bg-primary/80" />
+          <div className="h-2 w-full rounded bg-muted" />
+          <div className="h-2 w-11/12 rounded bg-muted" />
+          <div className="h-2 w-10/12 rounded bg-muted" />
         </div>
 
-        <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/45">
-          Experience
+        {/* Experience rows */}
+        <div className="space-y-3 pt-2">
+          <div className="h-2.5 w-28 rounded bg-primary/80" />
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="flex items-start gap-3">
+              <div className="mt-1 grid h-7 w-7 shrink-0 place-items-center rounded-md bg-accent text-accent-foreground">
+                <Briefcase className="h-3.5 w-3.5" />
+              </div>
+              <div className="flex-1 space-y-1.5">
+                <div className="h-2 w-1/2 rounded bg-foreground/70" />
+                <div className="h-1.5 w-full rounded bg-muted" />
+                <div className="h-1.5 w-5/6 rounded bg-muted" />
+              </div>
+            </div>
+          ))}
         </div>
 
-        <BulletMorph />
-
-        <div className="mt-5 space-y-1.5">
-          <div className="h-1.5 w-[78%] rounded-full bg-white/10" />
-          <div className="h-1.5 w-[64%] rounded-full bg-white/10" />
-          <div className="h-1.5 w-[86%] rounded-full bg-white/10" />
+        {/* Skills chips */}
+        <div className="flex flex-wrap gap-1.5 pt-2">
+          {["TypeScript", "React", "Node.js", "PostgreSQL", "AWS"].map((s) => (
+            <span
+              key={s}
+              className="rounded-full border border-border bg-muted/60 px-2.5 py-0.5 text-[10px] font-medium text-muted-foreground"
+            >
+              {s}
+            </span>
+          ))}
         </div>
       </div>
     </div>
   );
 }
 
-/**
- * BulletMorph — the 4-second live demonstration.
- * Phases: weak → scan-line sweep → character-by-character morph → strong → reset.
- */
-function BulletMorph() {
-  const weak = 'Worked on team projects and helped with tasks.';
-  const strong = 'Led a 5-person team to ship 3 features that lifted retention by 22%.';
-
-  type Phase = 'weak' | 'scanning' | 'morph' | 'strong';
-  const [phase, setPhase] = useState<Phase>('weak');
-  const [morphIndex, setMorphIndex] = useState(0);
-  const cleanupRef = useRef<(() => void) | null>(null);
-
-  useEffect(() => {
-    // Respect reduced motion: render the strong bullet statically.
-    const reduce =
-      typeof window !== 'undefined' &&
-      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) {
-      setPhase('strong');
-      setMorphIndex(strong.length);
-      return;
-    }
-
-    const loop = () => {
-      setPhase('weak');
-      setMorphIndex(0);
-      const t1 = setTimeout(() => setPhase('scanning'), 1400);
-      const t2 = setTimeout(() => setPhase('morph'), 2100);
-      const t3 = setTimeout(() => setPhase('strong'), 3100);
-      const t4 = setTimeout(loop, 4100);
-
-      // Character-by-character morph with ease-out cubic.
-      const start = performance.now() + 100;
-      let raf = 0;
-      const tick = (now: number) => {
-        const elapsed = now - start;
-        if (elapsed < 0) {
-          raf = requestAnimationFrame(tick);
-          return;
-        }
-        const ratio = Math.min(1, elapsed / 1000);
-        const eased = 1 - Math.pow(1 - ratio, 3);
-        setMorphIndex(Math.floor(eased * strong.length));
-        if (ratio < 1) raf = requestAnimationFrame(tick);
-      };
-      raf = requestAnimationFrame(tick);
-
-      cleanupRef.current = () => {
-        clearTimeout(t1);
-        clearTimeout(t2);
-        clearTimeout(t3);
-        clearTimeout(t4);
-        cancelAnimationFrame(raf);
-      };
-    };
-    loop();
-    return () => cleanupRef.current?.();
-  }, [strong.length]);
-
+function AiScoreBadge() {
   return (
-    <div className="relative min-h-[58px]">
-      <p
-        className={cn(
-          'relative text-[14px] leading-relaxed transition-colors duration-300',
-          phase === 'weak' || phase === 'scanning'
-            ? 'italic text-white/45'
-            : 'text-white'
-        )}
-      >
-        {phase === 'strong'
-          ? strong
-          : phase === 'morph'
-            ? strong.slice(0, morphIndex)
-            : weak}
-        {phase === 'scanning' || phase === 'morph' ? (
-          <span
-            className="pointer-events-none absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[--color-accent] to-transparent opacity-90"
-            style={{
-              animation: 'scan-line 0.7s linear forwards',
-              top: phase === 'morph' ? '60%' : '50%',
-            }}
-          />
-        ) : null}
-      </p>
+    <div
+      className={cn(
+        "absolute -right-3 -top-5 sm:-right-6 sm:-top-6",
+        "flex items-center gap-3 rounded-2xl border border-border bg-background p-3 pr-4 shadow-xl",
+        "animate-float-slow",
+      )}
+    >
+      <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white shadow-lg shadow-violet-500/30">
+        <Sparkles className="h-5 w-5" />
+      </div>
+      <div className="leading-tight">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          AI Score
+        </p>
+        <p className="text-xl font-bold text-foreground">
+          92<span className="text-muted-foreground">/100</span>
+        </p>
+      </div>
     </div>
   );
 }
 
-/** Two orbs at different depths, with subtle mouse parallax. */
-function ParallaxOrbs() {
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
-      setPos({ x: (e.clientX - cx) / cx, y: (e.clientY - cy) / cy });
-    };
-    window.addEventListener('mousemove', onMove);
-    return () => window.removeEventListener('mousemove', onMove);
-  }, []);
+function KeywordBadge() {
   return (
-    <>
-      <span
-        className="orb orb-drift-a"
-        style={{
-          top: '-20%',
-          right: '-10%',
-          width: 280,
-          height: 280,
-          opacity: 0.5,
-          transform: `translate(${pos.x * 18}px, ${pos.y * 14}px)`,
-          background:
-            'radial-gradient(circle at 35% 35%, rgba(196,181,253,0.6), rgba(124,58,237,0.25) 45%, transparent 75%)',
-        }}
-        aria-hidden
-      />
-      <span
-        className="orb orb-drift-c"
-        style={{
-          bottom: '-25%',
-          left: '-15%',
-          width: 200,
-          height: 200,
-          opacity: 0.4,
-          transform: `translate(${pos.x * 10}px, ${pos.y * 8}px)`,
-          background:
-            'radial-gradient(circle at 50% 50%, rgba(167,139,250,0.5), rgba(124,58,237,0.2) 50%, transparent 80%)',
-        }}
-        aria-hidden
-      />
-    </>
+    <div
+      className={cn(
+        "absolute -bottom-5 -left-3 sm:-bottom-6 sm:-left-6",
+        "flex items-center gap-2.5 rounded-xl border border-border bg-background px-3 py-2 shadow-xl",
+        "animate-float-slower",
+      )}
+    >
+      <div className="grid h-8 w-8 place-items-center rounded-md bg-emerald-50 text-emerald-600">
+        <FileText className="h-4 w-4" />
+      </div>
+      <div className="leading-tight">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          ATS Ready
+        </p>
+        <p className="text-sm font-semibold text-foreground">PDF Export</p>
+      </div>
+    </div>
   );
 }

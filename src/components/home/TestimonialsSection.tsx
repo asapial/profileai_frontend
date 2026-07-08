@@ -1,32 +1,63 @@
-import { Card } from "@/components/ui/card";
-import { SectionHeader } from "@/components/shared/SectionHeader";
-import { testimonials } from "@/constants/homepage";
+import { Star, Quote } from "lucide-react";
+import { SectionHeader } from "./SectionHeader";
+
+const QUOTES = [
+  {
+    quote:
+      "I went from zero callbacks to three interviews in a week. The ATS score alone is worth it.",
+    name: "Maya Chen",
+    role: "Product Designer",
+  },
+  {
+    quote:
+      "The AI rewrote my bullet points in a way I couldn't have done myself. Landed my dream role two weeks later.",
+    name: "James O'Connor",
+    role: "Data Engineer",
+  },
+  {
+    quote:
+      "I love that the cover letter matches my resume. It saves me an hour per application.",
+    name: "Priya Sharma",
+    role: "Marketing Manager",
+  },
+];
 
 export function TestimonialsSection() {
   return (
-    <section className="bg-[--color-bg-page] px-4 py-14 dark:bg-[--color-bg-page] lg:px-6 lg:py-20">
-      <div className="mx-auto max-w-6xl">
+    <section className="py-20 sm:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          eyebrow="Results"
-          title="Job seekers use it when the application matters"
-          description="The interface is built to make thoughtful resume iteration feel fast, clear, and less lonely."
+          eyebrow="Loved by job seekers"
+          title={<>Real people, real interviews</>}
+          description="Join thousands of job seekers who've used ProFile AI to land more interviews in less time."
         />
-        <div className="grid gap-4 md:grid-cols-3">
-          {testimonials.map((testimonial) => (
-            <Card key={testimonial.name} className="p-6">
-              <p className="text-sm leading-relaxed text-[--color-text-body]">&quot;{testimonial.quote}&quot;</p>
-              <div className="mt-6 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[--color-border] bg-[--color-badge-bg] text-sm font-medium text-[--color-badge-text]">
-                  {testimonial.name.split(" ").map((part) => part[0]).join("")}
-                </div>
+
+        <ul className="mt-12 grid gap-5 lg:grid-cols-3">
+          {QUOTES.map((q) => (
+            <li
+              key={q.name}
+              className="relative flex flex-col gap-5 rounded-2xl border border-border bg-card p-6"
+            >
+              <Quote className="h-6 w-6 text-violet-300" />
+              <p className="text-base leading-relaxed text-foreground">
+                &ldquo;{q.quote}&rdquo;
+              </p>
+              <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
                 <div>
-                  <p className="text-sm font-medium text-[--color-text-primary]">{testimonial.name}</p>
-                  <p className="text-xs text-[--color-text-muted]">{testimonial.role}</p>
+                  <p className="text-sm font-semibold text-foreground">
+                    {q.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{q.role}</p>
+                </div>
+                <div className="flex items-center gap-0.5 text-amber-400">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="h-3.5 w-3.5 fill-current" />
+                  ))}
                 </div>
               </div>
-            </Card>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );

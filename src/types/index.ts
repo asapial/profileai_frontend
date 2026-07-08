@@ -17,6 +17,23 @@ export type LoginRequest = {
   password: string;
 };
 
+export type RegisterRequest = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  acceptTerms: true;
+  /** Optional referral code, validated server-side when present. */
+  referredByCode?: string;
+};
+
+/** Payload returned from `POST /auth/register`. */
+export type RegisterResponse = {
+  userId: string;
+  email: string;
+};
+
 export type TwoFactorVerifyRequest = {
   email: string;
   otp: string;

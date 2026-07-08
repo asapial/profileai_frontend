@@ -8,6 +8,8 @@ import { api } from "./api";
 import type {
   LoginRequest,
   LoginResponse,
+  RegisterRequest,
+  RegisterResponse,
   TwoFactorVerifyRequest,
   User,
 } from "@/types";
@@ -16,10 +18,6 @@ export type LoginResult =
   | { kind: "ok"; user: User; accessToken: string }
   | { kind: "2fa"; email: string }
   | { kind: "error"; message: string; code?: string };
-
-export type Verify2FAResult =
-  | { kind: "ok"; user: User; accessToken: string }
-  | { kind: "error"; message: string };
 
 export const login = async (
   payload: LoginRequest
@@ -36,6 +34,70 @@ export const login = async (
     return { kind: "error", message };
   }
 };
+
+export type RegisterResult =
+  | { kind: "ok"; userId: string; email: string }
+  | { kind: "error"; message: string; code?: string };
+
+export const register = async (
+  payload: RegisterRequest
+): Promise<RegisterResult> => {
+  try {
+    const data = await api.post<RegisterResponse>("/auth/register", payload);
+    return { kind: "ok", userId: data.userId, email: data.email };
+  } catch (err) {
+    const message =
+      err instanceof Error
+        ? err.message
+        : "Registration failed. Please try again.";
+    return { kind: "error", message };
+  }
+};
+
+export type VerifyEmailResult =
+  | { kind: "ok"; email: string }
+  | { kind: "error"; message: string; code?: string };
+
+export const verifyEmail = async (
+  payload: { email: string; otp: string }
+): Promise<VerifyEmailResult> => {
+  try {
+    const data = await api.post<{ email: string }>(
+      "/auth/verify-email",
+      payload
+    );
+    return { kind: "ok", email: data.email };
+  } catch (err) {
+    const message =
+      err instanceof Error
+        ? err.message
+        : "Verification failed. Please try again.";
+    return { kind: "error", message };
+  }
+};
+
+export const resendVerificationOtp = async (
+  payload: { email: string }
+): Promise<{ ok: boolean; message: string }> => {
+  try {
+    await api.post<{ message: string }>("/auth/otp/resend", {
+      email: payload.email,
+      type: "EMAIL_VERIFY",
+    });
+    return {
+      ok: true,
+      message: "A new code has been sent to your email.",
+    };
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "Failed to resend code.";
+    return { ok: false, message };
+  }
+};
+
+export type Verify2FAResult =
+  | { kind: "ok"; user: User; accessToken: string }
+  | { kind: "error"; message: string };
 
 export const verifyTwoFactor = async (
   payload: TwoFactorVerifyRequest

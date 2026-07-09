@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" preserveAspectRatio="xMidYMid slice">
+  <rect width="600" height="800" fill="#fffbeb"/>
+  <!-- Top ornamental rule -->
+  <line x1="60" y1="60" x2="540" y2="60" stroke="#92400e" stroke-width="2"/>
+  <line x1="60" y1="68" x2="540" y2="68" stroke="#92400e" stroke-width="0.5"/>
+  <text x="300" y="120" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="38" font-weight="700" fill="#451a03">HERITAGE</text>
+  <text x="300" y="148" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="13" fill="#78350f" letter-spacing="3" font-style="italic">Curriculum Vitae</text>
+  <line x1="60" y1="180" x2="540" y2="180" stroke="#92400e" stroke-width="0.5"/>
+  <line x1="60" y1="188" x2="540" y2="188" stroke="#92400e" stroke-width="2"/>
+  <text x="300" y="220" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="14" fill="#451a03">Eleanor M. Whitfield</text>
+  <text x="300" y="240" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="11" fill="#78350f">elena.whitfield@example.com  ·  London, UK</text>
+  <!-- Sections single column -->
+  <text x="60" y="290" font-family="Georgia, 'Times New Roman', serif" font-size="13" font-weight="700" fill="#92400e" letter-spacing="2">PROFESSIONAL EXPERIENCE</text>
+  <line x1="60" y1="296" x2="540" y2="296" stroke="#fde68a" stroke-width="1"/>
+  <rect x="60" y="310" width="260" height="11" rx="2" fill="#451a03"/>
+  <text x="60" y="334" font-family="Georgia, 'Times New Roman', serif" font-size="10" fill="#92400e" letter-spacing="1" font-style="italic">2014 — Present</text>
+  <rect x="60" y="350" width="480" height="5" rx="2" fill="#e7e5e4"/>
+  <rect x="60" y="360" width="470" height="5" rx="2" fill="#e7e5e4"/>
+  <rect x="60" y="370" width="450" height="5" rx="2" fill="#e7e5e4"/>
+  <rect x="60" y="380" width="410" height="5" rx="2" fill="#e7e5e4"/>
+  <rect x="60" y="406" width="260" height="11" rx="2" fill="#451a03"/>
+  <text x="60" y="430" font-family="Georgia, 'Times New Roman', serif" font-size="10" fill="#92400e" letter-spacing="1" font-style="italic">2008 — 2014</text>
+  <rect x="60" y="446" width="480" height="5" rx="2" fill="#e7e5e4"/>
+  <rect x="60" y="456" width="440" height="5" rx="2" fill="#e7e5e4"/>
+  <text x="60" y="510" font-family="Georgia, 'Times New Roman', serif" font-size="13" font-weight="700" fill="#92400e" letter-spacing="2">EDUCATION &amp; HONOURS</text>
+  <line x1="60" y1="516" x2="540" y2="516" stroke="#fde68a" stroke-width="1"/>
+  <rect x="60" y="530" width="260" height="10" rx="2" fill="#451a03"/>
+  <rect x="60" y="546" width="200" height="6" rx="2" fill="#a8a29e"/>
+  <rect x="60" y="562" width="480" height="5" rx="2" fill="#e7e5e4"/>
+  <rect x="60" y="572" width="430" height="5" rx="2" fill="#e7e5e4"/>
+</svg>

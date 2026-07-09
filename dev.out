@@ -1,0 +1,18 @@
+
+> profileai@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.21.80.1:3000
+- Environments: .env
+✓ Ready in 1126ms
+
+○ Compiling / ...
+ GET / 200 in 12.7s (next.js: 7.5s, application-code: 5.2s)
+ GET /login?redirect=%2Fdashboard 200 in 275ms (next.js: 58ms, proxy.ts: 9ms, application-code: 208ms)
+ GET /login?redirect=%2Fdashboard%2Fresumes 200 in 130ms (next.js: 5ms, proxy.ts: 8ms, application-code: 116ms)
+○ Compiling /dashboard/resumes ...
+ GET /dashboard/resumes 200 in 5.1s (next.js: 4.4s, proxy.ts: 16ms, application-code: 640ms)
+ GET /avatars/user.jpg 404 in 1245ms (next.js: 1115ms, application-code: 130ms)
+[?25h

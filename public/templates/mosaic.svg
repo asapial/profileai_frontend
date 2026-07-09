@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" preserveAspectRatio="xMidYMid slice">
+  <rect width="600" height="800" fill="#fef3c7"/>
+  <!-- Mosaic tiles -->
+  <rect x="40" y="40" width="160" height="100" rx="8" fill="#fb923c"/>
+  <rect x="208" y="40" width="160" height="100" rx="8" fill="#f472b6"/>
+  <rect x="376" y="40" width="184" height="100" rx="8" fill="#34d399"/>
+  <rect x="40" y="148" width="160" height="60" rx="8" fill="#60a5fa"/>
+  <rect x="208" y="148" width="160" height="60" rx="8" fill="#a78bfa"/>
+  <rect x="376" y="148" width="184" height="60" rx="8" fill="#facc15"/>
+  <!-- Name in title -->
+  <text x="40" y="280" font-family="Inter, system-ui, sans-serif" font-size="40" font-weight="900" fill="#1c1917">MOSAIC</text>
+  <text x="40" y="310" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#57534e">Multi-disciplinary Designer · mosaic@example.com</text>
+  <!-- Body -->
+  <rect x="40" y="350" width="520" height="1" fill="#1c1917"/>
+  <text x="40" y="380" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700" fill="#1c1917" letter-spacing="3">PORTFOLIO</text>
+  <!-- 4-tile portfolio -->
+  <rect x="40" y="400" width="120" height="120" rx="8" fill="#fb923c"/>
+  <text x="100" y="468" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="700" fill="#ffffff">Brand</text>
+  <rect x="170" y="400" width="120" height="120" rx="8" fill="#f472b6"/>
+  <text x="230" y="468" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="700" fill="#ffffff">Web</text>
+  <rect x="300" y="400" width="120" height="120" rx="8" fill="#34d399"/>
+  <text x="360" y="468" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="700" fill="#ffffff">Motion</text>
+  <rect x="430" y="400" width="120" height="120" rx="8" fill="#60a5fa"/>
+  <text x="490" y="468" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="700" fill="#ffffff">Print</text>
+  <!-- About -->
+  <text x="40" y="570" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700" fill="#1c1917" letter-spacing="3">ABOUT</text>
+  <rect x="40" y="588" width="520" height="6" rx="2" fill="#a8a29e"/>
+  <rect x="40" y="600" width="500" height="6" rx="2" fill="#a8a29e"/>
+  <rect x="40" y="612" width="450" height="6" rx="2" fill="#a8a29e"/>
+</svg>

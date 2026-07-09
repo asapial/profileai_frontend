@@ -1,5 +1,4 @@
 import { Footer } from "@/components/layout/Footer";
-import { Navbar } from "@/components/layout/Navbar";
 import { AiBuilderSection } from "@/components/home/AiBuilderSection";
 import { AnimatedCtaSection } from "@/components/home/AnimatedCtaSection";
 import { ApplicationTrackerSection } from "@/components/home/ApplicationTrackerSection";
@@ -18,6 +17,7 @@ import { CtaButton } from "@/components/home/CtaButton";
 import { WorkflowSection } from "@/components/home/WorkflowSection";
 import TrustBarSection from "@/components/home/TrustBarSection";
 import { fetchFeaturedTemplates } from "@/lib/api";
+import { Navbar1 } from "@/components/navbar1";
 
 // Public, cacheable landing page. No auth required.
 export const revalidate = 300; // 5 min — fresh enough for featured templates
@@ -34,7 +34,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar1 />
       <main id="main">
         <HeroSection />
         <TrustBarSection />

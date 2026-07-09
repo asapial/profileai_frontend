@@ -45,7 +45,7 @@ export function RecentResumesList() {
           <CardDescription>Pick up where you left off.</CardDescription>
         </div>
         <Button asChild size="sm" className="gap-1">
-          <Link href="/resumes/new">
+          <Link href="/resume/create">
             <Plus className="h-3.5 w-3.5" />
             New
           </Link>
@@ -64,7 +64,7 @@ export function RecentResumesList() {
                 className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
               >
                 <Link
-                  href={`/resumes/${r.id}`}
+                  href={`/resume/${r.id}/edit`}
                   className="min-w-0 flex-1 truncate text-sm font-medium hover:text-violet-600"
                 >
                   {r.title}

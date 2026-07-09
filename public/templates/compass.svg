@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" preserveAspectRatio="xMidYMid slice">
+  <rect width="600" height="800" fill="#ffffff"/>
+  <text x="60" y="70" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="26" font-weight="700" fill="#000000">PRIYA RAMAN</text>
+  <text x="60" y="94" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="12" fill="#000000">Compass@example.com  ·  London  ·  +44 7700 900000</text>
+  <line x1="60" y1="112" x2="540" y2="112" stroke="#000000" stroke-width="1"/>
+  <text x="60" y="148" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="13" font-weight="700" fill="#000000" letter-spacing="1">PROFILE</text>
+  <rect x="60" y="162" width="480" height="6" rx="2" fill="#d4d4d4"/>
+  <rect x="60" y="174" width="470" height="6" rx="2" fill="#d4d4d4"/>
+  <rect x="60" y="186" width="440" height="6" rx="2" fill="#d4d4d4"/>
+  <text x="60" y="220" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="13" font-weight="700" fill="#000000" letter-spacing="1">EXPERIENCE</text>
+  <text x="60" y="244" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="12" font-weight="700" fill="#000000">COMPASS ANALYTICS — Lead</text>
+  <text x="60" y="262" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="11" fill="#000000">2019 — Present</text>
+  <rect x="60" y="278" width="480" height="5" rx="2" fill="#d4d4d4"/>
+  <rect x="60" y="288" width="470" height="5" rx="2" fill="#d4d4d4"/>
+  <rect x="60" y="298" width="450" height="5" rx="2" fill="#d4d4d4"/>
+  <text x="60" y="328" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="12" font-weight="700" fill="#000000">NORTHWIND — Senior</text>
+  <text x="60" y="346" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="11" fill="#000000">2015 — 2019</text>
+  <rect x="60" y="362" width="480" height="5" rx="2" fill="#d4d4d4"/>
+  <rect x="60" y="372" width="450" height="5" rx="2" fill="#d4d4d4"/>
+  <text x="60" y="410" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="13" font-weight="700" fill="#000000" letter-spacing="1">SKILLS</text>
+  <text x="60" y="432" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="11" fill="#000000">SQL · Python · dbt · Looker · Figma · Tableau · Snowflake · ETL · Communication</text>
+  <text x="60" y="468" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="13" font-weight="700" fill="#000000" letter-spacing="1">EDUCATION</text>
+  <text x="60" y="490" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="12" font-weight="700" fill="#000000">M.Sc. Data Science</text>
+  <rect x="60" y="506" width="280" height="5" rx="2" fill="#d4d4d4"/>
+</svg>

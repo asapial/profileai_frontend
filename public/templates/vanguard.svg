@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" preserveAspectRatio="xMidYMid slice">
+  <rect width="600" height="800" fill="#ffffff"/>
+  <text x="300" y="80" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="34" font-weight="700" fill="#111827" letter-spacing="1">VANGUARD</text>
+  <text x="300" y="108" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="13" fill="#6b7280" font-style="italic">Senior Counsel · vanguard@example.com · +1 555 0142</text>
+  <line x1="80" y1="140" x2="520" y2="140" stroke="#111827" stroke-width="2"/>
+  <line x1="80" y1="146" x2="520" y2="146" stroke="#111827" stroke-width="1"/>
+  <!-- Section: Summary -->
+  <text x="80" y="180" font-family="Georgia, 'Times New Roman', serif" font-size="13" font-weight="700" fill="#111827" letter-spacing="2">PROFESSIONAL SUMMARY</text>
+  <rect x="80" y="200" width="440" height="6" rx="2" fill="#e5e7eb"/>
+  <rect x="80" y="212" width="420" height="6" rx="2" fill="#e5e7eb"/>
+  <rect x="80" y="224" width="380" height="6" rx="2" fill="#e5e7eb"/>
+  <!-- Section: Experience -->
+  <text x="80" y="270" font-family="Georgia, 'Times New Roman', serif" font-size="13" font-weight="700" fill="#111827" letter-spacing="2">LEGAL EXPERIENCE</text>
+  <rect x="80" y="290" width="240" height="10" rx="2" fill="#111827"/>
+  <text x="80" y="312" font-family="Georgia, 'Times New Roman', serif" font-size="11" fill="#6b7280" font-style="italic">Senior Associate · 2019 — Present</text>
+  <rect x="80" y="328" width="440" height="5" rx="2" fill="#e5e7eb"/>
+  <rect x="80" y="338" width="430" height="5" rx="2" fill="#e5e7eb"/>
+  <rect x="80" y="348" width="420" height="5" rx="2" fill="#e5e7eb"/>
+  <rect x="80" y="358" width="380" height="5" rx="2" fill="#e5e7eb"/>
+  <rect x="80" y="384" width="240" height="10" rx="2" fill="#111827"/>
+  <text x="80" y="406" font-family="Georgia, 'Times New Roman', serif" font-size="11" fill="#6b7280" font-style="italic">Associate · 2015 — 2019</text>
+  <rect x="80" y="422" width="440" height="5" rx="2" fill="#e5e7eb"/>
+  <rect x="80" y="432" width="400" height="5" rx="2" fill="#e5e7eb"/>
+  <!-- Section: Bar Admissions -->
+  <text x="80" y="480" font-family="Georgia, 'Times New Roman', serif" font-size="13" font-weight="700" fill="#111827" letter-spacing="2">BAR ADMISSIONS &amp; EDUCATION</text>
+  <rect x="80" y="500" width="200" height="9" rx="2" fill="#111827"/>
+  <rect x="80" y="516" width="320" height="6" rx="2" fill="#e5e7eb"/>
+  <rect x="80" y="528" width="280" height="6" rx="2" fill="#e5e7eb"/>
+</svg>

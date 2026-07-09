@@ -57,16 +57,12 @@ export function FeaturedTemplateCarousel({ templates }: Props) {
     <div className="relative">
       <div
         ref={trackRef}
-        className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [-ms-overflow-style:none]"
+        // Tailwind arbitrary variants cover Firefox / IE / WebKit scrollbar hiding.
+        // We avoid <style jsx> here because its scoped class injection has been
+        // flaky under Next 16 + Turbopack + React 19, producing hydration mismatches.
+        className="scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-2 [&::-webkit-scrollbar]:hidden"
         style={{ scrollbarWidth: "none" }}
       >
-        {/* Hide scrollbar on WebKit */}
-        <style jsx>{`
-          div::-webkit-scrollbar {
-            display: none;
-          }
-        `}</style>
-
         {templates.map((t) => (
           <article
             key={t.id}

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" preserveAspectRatio="xMidYMid slice">
+  <rect width="600" height="800" fill="#ffffff"/>
+  <!-- Title -->
+  <text x="300" y="84" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="32" font-weight="800" fill="#0f172a">CASCADE</text>
+  <text x="300" y="110" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#64748b">senior.engineer@example.com</text>
+  <!-- Section divider with gradient bar -->
+  <rect x="40" y="150" width="520" height="1" fill="#e2e8f0"/>
+  <text x="40" y="190" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="700" fill="#0f172a" letter-spacing="3">EXPERIENCE</text>
+  <rect x="40" y="210" width="380" height="10" rx="2" fill="#0f172a"/>
+  <rect x="40" y="226" width="200" height="8" rx="2" fill="#0ea5e9"/>
+  <rect x="40" y="244" width="500" height="6" rx="2" fill="#cbd5e1"/>
+  <rect x="40" y="256" width="490" height="6" rx="2" fill="#cbd5e1"/>
+  <rect x="40" y="268" width="430" height="6" rx="2" fill="#cbd5e1"/>
+  <rect x="40" y="280" width="350" height="6" rx="2" fill="#cbd5e1"/>
+  <rect x="40" y="310" width="380" height="10" rx="2" fill="#0f172a"/>
+  <rect x="40" y="326" width="180" height="8" rx="2" fill="#0ea5e9"/>
+  <rect x="40" y="344" width="500" height="6" rx="2" fill="#cbd5e1"/>
+  <rect x="40" y="356" width="470" height="6" rx="2" fill="#cbd5e1"/>
+  <!-- Skills section -->
+  <text x="40" y="410" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="700" fill="#0f172a" letter-spacing="3">SKILLS</text>
+  <g font-family="Inter, system-ui, sans-serif" font-size="10" fill="#0f172a">
+    <rect x="40"  y="430" width="60" height="22" rx="11" fill="#e0f2fe"/>
+    <text x="70" y="445" text-anchor="middle">React</text>
+    <rect x="110" y="430" width="80" height="22" rx="11" fill="#e0f2fe"/>
+    <text x="150" y="445" text-anchor="middle">TypeScript</text>
+    <rect x="200" y="430" width="60" height="22" rx="11" fill="#e0f2fe"/>
+    <text x="230" y="445" text-anchor="middle">Node</text>
+    <rect x="270" y="430" width="80" height="22" rx="11" fill="#e0f2fe"/>
+    <text x="310" y="445" text-anchor="middle">PostgreSQL</text>
+    <rect x="360" y="430" width="60" height="22" rx="11" fill="#e0f2fe"/>
+    <text x="390" y="445" text-anchor="middle">AWS</text>
+    <rect x="430" y="430" width="60" height="22" rx="11" fill="#e0f2fe"/>
+    <text x="460" y="445" text-anchor="middle">Docker</text>
+  </g>
+  <!-- Education -->
+  <text x="40" y="500" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="700" fill="#0f172a" letter-spacing="3">EDUCATION</text>
+  <rect x="40" y="520" width="280" height="9" rx="2" fill="#0f172a"/>
+  <rect x="40" y="536" width="240" height="8" rx="2" fill="#0ea5e9"/>
+  <rect x="40" y="554" width="500" height="6" rx="2" fill="#cbd5e1"/>
+  <rect x="40" y="566" width="380" height="6" rx="2" fill="#cbd5e1"/>
+</svg>

@@ -15,8 +15,11 @@ import { TemplateGalleryCard } from "@/components/templates/TemplateGalleryCard"
 import { TemplatePreviewModal } from "@/components/templates/TemplatePreviewModal";
 import {
   useTemplates,
+  TEMPLATE_SORTS,
+  sortTemplates,
   type Template,
   type TemplateCategory,
+  type TemplateSort,
 } from "@/lib/hooks/useTemplates";
 
 const categories: { value: TemplateCategory | "ALL"; label: string }[] = [
@@ -32,6 +35,7 @@ export default function TemplatesPage() {
   const [category, setCategory] = useState<TemplateCategory | "ALL">("ALL");
   const [search, setSearch] = useState("");
   const [featuredOnly, setFeaturedOnly] = useState(false);
+  const [sort, setSort] = useState<TemplateSort>("featured");
   const [preview, setPreview] = useState<Template | null>(null);
 
   const { data, isLoading, isError } = useTemplates({
@@ -39,17 +43,20 @@ export default function TemplatesPage() {
     featured: featuredOnly,
   });
 
-  const filtered = (data ?? []).filter((t) => {
-    if (!search.trim()) return true;
-    const q = search.toLowerCase();
-    return (
-      t.name.toLowerCase().includes(q) ||
-      (t.description ?? "").toLowerCase().includes(q)
-    );
-  });
+  const filtered = sortTemplates(
+    (data ?? []).filter((t) => {
+      if (!search.trim()) return true;
+      const q = search.toLowerCase();
+      return (
+        t.name.toLowerCase().includes(q) ||
+        (t.description ?? "").toLowerCase().includes(q)
+      );
+    }),
+    sort
+  );
 
   const goUseTemplate = (t: Template) => {
-    router.push(`/resumes/new?template=${t.id}`);
+    router.push(`/resume/create?templateId=${encodeURIComponent(t.id)}`);
   };
 
   return (
@@ -131,14 +138,31 @@ export default function TemplatesPage() {
 
         {/* Grid */}
         <div className="space-y-4">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search templates…"
-              className="pl-9"
-            />
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search templatesâ€¦"
+                className="pl-9"
+              />
+            </div>
+            <label className="flex items-center gap-2 text-xs">
+              <span className="font-medium text-muted-foreground">Sort by</span>
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value as TemplateSort)}
+                className="h-9 rounded-md border border-border bg-background px-2 text-sm focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+                aria-label="Sort templates"
+              >
+                {TEMPLATE_SORTS.map((s) => (
+                  <option key={s.value} value={s.value}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
 
           {isLoading ? (

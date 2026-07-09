@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" preserveAspectRatio="xMidYMid slice">
+  <rect width="600" height="800" fill="#ffffff"/>
+  <!-- Spectrum rainbow header -->
+  <rect x="0" y="0" width="600" height="14" fill="#ef4444"/>
+  <rect x="0" y="14" width="600" height="14" fill="#f97316"/>
+  <rect x="0" y="28" width="600" height="14" fill="#eab308"/>
+  <rect x="0" y="42" width="600" height="14" fill="#22c55e"/>
+  <rect x="0" y="56" width="600" height="14" fill="#06b6d4"/>
+  <rect x="0" y="70" width="600" height="14" fill="#3b82f6"/>
+  <rect x="0" y="84" width="600" height="14" fill="#a855f7"/>
+  <!-- Header -->
+  <text x="300" y="160" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="40" font-weight="900" fill="#1c1917">SPECTRUM</text>
+  <text x="300" y="190" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#52525b" letter-spacing="4">FULL-COLOR FULL-STACK</text>
+  <!-- Left/right split bars -->
+  <text x="40" y="240" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#ef4444" letter-spacing="3">EXPERIENCE</text>
+  <rect x="40" y="254" width="240" height="9" rx="2" fill="#1c1917"/>
+  <rect x="40" y="270" width="160" height="6" rx="2" fill="#ef4444"/>
+  <rect x="40" y="288" width="240" height="5" rx="2" fill="#e5e7eb"/>
+  <rect x="40" y="298" width="220" height="5" rx="2" fill="#e5e7eb"/>
+  <text x="40" y="338" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#3b82f6" letter-spacing="3">PROJECTS</text>
+  <rect x="40" y="354" width="240" height="9" rx="2" fill="#1c1917"/>
+  <rect x="40" y="370" width="160" height="6" rx="2" fill="#3b82f6"/>
+  <rect x="40" y="388" width="240" height="5" rx="2" fill="#e5e7eb"/>
+  <rect x="40" y="398" width="220" height="5" rx="2" fill="#e5e7eb"/>
+  <text x="320" y="240" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#22c55e" letter-spacing="3">SKILLS</text>
+  <g font-family="Inter, system-ui, sans-serif" font-size="11" fill="#1c1917">
+    <text x="320" y="264">React</text><rect x="380" y="256" width="160" height="8" rx="4" fill="#22c55e" opacity="0.8"/>
+    <text x="320" y="284">Node</text><rect x="380" y="276" width="140" height="8" rx="4" fill="#22c55e" opacity="0.8"/>
+    <text x="320" y="304">Design</text><rect x="380" y="296" width="120" height="8" rx="4" fill="#22c55e" opacity="0.8"/>
+  </g>
+  <text x="320" y="338" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#a855f7" letter-spacing="3">LANGUAGES</text>
+  <g font-family="Inter, system-ui, sans-serif" font-size="11" fill="#1c1917">
+    <text x="320" y="362">English</text>
+    <text x="320" y="382">Spanish</text>
+    <text x="320" y="402">Japanese</text>
+  </g>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" preserveAspectRatio="xMidYMid slice">
+  <rect width="600" height="800" fill="#ffffff"/>
+  <!-- Top -->
+  <rect x="0" y="0" width="600" height="80" fill="#000000"/>
+  <text x="60" y="50" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="22" font-weight="700" fill="#ffffff">HORIZON</text>
+  <text x="540" y="50" text-anchor="end" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="11" fill="#ffffff">horizon@example.com</text>
+  <!-- Body -->
+  <text x="60" y="128" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="13" font-weight="700" fill="#000000">Objective</text>
+  <rect x="60" y="142" width="480" height="6" rx="2" fill="#d4d4d4"/>
+  <rect x="60" y="154" width="460" height="6" rx="2" fill="#d4d4d4"/>
+  <rect x="60" y="166" width="430" height="6" rx="2" fill="#d4d4d4"/>
+  <text x="60" y="204" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="13" font-weight="700" fill="#000000">Skills</text>
+  <text x="60" y="226" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="11" fill="#000000">Excel, SAP, Reporting, Data Entry, Customer Service, Spanish, English, Forklift</text>
+  <text x="60" y="266" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="13" font-weight="700" fill="#000000">Experience</text>
+  <text x="60" y="288" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="12" font-weight="700" fill="#000000">HORIZON LOGISTICS — Warehouse Lead</text>
+  <text x="60" y="306" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="11" fill="#000000">2020 — Present</text>
+  <rect x="60" y="322" width="480" height="5" rx="2" fill="#d4d4d4"/>
+  <rect x="60" y="332" width="470" height="5" rx="2" fill="#d4d4d4"/>
+  <rect x="60" y="342" width="450" height="5" rx="2" fill="#d4d4d4"/>
+  <text x="60" y="376" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="12" font-weight="700" fill="#000000">PACIFIC FREIGHT — Associate</text>
+  <text x="60" y="394" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="11" fill="#000000">2016 — 2020</text>
+  <rect x="60" y="410" width="480" height="5" rx="2" fill="#d4d4d4"/>
+  <rect x="60" y="420" width="450" height="5" rx="2" fill="#d4d4d4"/>
+  <text x="60" y="460" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="13" font-weight="700" fill="#000000">Education</text>
+  <text x="60" y="482" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="12" font-weight="700" fill="#000000">High School Diploma</text>
+  <rect x="60" y="498" width="280" height="5" rx="2" fill="#d4d4d4"/>
+  <text x="60" y="540" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="13" font-weight="700" fill="#000000">Certifications</text>
+  <text x="60" y="562" font-family="Arial, 'Helvetica Neue', sans-serif" font-size="11" fill="#000000">Forklift Operator (2017)  ·  OSHA-10 (2019)</text>
+</svg>

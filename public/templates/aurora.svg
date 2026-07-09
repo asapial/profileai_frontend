@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" preserveAspectRatio="xMidYMid slice">
+  <rect width="600" height="800" fill="#faf8ff"/>
+  <!-- Right sidebar -->
+  <rect x="380" y="0" width="220" height="800" fill="#f3efff"/>
+  <!-- Header strip with violet accent -->
+  <rect x="40" y="40" width="60" height="6" rx="3" fill="#7c3aed"/>
+  <text x="40" y="92" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="700" fill="#1f1b2e">Aurora</text>
+  <text x="40" y="118" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b6480">aurora@example.com  •  +1 555 0100</text>
+  <!-- Body sections -->
+  <rect x="40" y="160" width="320" height="6" rx="2" fill="#ddd6ff"/>
+  <rect x="40" y="174" width="280" height="10" rx="2" fill="#1f1b2e"/>
+  <rect x="40" y="190" width="300" height="6" rx="2" fill="#cfc9eb"/>
+  <rect x="40" y="202" width="240" height="6" rx="2" fill="#cfc9eb"/>
+  <rect x="40" y="214" width="220" height="6" rx="2" fill="#cfc9eb"/>
+  <rect x="40" y="240" width="80" height="8" rx="2" fill="#7c3aed"/>
+  <rect x="40" y="260" width="320" height="6" rx="2" fill="#cfc9eb"/>
+  <rect x="40" y="272" width="300" height="6" rx="2" fill="#cfc9eb"/>
+  <rect x="40" y="284" width="220" height="6" rx="2" fill="#cfc9eb"/>
+  <rect x="40" y="320" width="80" height="8" rx="2" fill="#7c3aed"/>
+  <rect x="40" y="340" width="320" height="6" rx="2" fill="#cfc9eb"/>
+  <rect x="40" y="352" width="280" height="6" rx="2" fill="#cfc9eb"/>
+  <!-- Sidebar content -->
+  <text x="400" y="60" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#7c3aed" letter-spacing="2">SKILLS</text>
+  <rect x="400" y="76" width="120" height="14" rx="7" fill="#7c3aed" opacity="0.85"/>
+  <rect x="528" y="76" width="50" height="14" rx="7" fill="#7c3aed" opacity="0.6"/>
+  <rect x="400" y="98" width="100" height="14" rx="7" fill="#7c3aed" opacity="0.7"/>
+  <rect x="508" y="98" width="70" height="14" rx="7" fill="#7c3aed" opacity="0.5"/>
+  <rect x="400" y="120" width="80" height="14" rx="7" fill="#7c3aed" opacity="0.6"/>
+  <text x="400" y="180" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#7c3aed" letter-spacing="2">LANGUAGES</text>
+  <rect x="400" y="200" width="170" height="6" rx="2" fill="#bfb4ee"/>
+  <rect x="400" y="220" width="170" height="6" rx="2" fill="#bfb4ee"/>
+  <text x="400" y="280" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#7c3aed" letter-spacing="2">EDUCATION</text>
+  <rect x="400" y="296" width="170" height="6" rx="2" fill="#bfb4ee"/>
+  <rect x="400" y="308" width="140" height="6" rx="2" fill="#bfb4ee"/>
+</svg>

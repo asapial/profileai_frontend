@@ -2,9 +2,12 @@
 
 import * as React from "react"
 import {
+  IconBell,
   IconChartBar,
+  IconCreditCard,
   IconDashboard,
   IconFileDescription,
+  IconGift,
   IconHelp,
   IconInnerShadowTop,
   IconListDetails,
@@ -19,6 +22,7 @@ import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
+import { ModeToggleCompact } from "@/components/mode-toggle"
 import {
   Sidebar,
   SidebarContent,
@@ -60,14 +64,17 @@ const USER_CONFIG: SidebarConfig = {
     { title: "Resumes", url: "/dashboard/resumes", icon: IconListDetails },
     { title: "Templates", url: "/dashboard/templates", icon: IconFileDescription },
     { title: "Analytics", url: "/dashboard/analytics", icon: IconChartBar },
+    { title: "Notifications", url: "/dashboard/notifications", icon: IconBell },
     { title: "Profile", url: "/dashboard/profile", icon: IconUsers },
   ],
   documents: [
     { name: "Cover Letters", url: "/dashboard/cover-letters", icon: IconFileDescription },
     { name: "Exports", url: "/dashboard/exports", icon: IconReport },
+    { name: "Referrals", url: "/dashboard/referrals", icon: IconGift },
+    { name: "Billing", url: "/dashboard/billing", icon: IconCreditCard },
   ],
   navSecondary: [
-    { title: "Settings", url: "/dashboard/profile", icon: IconSettings },
+    { title: "Settings", url: "/dashboard/settings", icon: IconSettings },
     { title: "Get Help", url: "/help", icon: IconHelp },
     { title: "Search", url: "#", icon: IconSearch },
   ],
@@ -151,6 +158,12 @@ export function AppSidebar({
         <NavSecondary items={config.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
+        <div className="flex items-center justify-between gap-2 px-1 pb-1">
+          <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Theme
+          </span>
+          <ModeToggleCompact />
+        </div>
         <NavUser user={navUser} />
       </SidebarFooter>
     </Sidebar>

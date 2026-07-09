@@ -1,10 +1,11 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { SidebarTrigger } from "@/components/ui/sidebar"
-import type { Role } from "@/types"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { NotificationsBell } from "@/components/notifications-bell";
+import type { Role } from "@/types";
 
 export function SiteHeader({
   title,
@@ -12,14 +13,14 @@ export function SiteHeader({
   cta,
 }: {
   /** Page-level title shown in the top bar (e.g. "Overview"). */
-  title?: string
+  title?: string;
   /**
    * Optional role context so the header can render a small badge and a
    * role-appropriate primary CTA. Pass `null` to hide the badge.
    */
-  role?: Role | null
+  role?: Role | null;
   /** Optional primary CTA on the right side of the header. */
-  cta?: { label: string; href: string }
+  cta?: { label: string; href: string };
 }) {
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
@@ -43,6 +44,7 @@ export function SiteHeader({
           </span>
         ) : null}
         <div className="ml-auto flex items-center gap-2">
+          <NotificationsBell />
           {cta ? (
             <Button asChild size="sm" className="hidden sm:flex">
               <Link href={cta.href}>{cta.label}</Link>
@@ -51,5 +53,5 @@ export function SiteHeader({
         </div>
       </div>
     </header>
-  )
+  );
 }

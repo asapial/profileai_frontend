@@ -1,36 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Bell,
-  Eye,
-  KeyRound,
-  Link2,
-  Sparkles,
-  Trash2,
-  User,
-} from "lucide-react";
+import { Eye, Sparkles, User } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PersonalTab } from "./PersonalTab";
 import { ProfessionalTab } from "./ProfessionalTab";
 import { SkillsTab } from "./SkillsTab";
 import { PrivacyTab } from "./PrivacyTab";
-import { SecurityTab } from "./SecurityTab";
-import { NotificationsTab } from "./NotificationsTab";
-import { ConnectionsTab } from "./ConnectionsTab";
-import { AccountTab } from "./AccountTab";
-import { DangerTab } from "./DangerTab";
 
 const tabs = [
   { value: "personal", label: "Personal", icon: User },
   { value: "professional", label: "Professional", icon: Sparkles },
   { value: "skills", label: "Skills", icon: Sparkles },
   { value: "privacy", label: "Privacy", icon: Eye },
-  { value: "security", label: "Security", icon: KeyRound },
-  { value: "notifications", label: "Notifications", icon: Bell },
-  { value: "connections", label: "Connected apps", icon: Link2 },
-  { value: "account", label: "Billing", icon: Sparkles },
-  { value: "danger", label: "Danger zone", icon: Trash2 },
 ] as const;
 
 export default function ProfilePage() {
@@ -40,10 +22,11 @@ export default function ProfilePage() {
     <div className="space-y-6 p-6 md:p-8">
       <div>
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Profile & settings
+          Profile
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Manage your personal info, security, and preferences.
+          Keep the information used to build your resumes and cover letters
+          up to date. Security and account preferences live in Settings.
         </p>
       </div>
 
@@ -77,21 +60,6 @@ export default function ProfilePage() {
         </TabsContent>
         <TabsContent value="privacy">
           <PrivacyTab />
-        </TabsContent>
-        <TabsContent value="security">
-          <SecurityTab />
-        </TabsContent>
-        <TabsContent value="notifications">
-          <NotificationsTab />
-        </TabsContent>
-        <TabsContent value="connections">
-          <ConnectionsTab />
-        </TabsContent>
-        <TabsContent value="account">
-          <AccountTab />
-        </TabsContent>
-        <TabsContent value="danger">
-          <DangerTab />
         </TabsContent>
       </Tabs>
     </div>

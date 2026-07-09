@@ -25,6 +25,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { ModeToggle } from "@/components/mode-toggle";
 import { cn } from "@/lib/utils";
 
 interface MenuItem {
@@ -178,6 +179,7 @@ const Navbar1 = ({
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
+          <ModeToggle />
           <Button
             asChild
             variant="ghost"
@@ -197,6 +199,7 @@ const Navbar1 = ({
 
         {/* Mobile Menu */}
         <div className="flex items-center gap-2 lg:hidden">
+          <ModeToggle />
           <Button
             asChild
             size="sm"

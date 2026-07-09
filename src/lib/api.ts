@@ -27,6 +27,14 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       Accept: "application/json",
       ...(init?.headers ?? {}),
     },
+    // ── Auth-critical ────────────────────────────────────────────────────
+    // The backend sets `accessToken` / `refreshToken` as httpOnly cookies
+    // on a different origin (frontend :3000 → backend :5000). The browser
+    // default for `credentials` is `"omit"`, which silently drops the
+    // `Set-Cookie` response header. We need `"include"` so the browser
+    // (a) accepts the cookies and (b) sends them back on every subsequent
+    // request. Callers can still override via `init.credentials`.
+    credentials: init?.credentials ?? "include",
     // `next` is a Next.js extension; cast keeps the standard RequestInit
     // type clean while still letting us opt into the data cache for GETs.
     ...(method === "GET" ? { next: { revalidate: 300 } } : {}),

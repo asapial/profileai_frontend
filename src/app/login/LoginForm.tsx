@@ -19,6 +19,18 @@ import { cn } from "@/lib/utils";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/**
+ * Mirror of the middleware's safe-redirect check so the client doesn't
+ * blindly trust `?redirect=` either.
+ */
+function getSafeRedirect(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  if (!raw.startsWith("/")) return null;
+  if (raw.startsWith("//")) return null;
+  if (raw.includes("\n") || raw.includes("\r")) return null;
+  return raw;
+}
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -69,7 +81,19 @@ export function LoginForm() {
       return;
     }
 
-    router.push(postLoginRoute(result.user));
+    // Tell our edge middleware who this user is so it can gate routes
+    // immediately on the first navigation. We don't await the role — the
+    // middleware also decodes it from the accessToken as a fallback.
+    void fetch("/api/auth/post-login", {
+      method: "POST",
+      credentials: "include",
+    }).catch(() => {
+      /* non-fatal: middleware will decode role from the JWT */
+    });
+
+    const intended = getSafeRedirect(searchParams.get("redirect"));
+    const destination = intended ?? postLoginRoute(result.user);
+    router.push(destination);
     router.refresh();
   };
 

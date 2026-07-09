@@ -126,10 +126,22 @@ export const verifyTwoFactor = async (
 export const logout = async (): Promise<{ ok: boolean }> => {
   try {
     await api.post<null>("/auth/logout", {});
-    return { ok: true };
   } catch {
-    return { ok: false };
+    // Even if the backend call fails, still try to clear local state
+    // so the user isn't stuck behind a stale cookie.
   }
+  // Clear the frontend-issued role cookie that the edge middleware reads.
+  // We deliberately don't throw if this fails — the next navigation will
+  // still re-evaluate against the (now-cleared) accessToken cookie.
+  try {
+    await fetch("/api/auth/post-logout", {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch {
+    /* non-fatal */
+  }
+  return { ok: true };
 };
 
 export type CurrentUser = User & {

@@ -1,0 +1,14 @@
+
+> profileai@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.56.1:3000
+- Environments: .env
+✓ Ready in 1033ms
+
+○ Compiling /login ...
+ HEAD /login 200 in 18.1s (next.js: 16.6s, proxy.ts: 11ms, application-code: 1419ms)
+ GET /login 200 in 11.9s (next.js: 10.3s, proxy.ts: 20ms, application-code: 1572ms)
+[?25h

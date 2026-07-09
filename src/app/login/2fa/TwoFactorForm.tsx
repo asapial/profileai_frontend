@@ -25,6 +25,14 @@ import { cn } from "@/lib/utils";
 
 const OTP_LENGTH = 6;
 
+function getSafeRedirect(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  if (!raw.startsWith("/")) return null;
+  if (raw.startsWith("//")) return null;
+  if (raw.includes("\n") || raw.includes("\r")) return null;
+  return raw;
+}
+
 export function TwoFactorForm() {
   const router = useRouter();
   const params = useSearchParams();
@@ -113,7 +121,19 @@ export function TwoFactorForm() {
       return;
     }
 
-    router.push(postLoginRoute(result.user));
+    // Sync role to middleware before navigation so /admin gates pass
+    // immediately on the first push (admin tabs are a frequent source
+    // of "redirected to login right after I logged in" bugs).
+    void fetch("/api/auth/post-login", {
+      method: "POST",
+      credentials: "include",
+    }).catch(() => {
+      /* non-fatal */
+    });
+
+    const intended = getSafeRedirect(params.get("redirect"));
+    const destination = intended ?? postLoginRoute(result.user);
+    router.push(destination);
     router.refresh();
   };
 

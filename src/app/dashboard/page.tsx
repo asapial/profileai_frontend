@@ -5,11 +5,12 @@
 // (see `lib/role.ts`), so this page just re-reads it and renders the
 // matching view. Default = user (matches `proxy.ts` HOME_ROUTE_BY_ROLE).
 
-import { AdminDashboardView } from "./_views/admin-dashboard"
 import { UserDashboardView } from "./_views/user-dashboard"
 import { getRoleFromCookies } from "@/lib/role"
+import { redirect } from "next/navigation"
 
 export default async function DashboardPage() {
   const role = await getRoleFromCookies()
-  return role === "ADMIN" ? <AdminDashboardView /> : <UserDashboardView />
+  if (role === "ADMIN") redirect("/admin");
+  return <UserDashboardView />
 }

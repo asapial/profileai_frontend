@@ -141,7 +141,7 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card/80 p-7 shadow-xl shadow-violet-500/5 backdrop-blur-md sm:p-9">
+    <div className="rounded-2xl border border-border/60 bg-card/80 p-5 shadow-xl shadow-violet-500/5 backdrop-blur-md min-[360px]:p-6 sm:p-9">
       {/* Brand mark */}
       <div className="mb-6 flex items-center gap-2">
         <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white shadow-lg shadow-violet-500/20">
@@ -163,7 +163,7 @@ export function RegisterForm() {
 
       <form noValidate onSubmit={onSubmit} className="mt-7 space-y-5">
         {/* Name */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <label
               htmlFor="firstName"

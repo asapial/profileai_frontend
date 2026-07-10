@@ -276,7 +276,7 @@ export function ResumeViewer({ data }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-svh bg-muted/30">
       {/* Floating action bar — small ProFile AI branding + download CTA */}
       <header className="sticky top-0 z-10 border-b border-border/60 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 px-4 sm:px-6">
@@ -288,7 +288,7 @@ export function ResumeViewer({ data }: Props) {
               {data.title}
             </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             {data.hasPdf && (
               <button
                 type="button"
@@ -317,7 +317,10 @@ export function ResumeViewer({ data }: Props) {
         <style dangerouslySetInnerHTML={{ __html: data.template.cssStyles }} />
 
         {/* Resume "page" — white A4 sheet on a soft background. */}
-        <article className="resume-sheet mx-auto bg-card shadow-sm ring-1 ring-border/60 print:shadow-none print:ring-0">
+        <article
+          className="resume-sheet mx-auto w-full max-w-[210mm] overflow-hidden bg-card shadow-sm ring-1 ring-border/60 print:max-w-none print:overflow-visible print:shadow-none print:ring-0"
+          style={{ width: "min(210mm, 100%)" }}
+        >
           <div
             className="resume-sheet__inner"
             dangerouslySetInnerHTML={{ __html: renderedHtml }}

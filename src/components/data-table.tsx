@@ -406,7 +406,7 @@ export function DataTable({
       defaultValue="outline"
       className="w-full flex-col justify-start gap-6"
     >
-      <div className="flex items-center justify-between px-4 lg:px-6">
+      <div className="flex flex-col items-stretch gap-2 px-4 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between lg:px-6">
         <Label htmlFor="view-selector" className="sr-only">
           View
         </Label>
@@ -435,7 +435,7 @@ export function DataTable({
           </TabsTrigger>
           <TabsTrigger value="focus-documents">Focus Documents</TabsTrigger>
         </TabsList>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-end gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
@@ -530,12 +530,12 @@ export function DataTable({
             </Table>
           </DndContext>
         </div>
-        <div className="flex items-center justify-between px-4">
+        <div className="flex items-center justify-between px-0 sm:px-4">
           <div className="hidden flex-1 text-sm text-muted-foreground lg:flex">
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows.length} row(s) selected.
           </div>
-          <div className="flex w-full items-center gap-8 lg:w-fit">
+          <div className="flex w-full items-center gap-2 sm:gap-8 lg:w-fit">
             <div className="hidden items-center gap-2 lg:flex">
               <Label htmlFor="rows-per-page" className="text-sm font-medium">
                 Rows per page
@@ -727,7 +727,7 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
               <Label htmlFor="header">Header</Label>
               <Input id="header" defaultValue={item.header} />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="flex flex-col gap-3">
                 <Label htmlFor="type">Type</Label>
                 <Select defaultValue={item.type}>
@@ -768,7 +768,7 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                 </Select>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="flex flex-col gap-3">
                 <Label htmlFor="target">Target</Label>
                 <Input id="target" defaultValue={item.target} />

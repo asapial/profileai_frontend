@@ -85,7 +85,7 @@ export function TemplateStep({
           No templates match this category.
         </p>
       ) : (
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 md:grid-cols-3">
           {templates.map((t) => (
             <TemplateTile
               key={t.id}
@@ -138,7 +138,7 @@ function TemplateTile({
             alt={template.name}
             fill
             className="object-cover transition group-hover:scale-105"
-            sizes="(min-width: 768px) 25vw, 50vw"
+            sizes="(min-width: 768px) 25vw, (min-width: 420px) 50vw, 100vw"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">

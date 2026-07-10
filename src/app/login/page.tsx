@@ -17,7 +17,7 @@ export default function LoginPage() {
       <Navbar />
       <main
         id="main"
-        className="relative isolate flex min-h-screen items-center justify-center overflow-hidden pt-24 pb-16"
+        className="relative isolate flex min-h-svh items-center justify-center overflow-hidden pb-10 pt-20 sm:pb-16 sm:pt-24"
       >
         {/* Decorative gradient background + soft mesh grid */}
         <div className="bg-hero absolute inset-0 -z-10" aria-hidden />

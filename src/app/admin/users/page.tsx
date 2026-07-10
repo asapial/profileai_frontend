@@ -19,7 +19,7 @@ export default async function AdminUsersPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex min-w-0 flex-col gap-4 px-4 lg:px-6">
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight">Users</h1>
         <p className="text-muted-foreground text-sm">

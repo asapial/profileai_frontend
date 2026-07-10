@@ -163,7 +163,7 @@ export function VerifyEmailForm() {
   };
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card/80 p-7 shadow-xl shadow-violet-500/5 backdrop-blur-md sm:p-9">
+    <div className="rounded-2xl border border-border/60 bg-card/80 p-5 shadow-xl shadow-violet-500/5 backdrop-blur-md min-[360px]:p-6 sm:p-9">
       <div className="mb-6 flex items-center gap-2">
         <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white shadow-lg shadow-violet-500/20">
           <Sparkles className="h-5 w-5" />
@@ -223,7 +223,7 @@ export function VerifyEmailForm() {
             Verification code
           </legend>
           <div
-            className="flex justify-between gap-2"
+            className="flex gap-1.5 sm:justify-between sm:gap-2"
             role="group"
             aria-label="Six-digit verification code"
             onPaste={handlePaste}
@@ -244,9 +244,8 @@ export function VerifyEmailForm() {
                 onKeyDown={handleKeyDown(index)}
                 aria-label={`Digit ${index + 1} of ${OTP_LENGTH}`}
                 className={cn(
-                  "h-12 w-10 rounded-md border border-input bg-background text-center text-lg font-semibold",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                  "sm:h-14 sm:w-12"
+                  "h-10 min-w-0 flex-1 rounded-md border border-input bg-background text-center text-lg font-semibold sm:h-14 sm:max-w-12",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                 )}
               />
             ))}
@@ -295,7 +294,7 @@ export function VerifyEmailForm() {
           )}
         </button>
 
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex flex-col items-start gap-2 text-sm sm:flex-row sm:items-center sm:justify-between">
           <Link
             href="/register"
             className="inline-flex items-center gap-1 font-medium text-muted-foreground transition hover:text-foreground"

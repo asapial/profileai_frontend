@@ -19,7 +19,7 @@ export default function ProfilePage() {
   const [value, setValue] = useState<string>("personal");
 
   return (
-    <div className="space-y-6 p-6 md:p-8">
+    <div className="min-w-0 space-y-6 p-4 sm:p-6 md:p-8">
       <div>
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
           Profile
@@ -32,7 +32,7 @@ export default function ProfilePage() {
 
       <Tabs value={value} onValueChange={setValue}>
         <div className="overflow-x-auto pb-1">
-          <TabsList className="flex h-auto w-max flex-wrap gap-1 sm:flex-nowrap">
+          <TabsList className="flex h-auto w-max min-w-full gap-1 sm:min-w-0">
             {tabs.map((t) => {
               const Icon = t.icon;
               return (

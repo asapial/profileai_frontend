@@ -203,9 +203,9 @@ const Navbar1 = ({
           <Button
             asChild
             size="sm"
-            className="rounded-lg border-0 bg-gradient-to-r from-violet-600 to-fuchsia-500 px-3 text-sm font-semibold text-white shadow-md shadow-violet-500/25"
+            className="hidden rounded-lg border-0 bg-gradient-to-r from-violet-600 to-fuchsia-500 px-3 text-sm font-semibold text-white shadow-md shadow-violet-500/25 sm:inline-flex"
           >
-            <Link href={auth.signup.url} className="hidden sm:inline-flex">
+            <Link href={auth.signup.url}>
               {auth.signup.title}
             </Link>
           </Button>
@@ -326,7 +326,7 @@ const renderMobileMenuItem = (item: MenuItem) => {
 const SubMenuLink = ({ item }: { item: MenuItem }) => {
   return (
     <Link
-      className="group/sublink flex min-w-80 flex-row gap-4 rounded-xl p-3 leading-none no-underline transition-colors outline-none select-none hover:bg-gradient-to-r hover:from-violet-500/10 hover:to-fuchsia-500/10 hover:text-accent-foreground"
+      className="group/sublink flex w-full min-w-0 flex-row gap-3 rounded-xl p-3 leading-none no-underline transition-colors outline-none select-none hover:bg-gradient-to-r hover:from-violet-500/10 hover:to-fuchsia-500/10 hover:text-accent-foreground sm:min-w-80 sm:gap-4"
       href={item.url}
     >
       <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-violet-600/15 to-fuchsia-500/15 text-violet-600 transition-colors group-hover/sublink:from-violet-600 group-hover/sublink:to-fuchsia-500 group-hover/sublink:text-white dark:text-violet-300">

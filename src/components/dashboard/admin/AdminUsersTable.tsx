@@ -90,9 +90,9 @@ export function AdminUsersTable() {
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-3 sm:px-6">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[34rem] text-sm">
             <thead className="text-muted-foreground">
               <tr className="border-b">
                 <th className="py-2 text-left font-medium">User</th>

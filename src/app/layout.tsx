@@ -24,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-background font-sans antialiased">
+      <body className="min-h-svh bg-background font-sans antialiased">
         {/* Providers (React Query + Toaster) sits above route trees so every
             page has a QueryClient available. Mount it once here rather than
             per-layout to avoid duplicate clients and HMR remount churn. */}

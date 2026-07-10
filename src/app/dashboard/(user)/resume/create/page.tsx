@@ -143,7 +143,7 @@ export default function CreateResumePage() {
   const generatedResume: ResumeDetail | undefined = generateMutation.data;
 
   return (
-    <div className="space-y-6 p-4 sm:p-6 md:p-8">
+    <div className="min-w-0 space-y-6 p-4 sm:p-6 md:p-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -181,7 +181,7 @@ export default function CreateResumePage() {
           </div>
         </aside>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           {!showPreview ? (
             <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
               {currentStep.id === "template" && (
@@ -223,7 +223,7 @@ export default function CreateResumePage() {
           ) : null}
 
           {!showPreview ? (
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <Button
                 variant="outline"
                 onClick={goBack}

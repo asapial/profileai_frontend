@@ -371,7 +371,7 @@ export function AdminSettingsForm({ initial }: Props) {
         </span>
         <Link
           href="/admin/audit-log"
-          className="hover:text-foreground inline-flex items-center gap-1"
+          className="inline-flex shrink-0 items-center gap-1 hover:text-foreground"
         >
           View audit log
           <IconExternalLink className="size-3" />
@@ -380,7 +380,7 @@ export function AdminSettingsForm({ initial }: Props) {
 
       <div className="sticky bottom-0 z-10 -mx-4 border-t bg-background/90 px-4 py-3 backdrop-blur md:mx-0 md:rounded-md md:border md:bg-background md:px-4">
         <div className="flex items-center justify-between gap-3">
-          <span className="text-muted-foreground inline-flex items-center gap-2 text-xs">
+          <span className="text-muted-foreground hidden items-center gap-2 text-xs sm:inline-flex">
             <IconShieldCheck className="size-3.5" />
             Changes are recorded in the audit log.
           </span>

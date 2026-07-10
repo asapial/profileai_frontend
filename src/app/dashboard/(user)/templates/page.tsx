@@ -60,7 +60,7 @@ export default function TemplatesPage() {
   };
 
   return (
-    <div className="space-y-6 p-6 md:p-8">
+    <div className="min-w-0 space-y-6 p-4 sm:p-6 md:p-8">
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
@@ -137,7 +137,7 @@ export default function TemplatesPage() {
         </aside>
 
         {/* Grid */}
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -148,7 +148,7 @@ export default function TemplatesPage() {
                 className="pl-9"
               />
             </div>
-            <label className="flex items-center gap-2 text-xs">
+            <label className="flex items-center justify-between gap-2 text-xs sm:justify-start">
               <span className="font-medium text-muted-foreground">Sort by</span>
               <select
                 value={sort}

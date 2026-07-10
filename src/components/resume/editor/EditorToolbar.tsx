@@ -44,7 +44,7 @@ export function EditorToolbar({
 
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex flex-1 flex-wrap items-center gap-3">
+      <div className="min-w-0 flex flex-1 flex-wrap items-center gap-3">
         <span
           className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
             STATUS_BADGE[resume.status]
@@ -54,14 +54,14 @@ export function EditorToolbar({
         </span>
         <span className="text-xs text-muted-foreground">{resume.type}</span>
         <span className="hidden h-4 w-px bg-border sm:block" />
-        <div className="relative">
+        <div className="relative min-w-0 max-w-full">
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
             disabled={templatesLoading}
-            className="flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium hover:bg-muted disabled:opacity-50"
+            className="flex max-w-full items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-left text-xs font-medium hover:bg-muted disabled:opacity-50"
           >
-            <span>
+            <span className="min-w-0 truncate">
               Template:{" "}
               <span className="text-violet-700">
                 {current?.name ?? "Pick one"}
@@ -75,7 +75,7 @@ export function EditorToolbar({
             <ChevronDown className="h-3.5 w-3.5" />
           </button>
           {open ? (
-            <div className="absolute left-0 top-full z-20 mt-2 w-72 rounded-xl border border-border bg-popover p-1 shadow-xl">
+            <div className="absolute left-0 top-full z-20 mt-2 w-[min(18rem,calc(100vw-3rem))] rounded-xl border border-border bg-popover p-1 shadow-xl">
               {templates.length === 0 ? (
                 <p className="px-3 py-2 text-xs text-muted-foreground">
                   Loading…

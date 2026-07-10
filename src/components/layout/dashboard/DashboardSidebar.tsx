@@ -31,7 +31,7 @@ export function DashboardSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border/70 bg-gradient-to-b from-background via-background to-violet-50/40 backdrop-blur-md md:flex dark:to-violet-950/20">
+    <aside className="sticky top-0 hidden h-svh w-64 shrink-0 flex-col border-r border-border/70 bg-gradient-to-b from-background via-background to-violet-50/40 backdrop-blur-md md:flex dark:to-violet-950/20">
       {/* Brand */}
       <div className="flex h-16 items-center gap-2.5 border-b border-border/60 px-6">
         <Link href="/dashboard" className="group flex items-center gap-2.5">

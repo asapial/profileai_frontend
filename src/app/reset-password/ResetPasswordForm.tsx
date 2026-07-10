@@ -213,7 +213,7 @@ export function ResetPasswordForm() {
 
   if (done) {
     return (
-      <div className="rounded-2xl border border-border/60 bg-card/80 p-7 text-center shadow-xl shadow-violet-500/5 backdrop-blur-md sm:p-9">
+      <div className="rounded-2xl border border-border/60 bg-card/80 p-5 text-center shadow-xl shadow-violet-500/5 backdrop-blur-md min-[360px]:p-6 sm:p-9">
         <div
           className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full"
           style={{
@@ -240,7 +240,7 @@ export function ResetPasswordForm() {
   }
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card/80 p-7 shadow-xl shadow-violet-500/5 backdrop-blur-md sm:p-9">
+    <div className="rounded-2xl border border-border/60 bg-card/80 p-5 shadow-xl shadow-violet-500/5 backdrop-blur-md min-[360px]:p-6 sm:p-9">
       <div className="mb-6 flex items-center gap-2">
         <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white shadow-lg shadow-violet-500/20">
           <Sparkles className="h-5 w-5" />
@@ -278,7 +278,7 @@ export function ResetPasswordForm() {
           <label className="text-sm font-medium text-foreground">
             Reset code
           </label>
-          <div className="flex justify-between gap-2">
+          <div className="flex gap-1.5 sm:gap-2">
             {otp.map((digit, index) => (
               <input
                 key={index}
@@ -296,7 +296,7 @@ export function ResetPasswordForm() {
                 aria-label={`Digit ${index + 1} of ${OTP_LENGTH}`}
                 id={`reset-otp-${index}`}
                 className={cn(
-                  "h-12 w-12 rounded-xl border border-border/70 bg-background/60 text-center text-lg font-semibold text-foreground",
+                  "h-10 min-w-0 flex-1 rounded-lg border border-border/70 bg-background/60 text-center text-lg font-semibold text-foreground sm:h-12 sm:max-w-12 sm:rounded-xl",
                   "outline-none transition-colors",
                   "focus:border-violet-400/60 focus:ring-2 focus:ring-violet-500/20"
                 )}
@@ -418,7 +418,7 @@ export function ResetPasswordForm() {
         </button>
       </form>
 
-      <div className="mt-6 flex items-center justify-between text-sm">
+      <div className="mt-6 flex flex-col items-start gap-2 text-sm sm:flex-row sm:items-center sm:justify-between">
         <Link
           href="/login"
           className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"

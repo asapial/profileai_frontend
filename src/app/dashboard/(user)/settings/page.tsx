@@ -28,7 +28,7 @@ export default function SettingsPage() {
   const [value, setValue] = useState<string>("security");
 
   return (
-    <div className="space-y-6 p-6 md:p-8">
+    <div className="min-w-0 space-y-6 p-4 sm:p-6 md:p-8">
       <div>
         <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
           <SettingsIcon className="h-6 w-6 text-violet-500" />
@@ -42,7 +42,7 @@ export default function SettingsPage() {
 
       <Tabs value={value} onValueChange={setValue}>
         <div className="overflow-x-auto pb-1">
-          <TabsList className="flex h-auto w-max flex-wrap gap-1 sm:flex-nowrap">
+          <TabsList className="flex h-auto w-max min-w-full gap-1 sm:min-w-0">
             {tabs.map((t) => {
               const Icon = t.icon;
               return (

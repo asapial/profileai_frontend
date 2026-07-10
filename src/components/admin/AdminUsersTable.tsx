@@ -388,11 +388,11 @@ export function AdminUsersTable({ initial }: Props) {
       </Card>
 
       {selected.size > 0 ? (
-        <Card className="flex items-center justify-between p-3">
+        <Card className="flex flex-col items-stretch gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-sm">
             <span className="font-medium">{selected.size}</span> selected
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <Button
               size="sm"
               variant="ghost"
@@ -582,7 +582,7 @@ export function AdminUsersTable({ initial }: Props) {
         </Table>
       </Card>
 
-      <div className="flex items-center justify-between text-sm">
+      <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
         <div className="text-muted-foreground">
           {meta
             ? `Showing ${(meta.page - 1) * meta.limit + 1}–${Math.min(
@@ -591,7 +591,7 @@ export function AdminUsersTable({ initial }: Props) {
               )} of ${meta.total}`
             : null}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 sm:justify-end">
           <Button
             size="sm"
             variant="ghost"

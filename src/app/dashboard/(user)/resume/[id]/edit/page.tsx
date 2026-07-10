@@ -340,7 +340,7 @@ export default function EditResumePage() {
   }
 
   return (
-    <div className="space-y-4 p-4 sm:p-6 md:p-8">
+    <div className="min-w-0 space-y-4 p-4 sm:p-6 md:p-8">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Button asChild variant="ghost" size="sm" className="gap-1">
           <Link href="/resumes">
@@ -383,8 +383,8 @@ export default function EditResumePage() {
         onRunAts={handleRunAts}
       />
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
-        <div className="space-y-4">
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
+        <div className="min-w-0 space-y-4">
           <div className="rounded-2xl border border-border bg-card p-1.5">
             <div className="flex flex-wrap gap-1">
               {SECTIONS.map(({ id: sid, label, Icon }) => (
@@ -466,7 +466,7 @@ export default function EditResumePage() {
           </div>
         </div>
 
-        <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start">
+        <aside className="min-w-0 space-y-4 xl:sticky xl:top-20 xl:self-start">
           <div className="rounded-2xl border border-border bg-card p-3">
             <ResumePreviewPane
               content={draft}

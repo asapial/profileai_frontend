@@ -70,8 +70,32 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    min-width: 0;
+    overflow-x: clip;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
+  }
+
+  main,
+  section,
+  article {
+    min-width: 0;
+  }
+
+  .grid > * {
+    min-width: 0;
+  }
+
+  fieldset {
+    min-width: 0;
+  }
+
+  @media (max-width: 767px) {
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+      font-size: 1rem;
+    }
   }
 }
 

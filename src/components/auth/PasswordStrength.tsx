@@ -18,8 +18,8 @@ const computeStrength = (password: string): Strength => {
     return {
       score: 0,
       label: "Too weak",
-      color: "text-zinc-500",
-      bar: "bg-zinc-700",
+      color: "text-muted-foreground",
+      bar: "bg-muted-foreground/40",
     };
   }
 
@@ -45,7 +45,7 @@ const computeStrength = (password: string): Strength => {
   const clamped = Math.max(0, Math.min(4, score)) as 0 | 1 | 2 | 3 | 4;
 
   const map: Record<0 | 1 | 2 | 3 | 4, Omit<Strength, "score">> = {
-    0: { label: "Too weak", color: "text-zinc-500", bar: "bg-zinc-700" },
+    0: { label: "Too weak", color: "text-muted-foreground", bar: "bg-muted-foreground/40" },
     1: { label: "Weak", color: "text-red-400", bar: "bg-red-500" },
     2: { label: "Fair", color: "text-amber-400", bar: "bg-amber-500" },
     3: { label: "Strong", color: "text-emerald-400", bar: "bg-emerald-500" },
@@ -74,11 +74,11 @@ export function PasswordStrength({ password }: { password: string }) {
           {[0, 1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-1 flex-1 rounded-full bg-zinc-800"
+              className="h-1 flex-1 rounded-full bg-muted"
             />
           ))}
         </div>
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-muted-foreground">
           Use 8+ characters with letters, numbers &amp; symbols.
         </p>
       </div>
@@ -92,7 +92,7 @@ export function PasswordStrength({ password }: { password: string }) {
           <div
             key={i}
             className={`h-1 flex-1 rounded-full transition-colors duration-200 ${
-              i < score ? bar : "bg-zinc-800"
+              i < score ? bar : "bg-muted"
             }`}
           />
         ))}

@@ -3,30 +3,39 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(222 47% 11%);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
 
-  --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(222 47% 11%);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
 
-  --color-muted: hsl(220 14% 96%);
-  --color-muted-foreground: hsl(220 9% 46%);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
 
-  --color-border: hsl(220 13% 91%);
-  --color-input: hsl(220 13% 91%);
-  --color-ring: hsl(258 90% 66%);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
 
-  --color-primary: hsl(258 90% 66%);
-  --color-primary-foreground: hsl(0 0% 100%);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 
-  --color-secondary: hsl(220 14% 96%);
-  --color-secondary-foreground: hsl(222 47% 11%);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
 
-  --color-accent: hsl(258 90% 96%);
-  --color-accent-foreground: hsl(258 90% 40%);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
 
-  --color-destructive: hsl(0 84% 60%);
-  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 
   --radius: 0.75rem;
 
@@ -53,6 +62,10 @@
   }
   html {
     scroll-behavior: smooth;
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
   }
   body {
     background-color: var(--color-background);
@@ -95,12 +108,66 @@
       );
   }
 
+  .dark .bg-hero {
+    background-color: hsl(222 47% 8%);
+    background-image:
+      radial-gradient(
+        ellipse 80% 60% at 20% 0%,
+        hsl(258 80% 32% / 0.38),
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 60% 50% at 90% 10%,
+        hsl(220 80% 28% / 0.32),
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 70% 50% at 50% 100%,
+        hsl(280 75% 28% / 0.28),
+        transparent 60%
+      );
+  }
+
   .bg-mesh {
     background-image:
       linear-gradient(hsl(220 13% 91% / 0.6) 1px, transparent 1px),
       linear-gradient(90deg, hsl(220 13% 91% / 0.6) 1px, transparent 1px);
     background-size: 36px 36px;
     mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+
+  .dark .bg-mesh {
+    background-image:
+      linear-gradient(hsl(220 13% 32% / 0.28) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(220 13% 32% / 0.28) 1px, transparent 1px);
+  }
+
+  .btn-primary {
+    min-height: 2.625rem;
+    gap: 0.5rem;
+    border-radius: 0.5rem;
+    background-image: linear-gradient(90deg, hsl(258 90% 58%), hsl(280 82% 58%));
+    padding: 0.625rem 1rem;
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: 0 8px 24px hsl(258 90% 50% / 0.2);
+    transition: opacity 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.92;
+    box-shadow: 0 10px 28px hsl(258 90% 50% / 0.28);
+  }
+
+  .btn-primary:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  .btn-primary:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 }
 
@@ -131,64 +198,187 @@
 }
 
 :root {
-  --sidebar: hsl(0 0% 98%);
-  --sidebar-foreground: hsl(240 5.3% 26.1%);
-  --sidebar-primary: hsl(240 5.9% 10%);
-  --sidebar-primary-foreground: hsl(0 0% 98%);
-  --sidebar-accent: hsl(240 4.8% 95.9%);
-  --sidebar-accent-foreground: hsl(240 5.9% 10%);
-  --sidebar-border: hsl(220 13% 91%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
-}
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(222 47% 11%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(222 47% 11%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(222 47% 11%);
+  --muted: hsl(220 14% 96%);
+  --muted-foreground: hsl(220 9% 46%);
+  --border: hsl(220 13% 91%);
+  --input: hsl(220 13% 91%);
+  --ring: hsl(258 90% 66%);
+  --primary: hsl(258 90% 58%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(220 14% 96%);
+  --secondary-foreground: hsl(222 47% 11%);
+  --accent: hsl(258 90% 96%);
+  --accent-foreground: hsl(258 72% 38%);
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --chart-1: hsl(258 90% 66%);
+  --chart-2: hsl(280 82% 60%);
+  --chart-3: hsl(220 90% 60%);
+  --chart-4: hsl(160 72% 42%);
+  --chart-5: hsl(38 92% 55%);
 
-.dark {
-  --sidebar: hsl(240 5.9% 10%);
-  --sidebar-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar: hsl(258 55% 97%);
+  --sidebar-foreground: hsl(246 28% 22%);
+  --sidebar-primary: hsl(258 82% 57%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(240 3.7% 15.9%);
-  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-border: hsl(240 3.7% 15.9%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar-accent: hsl(258 65% 92%);
+  --sidebar-accent-foreground: hsl(258 60% 30%);
+  --sidebar-border: hsl(258 28% 87%);
+  --sidebar-ring: hsl(258 90% 66%);
 }
 
-/* ProFile AI dark-mode overrides: preserve the violet brand tokens when
-   the user/system toggles `dark`. The base variables are light-only; we
-   remap them in `.dark` so shadcn components automatically adopt the
-   brand. */
 .dark {
-  --color-background: hsl(222 47% 8%);
-  --color-foreground: hsl(0 0% 98%);
+  --background: hsl(222 47% 8%);
+  --foreground: hsl(0 0% 98%);
 
-  --color-card: hsl(222 47% 11%);
-  --color-card-foreground: hsl(0 0% 98%);
+  --card: hsl(222 47% 11%);
+  --card-foreground: hsl(0 0% 98%);
 
-  --color-muted: hsl(220 14% 16%);
-  --color-muted-foreground: hsl(220 9% 70%);
+  --popover: hsl(222 42% 12%);
+  --popover-foreground: hsl(0 0% 98%);
 
-  --color-border: hsl(220 13% 22%);
-  --color-input: hsl(220 13% 22%);
-  --color-ring: hsl(258 90% 70%);
+  --muted: hsl(220 14% 16%);
+  --muted-foreground: hsl(220 9% 70%);
 
-  --color-primary: hsl(258 90% 70%);
-  --color-primary-foreground: hsl(222 47% 8%);
+  --border: hsl(220 13% 22%);
+  --input: hsl(220 13% 22%);
+  --ring: hsl(258 90% 70%);
 
-  --color-secondary: hsl(220 14% 18%);
-  --color-secondary-foreground: hsl(0 0% 98%);
+  --primary: hsl(258 90% 70%);
+  --primary-foreground: hsl(222 47% 8%);
 
-  --color-accent: hsl(258 60% 24%);
-  --color-accent-foreground: hsl(258 90% 90%);
+  --secondary: hsl(220 14% 18%);
+  --secondary-foreground: hsl(0 0% 98%);
 
-  --color-destructive: hsl(0 70% 50%);
-  --color-destructive-foreground: hsl(0 0% 98%);
+  --accent: hsl(258 60% 24%);
+  --accent-foreground: hsl(258 90% 90%);
 
-  /* Re-bind the shadcn sidebar palette to the brand dark tokens. */
-  --sidebar: hsl(222 47% 11%);
-  --sidebar-foreground: hsl(0 0% 98%);
+  --destructive: hsl(0 70% 55%);
+  --destructive-foreground: hsl(0 0% 98%);
+
+  --chart-1: hsl(258 90% 72%);
+  --chart-2: hsl(286 82% 70%);
+  --chart-3: hsl(215 92% 70%);
+  --chart-4: hsl(160 68% 52%);
+  --chart-5: hsl(42 92% 62%);
+
+  --sidebar: hsl(245 38% 11%);
+  --sidebar-foreground: hsl(250 30% 94%);
   --sidebar-primary: hsl(258 90% 70%);
-  --sidebar-primary-foreground: hsl(222 47% 8%);
-  --sidebar-accent: hsl(220 14% 18%);
-  --sidebar-accent-foreground: hsl(0 0% 98%);
-  --sidebar-border: hsl(220 13% 22%);
+  --sidebar-primary-foreground: hsl(245 38% 10%);
+  --sidebar-accent: hsl(252 30% 18%);
+  --sidebar-accent-foreground: hsl(250 35% 96%);
+  --sidebar-border: hsl(250 20% 23%);
   --sidebar-ring: hsl(258 90% 70%);
+}
+
+/* Legacy colored badges and notice panels pre-date the semantic theme
+   tokens. Keep their meaning in dark mode without washing out the dashboard. */
+.dark [class~="bg-violet-50"],
+.dark [class~="bg-violet-100"] {
+  background-color: hsl(258 55% 20%);
+}
+.dark [class~="bg-violet-50/40"] {
+  background-color: hsl(258 55% 20% / 0.55);
+}
+.dark [class~="bg-emerald-50"],
+.dark [class~="bg-emerald-100"] {
+  background-color: hsl(160 45% 16%);
+}
+.dark [class~="bg-amber-50"],
+.dark [class~="bg-amber-100"] {
+  background-color: hsl(38 55% 17%);
+}
+.dark [class~="bg-rose-50"],
+.dark [class~="bg-rose-100"],
+.dark [class~="bg-red-50"] {
+  background-color: hsl(350 48% 17%);
+}
+.dark [class~="bg-slate-100"] {
+  background-color: hsl(220 18% 20%);
+}
+.dark [class~="bg-fuchsia-100"] {
+  background-color: hsl(292 45% 19%);
+}
+.dark [class~="bg-sky-50"] {
+  background-color: hsl(202 48% 17%);
+}
+
+.dark [class~="text-violet-700"],
+.dark [class~="text-violet-800"],
+.dark [class~="text-violet-900"] {
+  color: hsl(258 92% 82%);
+}
+.dark [class~="text-violet-600"] {
+  color: hsl(258 88% 76%);
+}
+.dark [class~="text-emerald-600"],
+.dark [class~="text-emerald-700"] {
+  color: hsl(158 70% 70%);
+}
+.dark [class~="text-amber-600"],
+.dark [class~="text-amber-700"],
+.dark [class~="text-amber-900"] {
+  color: hsl(43 92% 72%);
+}
+.dark [class~="text-rose-600"],
+.dark [class~="text-rose-700"],
+.dark [class~="text-red-700"] {
+  color: hsl(350 88% 76%);
+}
+.dark [class~="text-slate-700"],
+.dark [class~="text-slate-800"] {
+  color: hsl(215 22% 78%);
+}
+.dark [class~="text-fuchsia-700"] {
+  color: hsl(292 88% 80%);
+}
+.dark [class~="text-sky-700"] {
+  color: hsl(199 90% 75%);
+}
+
+.dark [class~="border-violet-200"],
+.dark [class~="border-violet-300"] {
+  border-color: hsl(258 55% 38%);
+}
+.dark [class~="border-emerald-200"],
+.dark [class~="border-emerald-200/70"] {
+  border-color: hsl(160 45% 32%);
+}
+.dark [class~="border-amber-200"] {
+  border-color: hsl(38 55% 34%);
+}
+.dark [class~="border-rose-200"],
+.dark [class~="border-red-200"] {
+  border-color: hsl(350 48% 34%);
+}
+
+.dark [class~="hover:bg-violet-50"]:hover {
+  background-color: hsl(258 55% 22%);
+}
+.dark [class~="hover:bg-violet-100"]:hover,
+.dark [class~="hover:bg-violet-200"]:hover {
+  background-color: hsl(258 50% 25%);
+}
+.dark [class~="hover:bg-rose-50"]:hover,
+.dark [class~="hover:bg-rose-100"]:hover {
+  background-color: hsl(350 48% 20%);
+}
+
+/* Resume previews represent exported paper, so they intentionally stay light
+   even when the editor chrome is dark. */
+.dark .theme-paper [class~="bg-violet-50"] {
+  background-color: hsl(258 100% 97%);
+}
+.dark .theme-paper [class~="text-violet-700"] {
+  color: hsl(263 70% 42%);
+}
+.dark .theme-paper [class~="text-violet-600"] {
+  color: hsl(263 72% 50%);
 }

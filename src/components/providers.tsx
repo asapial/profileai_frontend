@@ -25,9 +25,9 @@ export function Providers({ children }: { children: ReactNode }) {
         toastOptions={{
           duration: 4000,
           style: {
-            background: "hsl(var(--card))",
-            color: "hsl(var(--foreground))",
-            border: "1px solid hsl(var(--border))",
+            background: "var(--color-card)",
+            color: "var(--color-foreground)",
+            border: "1px solid var(--color-border)",
             fontSize: "0.875rem",
           },
         }}

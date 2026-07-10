@@ -50,7 +50,7 @@ export function ResumePreviewPane({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border border-border bg-white shadow-sm ${className}`}
+      className={`theme-paper relative overflow-hidden rounded-2xl border border-border bg-white shadow-sm ${className}`}
       style={styleVars}
     >
       <div

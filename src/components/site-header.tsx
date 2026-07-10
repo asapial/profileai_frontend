@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { NotificationsBell } from "@/components/notifications-bell";
+import { ModeToggleCompact } from "@/components/mode-toggle";
 import type { Role } from "@/types";
 
 export function SiteHeader({
@@ -44,6 +45,7 @@ export function SiteHeader({
           </span>
         ) : null}
         <div className="ml-auto flex items-center gap-2">
+          <ModeToggleCompact className="size-8 border-border/70 bg-background/70" />
           <NotificationsBell />
           {cta ? (
             <Button asChild size="sm" className="hidden sm:flex">

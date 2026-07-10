@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ModeToggleCompact } from "@/components/mode-toggle";
 
 const NAV_LINKS = [
   { href: "#features", label: "Features" },
@@ -57,6 +58,7 @@ export function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
+          <ModeToggleCompact />
           <Link
             href="/login"
             className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
@@ -71,13 +73,16 @@ export function Navbar() {
           </Link>
         </div>
 
-        <button
-          aria-label="Toggle menu"
-          className="grid h-10 w-10 place-items-center rounded-md text-foreground md:hidden"
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <ModeToggleCompact />
+          <button
+            aria-label="Toggle menu"
+            className="grid h-10 w-10 place-items-center rounded-md text-foreground"
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
       {open && (

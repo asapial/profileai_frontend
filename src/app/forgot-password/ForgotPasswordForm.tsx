@@ -109,12 +109,12 @@ export function ForgotPasswordForm() {
             <CheckCircle2 className="h-8 w-8 text-violet-400" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
               Check your email
             </h1>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-muted-foreground">
               If an account exists for{" "}
-              <span className="font-medium text-purple-300">
+              <span className="font-medium text-primary">
                 {email.trim().toLowerCase()}
               </span>
               , we just sent a 6-digit reset code. The code expires in 10
@@ -135,9 +135,9 @@ export function ForgotPasswordForm() {
 
           <div className="space-y-2 pt-2 text-sm">
             {cooldown > 0 ? (
-              <p className="text-zinc-500">
+              <p className="text-muted-foreground">
                 Didn&apos;t get it?{" "}
-                <span className="font-semibold text-purple-400">
+                <span className="font-semibold text-primary">
                   Resend in {cooldown}s
                 </span>
               </p>
@@ -145,7 +145,7 @@ export function ForgotPasswordForm() {
               <button
                 type="button"
                 onClick={handleResend}
-                className="inline-flex items-center gap-1.5 text-purple-300 transition-colors hover:text-purple-200"
+                className="inline-flex items-center gap-1.5 text-primary transition-colors hover:opacity-80"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 Resend code
@@ -153,7 +153,7 @@ export function ForgotPasswordForm() {
             )}
           </div>
 
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-muted-foreground">
             Wrong address?{" "}
             <button
               type="button"
@@ -165,7 +165,7 @@ export function ForgotPasswordForm() {
                   timerRef.current = null;
                 }
               }}
-              className="text-purple-300 underline-offset-2 hover:underline"
+              className="text-primary underline-offset-2 hover:underline"
             >
               Use a different email
             </button>
@@ -187,10 +187,10 @@ export function ForgotPasswordForm() {
       </div>
 
       <header className="mb-6 space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
           Forgot your password?
         </h1>
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm text-muted-foreground">
           Enter the email on your account and we&apos;ll send a one-time code to
           reset your password.
         </p>
@@ -199,7 +199,7 @@ export function ForgotPasswordForm() {
       {error && (
         <div
           role="alert"
-          className="mb-5 flex items-start gap-2 rounded-xl border border-red-500/30 p-3 text-sm text-red-300"
+          className="mb-5 flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
           style={{ background: "rgba(239,68,68,0.08)" }}
         >
           <span className="mt-0.5 inline-block h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-400" />
@@ -211,7 +211,7 @@ export function ForgotPasswordForm() {
         <div className="space-y-1.5">
           <label
             htmlFor="email"
-            className="text-sm font-medium text-zinc-200"
+            className="text-sm font-medium text-foreground"
           >
             Email
           </label>
@@ -221,7 +221,7 @@ export function ForgotPasswordForm() {
               "focus-within:border-violet-400/60 focus-within:ring-2 focus-within:ring-violet-500/20"
             )}
           >
-            <Mail className="ml-3 h-4 w-4 text-zinc-500" />
+            <Mail className="ml-3 h-4 w-4 text-muted-foreground" />
             <input
               id="email"
               type="email"
@@ -231,7 +231,7 @@ export function ForgotPasswordForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full bg-transparent px-3 py-3 text-sm text-white placeholder-zinc-500 outline-none"
+              className="w-full bg-transparent px-3 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none"
             />
           </div>
         </div>
@@ -259,14 +259,14 @@ export function ForgotPasswordForm() {
       <div className="mt-6 flex items-center justify-between text-sm">
         <Link
           href="/login"
-          className="inline-flex items-center gap-1.5 text-zinc-400 transition-colors hover:text-zinc-200"
+          className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to login
         </Link>
         <Link
           href="/register"
-          className="text-zinc-400 transition-colors hover:text-zinc-200"
+          className="text-muted-foreground transition-colors hover:text-foreground"
         >
           Create an account
         </Link>

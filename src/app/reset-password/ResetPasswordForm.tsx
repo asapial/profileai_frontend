@@ -223,10 +223,10 @@ export function ResetPasswordForm() {
         >
           <CheckCircle2 className="h-8 w-8 text-emerald-400" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-white">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
           Password updated
         </h1>
-        <p className="mt-2 text-sm text-zinc-400">
+        <p className="mt-2 text-sm text-muted-foreground">
           All other sessions have been signed out. Redirecting you to log in…
         </p>
         <Link
@@ -251,12 +251,12 @@ export function ResetPasswordForm() {
       </div>
 
       <header className="mb-6 space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
           Reset your password
         </h1>
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm text-muted-foreground">
           We sent a 6-digit code to{" "}
-          <span className="font-medium text-purple-300">{email}</span>. Enter
+          <span className="font-medium text-primary">{email}</span>. Enter
           it below with a new password.
         </p>
       </header>
@@ -264,7 +264,7 @@ export function ResetPasswordForm() {
       {error && (
         <div
           role="alert"
-          className="mb-5 flex items-start gap-2 rounded-xl border border-red-500/30 p-3 text-sm text-red-300"
+          className="mb-5 flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
           style={{ background: "rgba(239,68,68,0.08)" }}
         >
           <span className="mt-0.5 inline-block h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-400" />
@@ -275,7 +275,7 @@ export function ResetPasswordForm() {
       <form onSubmit={submit} noValidate className="space-y-6">
         {/* OTP */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-zinc-200">
+          <label className="text-sm font-medium text-foreground">
             Reset code
           </label>
           <div className="flex justify-between gap-2">
@@ -296,26 +296,26 @@ export function ResetPasswordForm() {
                 aria-label={`Digit ${index + 1} of ${OTP_LENGTH}`}
                 id={`reset-otp-${index}`}
                 className={cn(
-                  "h-12 w-12 rounded-xl border border-border/70 bg-background/60 text-center text-lg font-semibold text-white",
+                  "h-12 w-12 rounded-xl border border-border/70 bg-background/60 text-center text-lg font-semibold text-foreground",
                   "outline-none transition-colors",
                   "focus:border-violet-400/60 focus:ring-2 focus:ring-violet-500/20"
                 )}
               />
             ))}
           </div>
-          <div className="flex items-center justify-between text-xs text-zinc-500">
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Code expires in 10 minutes.</span>
             {cooldown > 0 ? (
               <span>
                 Resend in{" "}
-                <span className="font-semibold text-purple-400">{cooldown}s</span>
+                <span className="font-semibold text-primary">{cooldown}s</span>
               </span>
             ) : (
               <button
                 type="button"
                 onClick={handleResend}
                 disabled={resending}
-                className="inline-flex items-center gap-1 text-purple-300 transition-colors hover:text-purple-200 disabled:opacity-60"
+                className="inline-flex items-center gap-1 text-primary transition-colors hover:opacity-80 disabled:opacity-60"
               >
                 <RefreshCw
                   className={cn(
@@ -333,7 +333,7 @@ export function ResetPasswordForm() {
         <div className="space-y-1.5">
           <label
             htmlFor="new-password"
-            className="text-sm font-medium text-zinc-200"
+            className="text-sm font-medium text-foreground"
           >
             New password
           </label>
@@ -343,7 +343,7 @@ export function ResetPasswordForm() {
               "focus-within:border-violet-400/60 focus-within:ring-2 focus-within:ring-violet-500/20"
             )}
           >
-            <Lock className="ml-3 h-4 w-4 text-zinc-500" />
+            <Lock className="ml-3 h-4 w-4 text-muted-foreground" />
             <input
               id="new-password"
               type={showPassword ? "text" : "password"}
@@ -351,13 +351,13 @@ export function ResetPasswordForm() {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full bg-transparent px-3 py-3 text-sm text-white placeholder-zinc-500 outline-none"
+              className="w-full bg-transparent px-3 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none"
             />
             <button
               type="button"
               onClick={() => setShowPassword((s) => !s)}
               aria-label={showPassword ? "Hide password" : "Show password"}
-              className="mr-2 grid h-7 w-7 place-items-center rounded-md text-zinc-400 hover:bg-white/5 hover:text-zinc-200"
+              className="mr-2 grid h-7 w-7 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
             >
               {showPassword ? (
                 <EyeOff className="h-4 w-4" />
@@ -373,7 +373,7 @@ export function ResetPasswordForm() {
         <div className="space-y-1.5">
           <label
             htmlFor="confirm-password"
-            className="text-sm font-medium text-zinc-200"
+            className="text-sm font-medium text-foreground"
           >
             Confirm new password
           </label>
@@ -385,7 +385,7 @@ export function ResetPasswordForm() {
                 : "border-border/70 focus-within:border-violet-400/60 focus-within:ring-2 focus-within:ring-violet-500/20"
             )}
           >
-            <ShieldCheck className="ml-3 h-4 w-4 text-zinc-500" />
+            <ShieldCheck className="ml-3 h-4 w-4 text-muted-foreground" />
             <input
               id="confirm-password"
               type={showPassword ? "text" : "password"}
@@ -393,7 +393,7 @@ export function ResetPasswordForm() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full bg-transparent px-3 py-3 text-sm text-white placeholder-zinc-500 outline-none"
+              className="w-full bg-transparent px-3 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none"
             />
           </div>
           {confirmPassword && !passwordsMatch && (
@@ -421,14 +421,14 @@ export function ResetPasswordForm() {
       <div className="mt-6 flex items-center justify-between text-sm">
         <Link
           href="/login"
-          className="inline-flex items-center gap-1.5 text-zinc-400 transition-colors hover:text-zinc-200"
+          className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to login
         </Link>
         <Link
           href="/forgot-password"
-          className="text-zinc-400 transition-colors hover:text-zinc-200"
+          className="text-muted-foreground transition-colors hover:text-foreground"
         >
           Use a different email
         </Link>

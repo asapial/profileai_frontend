@@ -1,16 +1,21 @@
 "use client";
 
+// Notification preview widget. Shows the three most recent notifications
+// (per U-P1 spec) and links out to the full notification center.
+// Clicking an item navigates to its `targetUrl` and marks it read in the
+// background.
+
 import Link from "next/link";
 import { Bell, ArrowRight } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useDashboardSummary } from "@/lib/hooks/useDashboardSummary";
+import { useMarkRead } from "@/lib/hooks/useNotifications";
+import {
+  WidgetCard,
+  WidgetEmpty,
+  WidgetError,
+  WidgetSkeleton,
+} from "./WidgetCard";
 
 function timeAgo(iso?: string) {
   if (!iso) return "";
@@ -41,52 +46,102 @@ const typeColors: Record<string, string> = {
 };
 
 export function NotificationsPreview() {
-  const { data } = useDashboardSummary();
-  const items = data?.notifications ?? [];
+  const q = useDashboardSummary();
+  const markRead = useMarkRead();
 
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-3">
-        <div className="space-y-1">
-          <CardTitle className="flex items-center gap-2">
+  if (q.isLoading) {
+    return (
+      <WidgetCard
+        title={
+          <>
             <Bell className="h-4 w-4 text-violet-500" />
             Notifications
-          </CardTitle>
-          <CardDescription>
-            {data?.stats.unreadNotifications
-              ? `${data.stats.unreadNotifications} unread`
-              : "You're all caught up."}
-          </CardDescription>
-        </div>
+          </>
+        }
+        description="Loading…"
+        action={
+          <Button asChild variant="ghost" size="sm" className="gap-1">
+            <Link href="/dashboard/notifications">
+              View all <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </Button>
+        }
+      >
+        <WidgetSkeleton rows={3} />
+      </WidgetCard>
+    );
+  }
+
+  if (q.isError) {
+    return (
+      <WidgetCard
+        title={
+          <>
+            <Bell className="h-4 w-4 text-violet-500" />
+            Notifications
+          </>
+        }
+        description="Your latest alerts."
+      >
+        <WidgetError onRetry={() => void q.refetch()} />
+      </WidgetCard>
+    );
+  }
+
+  const items = (q.data?.notifications ?? []).slice(0, 3);
+  const unread = q.data?.stats.unreadNotifications ?? 0;
+
+  return (
+    <WidgetCard
+      title={
+        <>
+          <Bell className="h-4 w-4 text-violet-500" />
+            Notifications
+        </>
+      }
+      description={
+        unread ? `${unread} unread` : "You’re all caught up."
+      }
+      action={
         <Button asChild variant="ghost" size="sm" className="gap-1">
-          <Link href="/notifications">
-            View all
-            <ArrowRight className="h-3.5 w-3.5" />
+          <Link href="/dashboard/notifications">
+            View all <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </Button>
-      </CardHeader>
-      <CardContent>
-        {items.length === 0 ? (
-          <p className="py-6 text-center text-sm text-muted-foreground">
-            No notifications yet.
-          </p>
-        ) : (
-          <ul className="space-y-3">
-            {items.slice(0, 5).map((n) => (
+      }
+    >
+      {items.length === 0 ? (
+        <WidgetEmpty
+          title="No notifications yet"
+          description="We’ll surface alerts here as your account grows."
+        />
+      ) : (
+        <ul className="space-y-3">
+          {items.map((n) => {
+            const href = n.link ?? "/dashboard/notifications";
+            return (
               <li
                 key={n.id}
                 className="flex items-start gap-3 rounded-lg border border-border/60 p-3"
               >
                 <span
                   className={`mt-1 h-2 w-2 shrink-0 rounded-full ${typeColors[n.type] ?? "bg-slate-400"}`}
+                  aria-hidden
                 />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
-                    <p
-                      className={`truncate text-sm ${n.read ? "text-muted-foreground" : "font-medium"}`}
+                    <Link
+                      href={href}
+                      onClick={() => {
+                        if (!n.read) markRead.mutate(n.id);
+                      }}
+                      className={
+                        "truncate text-sm hover:text-violet-600 " +
+                        (n.read ? "text-muted-foreground" : "font-medium")
+                      }
                     >
                       {n.title}
-                    </p>
+                    </Link>
                     <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
                       {timeAgo(n.createdAt)}
                     </span>
@@ -98,10 +153,10 @@ export function NotificationsPreview() {
                   ) : null}
                 </div>
               </li>
-            ))}
-          </ul>
-        )}
-      </CardContent>
-    </Card>
+            );
+          })}
+        </ul>
+      )}
+    </WidgetCard>
   );
 }

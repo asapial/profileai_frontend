@@ -14,7 +14,7 @@
 // limit is full.
 
 import Link from "next/link";
-import { useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import {
   Briefcase,
   FileText,
@@ -103,9 +103,11 @@ export function QuickActionTiles() {
   const limits = data?.limits;
   const trackedRef = useRef(false);
 
-  // Fire a single `dashboard_view` on mount, scoped to each render of
-  // the tile strip so the analytics count matches real visits.
-  if (!trackedRef.current && typeof window !== "undefined") {
+  // Fire `dashboard_view` once per mount. Doing this in an effect rather
+  // than during render avoids the lint "refs during render" rule and
+  // also keeps React strict-mode double-invokes from double-counting.
+  useEffect(() => {
+    if (trackedRef.current) return;
     trackedRef.current = true;
     track({
       name: "dashboard_view",
@@ -114,7 +116,7 @@ export function QuickActionTiles() {
         usagePercent: limits?.apiPercent ?? 0,
       },
     });
-  }
+  }, [data?.profile?.completionPercentage, limits?.apiPercent]);
 
   return (
     <TooltipProvider delayDuration={150}>
@@ -146,7 +148,7 @@ export function QuickActionTiles() {
               }
             >
               <span
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${tile.accent}`}
+                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br ${tile.accent}`}
               >
                 <Icon className="h-5 w-5" />
               </span>
@@ -164,7 +166,7 @@ export function QuickActionTiles() {
             </Link>
           );
 
-          if (!disabled) return body;
+          if (!disabled) return <Fragment key={tile.id}>{body}</Fragment>;
           return (
             <Tooltip key={tile.id}>
               <TooltipTrigger asChild>{body}</TooltipTrigger>

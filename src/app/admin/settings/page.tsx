@@ -1,8 +1,11 @@
+// A-P8 server wrapper for tabbed platform settings.
+
 import { adminApi, ServerApiError } from "@/lib/adminApi";
-import { AdminSettingsForm } from "@/components/admin/AdminSettingsForm";
+import { AdminSettingsTabs } from "@/components/admin/AdminSettingsTabs";
 import type { PlatformSetting } from "@/lib/hooks/useAdminSettings";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Platform settings · Admin" };
 
 export default async function AdminSettingsPage() {
   let initial: PlatformSetting[] | undefined;
@@ -22,11 +25,11 @@ export default async function AdminSettingsPage() {
           Platform settings
         </h1>
         <p className="text-muted-foreground text-sm">
-          Global defaults, security thresholds, and operational toggles.
+          Global defaults, security thresholds, email identity, and brand.
           Changes propagate immediately and are recorded in the audit log.
         </p>
       </div>
-      <AdminSettingsForm initial={initial} />
+      <AdminSettingsTabs initial={initial} />
     </div>
   );
 }

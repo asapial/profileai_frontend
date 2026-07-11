@@ -39,7 +39,7 @@ export function useAdminPlans() {
     queryFn: async () => {
       try {
         const r = await api.get<Plan[]>("/admin/plans");
-        return r.data;
+        return r;
       } catch (err: unknown) {
         if (err instanceof ApiError && err.status === 404)
           return [] as Plan[];

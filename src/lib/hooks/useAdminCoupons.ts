@@ -47,7 +47,7 @@ export function useAdminCoupons(filters: AdminCouponsFilters = {}) {
         : "/admin/coupons";
       try {
         const res = await api.get<Coupon[]>(path);
-        return res.data;
+        return res;
       } catch (err: unknown) {
         if (err instanceof ApiError && err.status === 404) return [];
         throw err;
@@ -63,7 +63,7 @@ export function useCreateCoupon() {
   return useMutation({
     mutationFn: async (payload: CouponPayload) => {
       const res = await api.post<Coupon>("/admin/coupons", payload);
-      return res.data;
+      return res;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ADMIN_COUPONS_QUERY_KEY });
@@ -76,7 +76,7 @@ export function useUpdateCoupon(id: string) {
   return useMutation({
     mutationFn: async (payload: Partial<CouponPayload>) => {
       const res = await api.patch<Coupon>(`/admin/coupons/${id}`, payload);
-      return res.data;
+      return res;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ADMIN_COUPONS_QUERY_KEY });
@@ -88,8 +88,8 @@ export function useDeactivateCoupon(id: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async () => {
-      const res = await api.post<Coupon>(`/admin/coupons/${id}/deactivate`);
-      return res.data;
+      const res = await api.post<Coupon>(`/admin/coupons/${id}/deactivate`, {});    
+      return res;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ADMIN_COUPONS_QUERY_KEY });

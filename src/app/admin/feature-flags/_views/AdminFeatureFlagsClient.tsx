@@ -26,7 +26,13 @@ import {
   useUpdateFlag,
 } from "@/lib/hooks/useAdminFeatureFlags";
 
-type Draft = Partial<FeatureFlag> & {
+type Draft = {
+  key: string;
+  name: string;
+  description: string;
+  enabled: boolean;
+  rolloutPercent: number;
+  environment: FlagEnvironment;
   planIds: string;
   regions: string;
   userIds: string;
@@ -46,11 +52,84 @@ const EMPTY: Draft = {
   enabled: false,
   rolloutPercent: 0,
   environment: "PRODUCTION",
-  targeting: { planIds: [], regions: [], userIds: [] },
   planIds: "",
   regions: "",
   userIds: "",
 };
+
+function parseCSV(s: string) {
+  return s ? s.split(",").map((x) => x.trim()).filter(Boolean) : [];
+}
+
+function FlagCard({
+  flag,
+  onEdit,
+  onDelete,
+  onToggle,
+}: {
+  flag: FeatureFlag;
+  onEdit: () => void;
+  onDelete: () => void;
+  onToggle: (enabled: boolean) => void;
+}) {
+  return (
+    <Card className="flex flex-col gap-3 p-4">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            <IconFlag className="size-4" />
+            <span className="font-mono text-xs">{flag.key}</span>
+            <Badge variant={flag.enabled ? "default" : "outline"}>
+              {flag.enabled ? "Enabled" : "Disabled"}
+            </Badge>
+            <Badge variant="secondary">{flag.environment}</Badge>
+          </div>
+          <span className="text-sm font-medium">{flag.name}</span>
+          <span className="text-muted-foreground text-xs">
+            {flag.description}
+          </span>
+        </div>
+        <Switch checked={flag.enabled} onCheckedChange={onToggle} />
+      </div>
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-muted-foreground">Rollout</span>
+          <span>{flag.rolloutPercent}%</span>
+        </div>
+        <div className="bg-muted h-1.5 overflow-hidden rounded-full">
+          <div
+            className="bg-primary h-full"
+            style={{ width: `${flag.rolloutPercent}%` }}
+          />
+        </div>
+      </div>
+      <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-xs">
+        {flag.targeting.planIds.length > 0 ? (
+          <span>plans: {flag.targeting.planIds.join(", ")}</span>
+        ) : null}
+        {flag.targeting.regions.length > 0 ? (
+          <span>regions: {flag.targeting.regions.join(", ")}</span>
+        ) : null}
+        {flag.targeting.userIds.length > 0 ? (
+          <span>{flag.targeting.userIds.length} users</span>
+        ) : null}
+      </div>
+      <div className="flex items-center justify-between">
+        <span className="text-muted-foreground text-xs">
+          updated {new Date(flag.updatedAt).toLocaleString()}
+        </span>
+        <div className="flex items-center gap-1">
+          <Button size="sm" variant="ghost" onClick={onEdit}>
+            Edit
+          </Button>
+          <Button size="sm" variant="ghost" onClick={onDelete}>
+            <IconTrash className="size-4" />
+          </Button>
+        </div>
+      </div>
+    </Card>
+  );
+}
 
 export function AdminFeatureFlagsClient() {
   const { data, isLoading } = useAdminFeatureFlags();
@@ -63,7 +142,6 @@ export function AdminFeatureFlagsClient() {
 
   const create = useCreateFlag();
   const update = useUpdateFlag(editingId ?? "");
-  const del = useDeleteFlag("");
 
   const visible = useMemo(
     () => (env === "ALL" ? flags : flags.filter((f) => f.environment === env)),
@@ -79,19 +157,10 @@ export function AdminFeatureFlagsClient() {
       enabled: f.enabled,
       rolloutPercent: f.rolloutPercent,
       environment: f.environment,
-      targeting: f.targeting,
       planIds: f.targeting.planIds.join(", "),
       regions: f.targeting.regions.join(", "),
       userIds: f.targeting.userIds.join(", "),
     });
-  }
-
-  function parseTargeting(d: Draft) {
-    return {
-      planIds: d.planIds ? d.planIds.split(",").map((s) => s.trim()).filter(Boolean) : [],
-      regions: d.regions ? d.regions.split(",").map((s) => s.trim()).filter(Boolean) : [],
-      userIds: d.userIds ? d.userIds.split(",").map((s) => s.trim()).filter(Boolean) : [],
-    };
   }
 
   async function save() {
@@ -102,11 +171,15 @@ export function AdminFeatureFlagsClient() {
     const payload = {
       key: draft.key,
       name: draft.name,
-      description: draft.description ?? "",
-      enabled: Boolean(draft.enabled),
-      rolloutPercent: Math.min(100, Math.max(0, Number(draft.rolloutPercent) || 0)),
-      environment: (draft.environment ?? "PRODUCTION") as FlagEnvironment,
-      targeting: parseTargeting(draft),
+      description: draft.description,
+      enabled: draft.enabled,
+      rolloutPercent: Math.min(100, Math.max(0, draft.rolloutPercent)),
+      environment: draft.environment,
+      targeting: {
+        planIds: parseCSV(draft.planIds),
+        regions: parseCSV(draft.regions),
+        userIds: parseCSV(draft.userIds),
+      },
     };
     try {
       if (editingId) {
@@ -120,15 +193,6 @@ export function AdminFeatureFlagsClient() {
       setEditingId(null);
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Save failed.");
-    }
-  }
-
-  async function toggle(f: FeatureFlag, enabled: boolean) {
-    try {
-      await useUpdateFlagHook(f.id, { enabled });
-      toast.success(`Flag ${enabled ? "enabled" : "disabled"}.`);
-    } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Toggle failed.");
     }
   }
 
@@ -176,68 +240,12 @@ export function AdminFeatureFlagsClient() {
       ) : (
         <div className="grid gap-3 md:grid-cols-2">
           {visible.map((f) => (
-            <Card key={f.id} className="flex flex-col gap-3 p-4">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    <IconFlag className="size-4" />
-                    <span className="font-mono text-xs">{f.key}</span>
-                    <Badge variant={f.enabled ? "default" : "outline"}>
-                      {f.enabled ? "Enabled" : "Disabled"}
-                    </Badge>
-                    <Badge variant="secondary">{f.environment}</Badge>
-                  </div>
-                  <span className="text-sm font-medium">{f.name}</span>
-                  <span className="text-muted-foreground text-xs">
-                    {f.description}
-                  </span>
-                </div>
-                <Switch
-                  checked={f.enabled}
-                  onCheckedChange={(v) => toggle(f, v)}
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Rollout</span>
-                  <span>{f.rolloutPercent}%</span>
-                </div>
-                <div className="bg-muted h-1.5 overflow-hidden rounded-full">
-                  <div
-                    className="bg-primary h-full"
-                    style={{ width: `${f.rolloutPercent}%` }}
-                  />
-                </div>
-              </div>
-              <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-xs">
-                {f.targeting.planIds.length > 0 ? (
-                  <span>plans: {f.targeting.planIds.join(", ")}</span>
-                ) : null}
-                {f.targeting.regions.length > 0 ? (
-                  <span>regions: {f.targeting.regions.join(", ")}</span>
-                ) : null}
-                {f.targeting.userIds.length > 0 ? (
-                  <span>{f.targeting.userIds.length} users</span>
-                ) : null}
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground text-xs">
-                  updated {new Date(f.updatedAt).toLocaleString()}
-                </span>
-                <div className="flex items-center gap-1">
-                  <Button size="sm" variant="ghost" onClick={() => populateDraft(f)}>
-                    Edit
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setConfirmDelete(f)}
-                  >
-                    <IconTrash className="size-4" />
-                  </Button>
-                </div>
-              </div>
-            </Card>
+            <FlagRow
+              key={f.id}
+              flag={f}
+              onEdit={() => populateDraft(f)}
+              onDelete={() => setConfirmDelete(f)}
+            />
           ))}
         </div>
       )}
@@ -250,7 +258,7 @@ export function AdminFeatureFlagsClient() {
           <div className="flex flex-col gap-2">
             <Label>Key</Label>
             <Input
-              value={draft.key ?? ""}
+              value={draft.key}
               onChange={(e) => setDraft((d) => ({ ...d, key: e.target.value }))}
               placeholder="new_ats_v2"
             />
@@ -258,7 +266,7 @@ export function AdminFeatureFlagsClient() {
           <div className="flex flex-col gap-2">
             <Label>Name</Label>
             <Input
-              value={draft.name ?? ""}
+              value={draft.name}
               onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
               placeholder="ATS scoring v2"
             />
@@ -266,7 +274,7 @@ export function AdminFeatureFlagsClient() {
           <div className="flex flex-col gap-2 md:col-span-2">
             <Label>Description</Label>
             <Input
-              value={draft.description ?? ""}
+              value={draft.description}
               onChange={(e) =>
                 setDraft((d) => ({ ...d, description: e.target.value }))
               }
@@ -293,7 +301,7 @@ export function AdminFeatureFlagsClient() {
             <Label>Rollout %</Label>
             <Input
               type="number"
-              value={draft.rolloutPercent ?? 0}
+              value={draft.rolloutPercent}
               onChange={(e) =>
                 setDraft((d) => ({
                   ...d,
@@ -306,7 +314,7 @@ export function AdminFeatureFlagsClient() {
           </div>
           <div className="flex items-center gap-2 md:col-span-2">
             <Switch
-              checked={Boolean(draft.enabled)}
+              checked={draft.enabled}
               onCheckedChange={(v) => setDraft((d) => ({ ...d, enabled: v }))}
             />
             <Label>Enabled globally</Label>
@@ -314,14 +322,14 @@ export function AdminFeatureFlagsClient() {
           <div className="flex flex-col gap-2 md:col-span-2">
             <Label>Target plan IDs (comma separated)</Label>
             <Input
-              value={draft.planIds ?? ""}
+              value={draft.planIds}
               onChange={(e) => setDraft((d) => ({ ...d, planIds: e.target.value }))}
             />
           </div>
           <div className="flex flex-col gap-2">
             <Label>Target regions</Label>
             <Input
-              value={draft.regions ?? ""}
+              value={draft.regions}
               onChange={(e) => setDraft((d) => ({ ...d, regions: e.target.value }))}
               placeholder="US, EU"
             />
@@ -329,7 +337,7 @@ export function AdminFeatureFlagsClient() {
           <div className="flex flex-col gap-2">
             <Label>Override for user IDs</Label>
             <Input
-              value={draft.userIds ?? ""}
+              value={draft.userIds}
               onChange={(e) => setDraft((d) => ({ ...d, userIds: e.target.value }))}
             />
           </div>
@@ -363,7 +371,7 @@ export function AdminFeatureFlagsClient() {
         onConfirm={async () => {
           if (!confirmDelete) return;
           try {
-            await del.mutateAsync();
+            await useDeleteFlagHook(confirmDelete.id)();
             toast.success("Flag deleted.");
             setConfirmDelete(null);
           } catch (err: unknown) {
@@ -375,7 +383,30 @@ export function AdminFeatureFlagsClient() {
   );
 }
 
-function useUpdateFlagHook(id: string, payload: Partial<FeatureFlag>) {
-  const m = useUpdateFlag(id);
-  return payload ? m.mutateAsync(payload) : Promise.resolve(null);
+function FlagRow({
+  flag,
+  onEdit,
+  onDelete,
+}: {
+  flag: FeatureFlag;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  // Local update hook for the row so toggling flags can call mutateAsync
+  // without violating hook rules.
+  const updater = useUpdateFlag(flag.id);
+  async function toggle(enabled: boolean) {
+    try {
+      await updater.mutateAsync({ enabled });
+      toast.success(`Flag ${enabled ? "enabled" : "disabled"}.`);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Toggle failed.");
+    }
+  }
+  return <FlagCard flag={flag} onEdit={onEdit} onDelete={onDelete} onToggle={toggle} />;
+}
+
+function useDeleteFlagHook(id: string) {
+  const m = useDeleteFlag(id);
+  return m.mutateAsync;
 }

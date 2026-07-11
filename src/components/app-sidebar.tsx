@@ -103,6 +103,7 @@ const ADMIN_CONFIG: SidebarConfig = {
     { title: "Tickets", url: "/admin/tickets", icon: IconTicket },
     { title: "Analytics", url: "/admin/analytics", icon: IconChartBar },
     { title: "Reports", url: "/admin/reports", icon: IconReport },
+    { title: "Moderation", url: "/admin/moderation", icon: IconShield },
   ],
   documents: [
     { name: "Announcements", url: "/admin/announcements", icon: IconMegaphone },

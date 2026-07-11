@@ -342,12 +342,31 @@ export function useRestoreVersion(id: string) {
 }
 
 export function useExportResume(
-  options?: UseMutationOptions<{ presignedUrl?: string; jobId?: string }, ApiError, { id: string; format?: "A4" | "Letter" }>
+  options?: UseMutationOptions<
+    {
+      presignedUrl?: string;
+      base64?: string;
+      jobId?: string;
+      fileName?: string;
+      contentType?: string;
+      format?: "PDF" | "DOCX";
+    },
+    ApiError,
+    { id: string; fileType?: "PDF" | "DOCX"; pageSize?: "A4" | "Letter" }
+  >
 ) {
   return useMutation({
-    mutationFn: ({ id, format }) =>
-      api.post<{ presignedUrl?: string; jobId?: string }>(`/resumes/${id}/export`, {
-        format: format ?? "A4",
+    mutationFn: ({ id, fileType, pageSize }) =>
+      api.post<{
+        presignedUrl?: string;
+        base64?: string;
+        jobId?: string;
+        fileName?: string;
+        contentType?: string;
+        format?: "PDF" | "DOCX";
+      }>(`/resumes/${id}/export`, {
+        fileType: fileType ?? "PDF",
+        pageSize: pageSize ?? "A4",
       }),
     ...options,
   });

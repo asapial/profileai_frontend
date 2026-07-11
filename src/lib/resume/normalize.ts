@@ -49,6 +49,22 @@ export function normalizeContentData(
 }
 
 /**
+ * Resume templates intentionally expose personal fields at the top level
+ * (`{{firstName}}`, `{{email}}`, etc.) while the persisted resume document
+ * keeps them grouped under `personalInfo`.  Every HTML renderer must use this
+ * exact projection or the chosen template renders an empty header.
+ */
+export function toTemplateData(
+  data: ResumeContentData | null | undefined
+): Record<string, unknown> {
+  const normalized = normalizeContentData(data);
+  return {
+    ...normalized,
+    ...(normalized.personalInfo ?? {}),
+  };
+}
+
+/**
  * Strip the client-only `id` field from experience/education before sending
  * to the API. Backend stores `contentData` as JSON and doesn't expect this
  * synthetic React key. We still keep it in local state for stable lists.
@@ -59,11 +75,15 @@ export function sanitizeForApi(
   if (!data) return {};
   return {
     ...data,
-    experience: (data.experience ?? []).map(
-      ({ id: _id, ...rest }) => rest
-    ) as ResumeExperience[],
-    education: (data.education ?? []).map(
-      ({ id: _id, ...rest }) => rest
-    ) as ResumeEducation[],
+    experience: (data.experience ?? []).map((item) => {
+      const copy = { ...item };
+      delete copy.id;
+      return copy;
+    }) as ResumeExperience[],
+    education: (data.education ?? []).map((item) => {
+      const copy = { ...item };
+      delete copy.id;
+      return copy;
+    }) as ResumeEducation[],
   };
 }

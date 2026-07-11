@@ -38,13 +38,22 @@ const CATEGORY_TONE: Record<TemplateCategory, string> = {
 export function TemplateStep({
   templateId,
   onSelect,
+  onAfterSelect,
 }: {
   templateId: string;
   onSelect: (id: string) => void;
+  /** Called right after a template is picked. The wizard uses this to
+   * advance to the next step so a click is enough — no extra Continue. */
+  onAfterSelect?: () => void;
 }) {
   const [category, setCategory] = useState<TemplateCategory | "ALL">("ALL");
 
   const { data: templates = [], isLoading, isError } = useTemplates({ category });
+
+  function pick(id: string) {
+    onSelect(id);
+    onAfterSelect?.();
+  }
 
   return (
     <div className="space-y-5">
@@ -91,7 +100,7 @@ export function TemplateStep({
               key={t.id}
               template={t}
               selected={templateId === t.id}
-              onSelect={() => onSelect(t.id)}
+              onSelect={() => pick(t.id)}
             />
           ))}
         </div>

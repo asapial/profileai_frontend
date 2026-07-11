@@ -5,6 +5,8 @@ import { Download, Eye, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { track } from "@/lib/analytics";
 import { env } from "@/lib/env";
+import { toTemplateData } from "@/lib/resume/normalize";
+import { safeInterpolate as sharedInterpolate } from "@/lib/resume/interpolate";
 
 const apiBase = env.apiBaseUrl;
 
@@ -49,6 +51,31 @@ function getPath(obj: unknown, path: string): unknown {
   return cur;
 }
 
+// Templates seeded with the legacy names; keep the aliases here too.
+const TOP_LEVEL_ALIASES: Record<string, string> = {
+  bio: "summary",
+};
+const ITEM_ALIASES: Record<string, string> = {
+  institution: "school",
+  title: "role",
+  startDate: "from",
+  endDate: "to",
+};
+function applyItemAliases(obj: Record<string, unknown>): Record<string, unknown> {
+  if (obj == null || typeof obj !== "object") return obj;
+  const out: Record<string, unknown> = { ...obj };
+  for (const [legacy, modern] of Object.entries(ITEM_ALIASES)) {
+    if (out[legacy] == null && out[modern] != null) out[legacy] = out[modern];
+  }
+  if (out.desc == null && Array.isArray(out.bullets)) {
+    const bullets = (out.bullets as unknown[]).filter(
+      (b) => typeof b === "string" && (b as string).trim()
+    );
+    if (bullets.length) out.desc = bullets.join("\n");
+  }
+  return out;
+}
+
 // `scope` is a chain of data objects, outermost first. Lookups walk from the
 // innermost (most recent) scope outward, so `{{this.x}}` inside an each sees
 // the current item while `{{name}}` still sees the top-level contentData.
@@ -70,7 +97,10 @@ function lookupValue(scope: Record<string, unknown>[], path: string): unknown {
     for (let s = scope.length - 1; s >= 0; s--) {
       const obj = scope[s];
       if (obj != null && "this" in obj) {
-        return getPath((obj as Record<string, unknown>)["this"], rest);
+        const aliased = applyItemAliases(
+          (obj as Record<string, unknown>)["this"] as Record<string, unknown>
+        );
+        return getPath(aliased, rest);
       }
     }
     return undefined;
@@ -81,6 +111,15 @@ function lookupValue(scope: Record<string, unknown>[], path: string): unknown {
     const obj = scope[s];
     if (obj != null && path in obj) {
       return (obj as Record<string, unknown>)[path];
+    }
+  }
+  if (TOP_LEVEL_ALIASES[path]) {
+    const aliased = TOP_LEVEL_ALIASES[path];
+    for (let s = scope.length - 1; s >= 0; s--) {
+      const obj = scope[s];
+      if (obj != null && aliased in obj) {
+        return (obj as Record<string, unknown>)[aliased];
+      }
     }
   }
   return getPath(scope[scope.length - 1], path);
@@ -246,7 +285,10 @@ export function ResumeViewer({ data }: Props) {
 
   const renderedHtml = useMemo(() => {
     try {
-      return interpolate(data.template.htmlLayout, [data.contentData ?? {}]);
+      return sharedInterpolate(
+        data.template.htmlLayout,
+        toTemplateData(data.contentData),
+      );
     } catch {
       return `<p style="color:#b91c1c;padding:24px">This resume could not be rendered.</p>`;
     }

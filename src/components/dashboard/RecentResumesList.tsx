@@ -64,7 +64,7 @@ export function RecentResumesList() {
                 className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
               >
                 <Link
-                  href={`/resume/${r.id}/edit`}
+                  href={`/dashboard/resume/${r.id}/edit`}
                   className="min-w-0 flex-1 truncate text-sm font-medium hover:text-violet-600"
                 >
                   {r.title}

@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect } from "react";
-import { CheckCircle2, FileEdit, RefreshCcw, Wand2 } from "lucide-react";
+import Link from "next/link";
+import toast from "react-hot-toast";
+import { CheckCircle2, Download, FileEdit, Loader2, RefreshCcw, Wand2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { ResumePreviewPane } from "@/components/resume/ResumePreviewPane";
+import { TemplateRenderedPreview } from "@/components/resume/TemplateRenderedPreview";
 import { useDashboardSummary } from "@/lib/hooks/useDashboardSummary";
-import type { ResumeDetail } from "@/lib/hooks/useResumes";
+import { useExportResume, type ResumeDetail } from "@/lib/hooks/useResumes";
+import { downloadResumeExport } from "@/lib/resume/download";
 
 export function PreviewStep({
   resume,
@@ -20,6 +23,7 @@ export function PreviewStep({
 }) {
   const { data, refetch } = useDashboardSummary();
   const limits = data?.limits;
+  const exportMutation = useExportResume();
 
   // After a successful generation, the dashboard summary resumeUsed was bumped
   // server-side. Refetch once on mount so the user sees fresh usage.
@@ -28,6 +32,18 @@ export function PreviewStep({
   }, [refetch]);
 
   const resumePercent = limits?.resumePercent ?? 0;
+
+  async function exportFile(fileType: "PDF" | "DOCX") {
+    try {
+      const result = await exportMutation.mutateAsync({ id: resume.id, fileType });
+      if (!downloadResumeExport(result, `${resume.title}.${fileType.toLowerCase()}`)) {
+        throw new Error("The export did not return a download URL.");
+      }
+      toast.success(`${fileType} export ready.`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : `${fileType} export failed.`);
+    }
+  }
 
   return (
     <div className="space-y-5">
@@ -38,8 +54,8 @@ export function PreviewStep({
             Resume generated
           </CardTitle>
           <CardDescription>
-            {resume.title} · v{resume.version}. ATS checks and edits live in the
-            editor.
+            {resume.title} · v{resume.version}. Saved automatically to My
+            resumes; ATS checks and edits live in the editor.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center gap-2">
@@ -50,6 +66,31 @@ export function PreviewStep({
           <Button variant="outline" onClick={onRegenerate} className="gap-1">
             <RefreshCcw className="h-4 w-4" />
             Regenerate
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => void exportFile("PDF")}
+            disabled={exportMutation.isPending}
+            className="gap-1"
+          >
+            {exportMutation.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4" />
+            )}
+            PDF
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => void exportFile("DOCX")}
+            disabled={exportMutation.isPending}
+            className="gap-1"
+          >
+            <Download className="h-4 w-4" />
+            DOCX
+          </Button>
+          <Button asChild variant="ghost">
+            <Link href="/dashboard/resumes">My resumes</Link>
           </Button>
         </CardContent>
       </Card>
@@ -93,11 +134,12 @@ export function PreviewStep({
           <CardHeader>
             <CardTitle className="text-base">Generated preview</CardTitle>
             <CardDescription>
-              Live preview. Run an ATS score and refine inside the editor.
+              Rendered with the {resume.template?.name ?? "selected"} template.
+              Run an ATS score and refine inside the editor.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResumePreviewPane content={resume.contentData} scale={0.85} />
+            <TemplateRenderedPreview resume={resume} scale={0.85} />
           </CardContent>
         </Card>
         <Card>
@@ -108,7 +150,7 @@ export function PreviewStep({
             <p>1. Edit any field — auto-saves after 1s idle.</p>
             <p>2. Run an ATS check against your pasted job description.</p>
             <p>3. Apply AI suggestions section by section.</p>
-            <p>4. Export to PDF or share a public link.</p>
+            <p>4. Export to PDF or DOCX, or share a public link.</p>
           </CardContent>
         </Card>
       </div>

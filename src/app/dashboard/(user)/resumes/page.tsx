@@ -292,7 +292,7 @@ function ResumeCard({
     duplicate.mutate(resume.id, {
       onSuccess: (data) => {
         toast.success("Duplicated.");
-        router.push(`/resume/${data.id}/edit`);
+        router.push(`/dashboard/resume/${data.id}/edit`);
       },
       onError: (err) =>
         toast.error(err instanceof Error ? err.message : "Duplicate failed."),
@@ -334,7 +334,7 @@ function ResumeCard({
       <CardHeader className="space-y-2">
         <div className="flex items-start justify-between gap-2">
           <Link
-            href={`/resume/${resume.id}/edit`}
+            href={`/dashboard/resume/${resume.id}/edit`}
             className="block flex-1 hover:underline"
           >
             <CardTitle className="line-clamp-1 text-base">{resume.title}</CardTitle>
@@ -418,7 +418,7 @@ function ResumeCard({
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>Updated {formatRelative(resume.updatedAt)}</span>
           <Link
-            href={`/resume/${resume.id}/edit`}
+            href={`/dashboard/resume/${resume.id}/edit`}
             className="font-medium text-violet-700 hover:underline"
           >
             Open →

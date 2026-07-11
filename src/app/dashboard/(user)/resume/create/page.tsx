@@ -137,7 +137,11 @@ export default function CreateResumePage() {
     });
     toast.success("Resume generated.");
     setShowPreview(true);
-    router.prefetch(`/resume/${resume.id}/edit`);
+    // Pre-warm the dashboard editor route so the "Open in editor" click
+    // feels instant. We deliberately route to the canonical dashboard
+    // URL (instead of `/resume/[id]/edit`, which is a redirect hop) to
+    // avoid any chance the redirect chain swallows the navigation.
+    router.prefetch(`/dashboard/resume/${resume.id}/edit`);
   }
 
   const generatedResume: ResumeDetail | undefined = generateMutation.data;
@@ -156,7 +160,7 @@ export default function CreateResumePage() {
         {showPreview && generatedResume ? (
           <Button
             variant="default"
-            onClick={() => router.push(`/resume/${generatedResume.id}/edit`)}
+            onClick={() => router.push(`/dashboard/resume/${generatedResume.id}/edit`)}
             className="gap-2"
           >
             <ArrowRight className="h-4 w-4" />
@@ -188,6 +192,14 @@ export default function CreateResumePage() {
                 <TemplateStep
                   templateId={state.templateId}
                   onSelect={setTemplateId}
+                  onAfterSelect={() => {
+                    // Picking a template advances the wizard automatically,
+                    // matching the user's expectation that the click itself
+                    // moves them to the next step.
+                    if (stepIndex < STEPS.length - 1) {
+                      setStepIndex((i) => i + 1);
+                    }
+                  }}
                 />
               )}
               {currentStep.id === "type" && (
@@ -207,13 +219,13 @@ export default function CreateResumePage() {
                 />
               )}
               {currentStep.id === "preview" && !generatedResume ? (
-                <EmptyPreviewStep onGenerate={runGenerate} blocked={blockedByLimits} />
+                <EmptyPreviewStep blocked={blockedByLimits} />
               ) : null}
             </div>
           ) : generatedResume ? (
             <PreviewStep
               resume={generatedResume}
-              onEdit={() => router.push(`/resume/${generatedResume.id}/edit`)}
+              onEdit={() => router.push(`/dashboard/resume/${generatedResume.id}/edit`)}
               onRegenerate={() => {
                 setShowPreview(false);
                 generateMutation.reset();
@@ -238,7 +250,7 @@ export default function CreateResumePage() {
                 disabled={!validation.canContinue || generateMutation.isPending}
                 className="gap-2"
               >
-                {currentStep.id === "job" || (currentStep.id === "preview" && !generatedResume) ? (
+                {currentStep.id === "preview" && !generatedResume ? (
                   <>
                     <Sparkles className="h-4 w-4" />
                     Generate with AI
@@ -265,10 +277,8 @@ export default function CreateResumePage() {
 }
 
 function EmptyPreviewStep({
-  onGenerate,
   blocked,
 }: {
-  onGenerate: () => void | Promise<void>;
   blocked: boolean;
 }) {
   return (
@@ -279,14 +289,6 @@ function EmptyPreviewStep({
         We&apos;ll send your inputs to the AI and build a structured resume. You
         can edit every field afterward.
       </p>
-      <Button
-        onClick={onGenerate}
-        disabled={blocked}
-        className="mx-auto gap-2"
-      >
-        <Sparkles className="h-4 w-4" />
-        {blocked ? "Limit reached" : "Generate with AI"}
-      </Button>
       {blocked ? (
         <p className="text-xs text-rose-600">
           Resume or AI credit limit reached. Upgrade your plan to continue.

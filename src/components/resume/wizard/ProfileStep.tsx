@@ -35,7 +35,7 @@ export function ProfileStep() {
           a tailored resume.
         </p>
         <Button asChild>
-          <Link href="/profile">Complete profile</Link>
+          <Link href="/dashboard/profile">Complete profile</Link>
         </Button>
       </div>
     );
@@ -127,7 +127,7 @@ export function ProfileStep() {
 
       <p className="text-xs text-muted-foreground">
         Missing something?{" "}
-        <Link href="/profile" className="font-medium text-violet-600 hover:underline">
+        <Link href="/dashboard/profile" className="font-medium text-violet-600 hover:underline">
           Update your profile
         </Link>{" "}
         and come back.

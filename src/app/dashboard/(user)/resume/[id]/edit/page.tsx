@@ -1,28 +1,12 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import {
-  ArrowLeft,
-  Briefcase,
-  GraduationCap,
-  Languages as LanguagesIcon,
-  Loader2,
-  Sparkles,
-  User,
-} from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ResumePreviewPane } from "@/components/resume/ResumePreviewPane";
-import { EditorToolbar } from "@/components/resume/editor/EditorToolbar";
-import { PersonalInfoSection } from "@/components/resume/editor/PersonalInfoSection";
-import { SummarySection } from "@/components/resume/editor/SummarySection";
-import { ExperienceSection } from "@/components/resume/editor/ExperienceSection";
-import { EducationSection } from "@/components/resume/editor/EducationSection";
-import { ChipListSection } from "@/components/resume/editor/ChipListSection";
-import { AtsPanel } from "@/components/resume/editor/AtsPanel";
-import { HistoryDrawer } from "@/components/resume/editor/HistoryDrawer";
+import { WordStyleEditor } from "@/components/resume/editor/WordStyleEditor";
 import {
   useAtsCheck,
   useAiModify,
@@ -43,25 +27,7 @@ import {
   normalizeContentData,
   sanitizeForApi,
 } from "@/lib/resume/normalize";
-
-type SectionId =
-  | "personal"
-  | "summary"
-  | "experience"
-  | "education"
-  | "skills"
-  | "languages"
-  | "certifications";
-
-const SECTIONS: { id: SectionId; label: string; Icon: React.ComponentType<{ className?: string }> }[] = [
-  { id: "personal", label: "Personal", Icon: User },
-  { id: "summary", label: "Summary", Icon: Sparkles },
-  { id: "experience", label: "Experience", Icon: Briefcase },
-  { id: "education", label: "Education", Icon: GraduationCap },
-  { id: "skills", label: "Skills", Icon: Sparkles },
-  { id: "languages", label: "Languages", Icon: LanguagesIcon },
-  { id: "certifications", label: "Certifications", Icon: GraduationCap },
-];
+import { downloadResumeExport } from "@/lib/resume/download";
 
 const DEBOUNCE_MS = 1000;
 
@@ -87,7 +53,6 @@ export default function EditResumePage() {
   const { data: historyEntries = [], isLoading: historyLoading } =
     useResumeHistory(id);
 
-  const [section, setSection] = useState<SectionId>("personal");
   const [historyOpen, setHistoryOpen] = useState(false);
   const [atsData, setAtsData] = useState<AtsResult | null>(null);
 
@@ -250,13 +215,26 @@ export default function EditResumePage() {
     }
   }
 
-  async function handleExport() {
+  async function handleExport(fileType: "PDF" | "DOCX" = "PDF") {
     if (!id) return;
     try {
-      const res = await exportMutation.mutateAsync({ id });
-      if (res.presignedUrl) {
-        window.open(res.presignedUrl, "_blank", "noopener");
-        toast.success("Export ready. Opening PDF…");
+      // Export the exact document currently visible in the editor, including
+      // changes that are still inside the one-second autosave window.
+      const serialized = JSON.stringify(draft);
+      if (serialized !== lastSavedRef.current) {
+        if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+        setSaving(true);
+        const saved = await updateMutation.mutateAsync({
+          contentData: sanitizeForApi(draft),
+        });
+        const normalized = normalizeContentData(saved.contentData);
+        lastSavedRef.current = JSON.stringify(normalized);
+        setSaving(false);
+      }
+
+      const res = await exportMutation.mutateAsync({ id, fileType });
+      if (downloadResumeExport(res, `${resume?.title ?? "resume"}.${fileType.toLowerCase()}`)) {
+        toast.success(`${fileType} export ready.`);
         return;
       }
       if (res.jobId) {
@@ -274,7 +252,7 @@ export default function EditResumePage() {
     duplicateMutation.mutate(id, {
       onSuccess: (data) => {
         toast.success("Duplicated. Opening the copy…");
-        router.push(`/resume/${data.id}/edit`);
+        router.push(`/dashboard/resume/${data.id}/edit`);
       },
       onError: (err) =>
         toast.error(err instanceof Error ? err.message : "Duplicate failed."),
@@ -290,7 +268,7 @@ export default function EditResumePage() {
     deleteMutation.mutate(id, {
       onSuccess: () => {
         toast.success("Resume deleted.");
-        router.push("/resumes");
+        router.push("/dashboard/resumes");
       },
       onError: (err) =>
         toast.error(err instanceof Error ? err.message : "Delete failed."),
@@ -299,7 +277,10 @@ export default function EditResumePage() {
 
   const personalInfo = draft.personalInfo ?? {};
   const fullName = useMemo(
-    () => [personalInfo.firstName, personalInfo.lastName].filter(Boolean).join(" "),
+    () =>
+      [personalInfo.firstName, personalInfo.lastName]
+        .filter(Boolean)
+        .join(" "),
     [personalInfo.firstName, personalInfo.lastName]
   );
 
@@ -329,7 +310,7 @@ export default function EditResumePage() {
         </p>
         <div className="flex items-center justify-center gap-2">
           <Button asChild variant="outline">
-            <Link href="/resumes" className="gap-1">
+            <Link href="/dashboard/resumes" className="gap-1">
               <ArrowLeft className="h-4 w-4" />
               Back to resumes
             </Link>
@@ -340,156 +321,36 @@ export default function EditResumePage() {
   }
 
   return (
-    <div className="min-w-0 space-y-4 p-4 sm:p-6 md:p-8">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <Button asChild variant="ghost" size="sm" className="gap-1">
-          <Link href="/resumes">
-            <ArrowLeft className="h-4 w-4" /> All resumes
-          </Link>
-        </Button>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleDuplicate}
-            disabled={duplicateMutation.isPending}
-            className="gap-1"
-          >
-            {duplicateMutation.isPending ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : null}
-            Duplicate
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleDelete}
-            disabled={deleteMutation.isPending}
-            className="gap-1 text-rose-600 hover:bg-rose-50 hover:text-rose-700"
-          >
-            Delete
-          </Button>
-        </div>
-      </div>
-
-      <EditorToolbar
+    <div className="min-w-0">
+      <WordStyleEditor
         resume={resume}
+        draft={draft}
         saving={saving}
         templates={templates}
         templatesLoading={templatesLoading}
         exporting={exportMutation.isPending}
-        onExport={handleExport}
-        onToggleHistory={() => setHistoryOpen((v) => !v)}
-        onRunAts={handleRunAts}
-      />
-
-      <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
-        <div className="min-w-0 space-y-4">
-          <div className="rounded-2xl border border-border bg-card p-1.5">
-            <div className="flex flex-wrap gap-1">
-              {SECTIONS.map(({ id: sid, label, Icon }) => (
-                <button
-                  key={sid}
-                  type="button"
-                  onClick={() => setSection(sid)}
-                  className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition ${
-                    section === sid
-                      ? "bg-violet-600 text-white shadow"
-                      : "text-muted-foreground hover:bg-muted"
-                  }`}
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
-            {section === "personal" && (
-              <PersonalInfoSection
-                detail={resume}
-                saving={saving}
-                onChange={patchPersonalInfo}
-              />
-            )}
-            {section === "summary" && (
-              <SummarySection
-                value={draft.summary ?? ""}
-                targetJobTitle={resume.targetJobTitle}
-                onChange={patchSummary}
-                onAiRewrite={handleAiRewriteSummary}
-              />
-            )}
-            {section === "experience" && (
-              <ExperienceSection
-                experiences={draft.experience ?? []}
-                onChange={patchExperience}
-                onAiRewrite={handleAiRewriteExperience}
-              />
-            )}
-            {section === "education" && (
-              <EducationSection
-                educations={draft.education ?? []}
-                onChange={patchEducation}
-              />
-            )}
-            {section === "skills" && (
-              <ChipListSection
-                title="Skills"
-                emoji="🛠️"
-                items={draft.skills ?? []}
-                onChange={patchSkills}
-                placeholder="e.g. React, Python, Figma"
-              />
-            )}
-            {section === "languages" && (
-              <ChipListSection
-                title="Languages"
-                emoji="🌐"
-                items={draft.languages ?? []}
-                onChange={patchLanguages}
-                placeholder="e.g. English (Fluent)"
-              />
-            )}
-            {section === "certifications" && (
-              <ChipListSection
-                title="Certifications"
-                emoji="🏅"
-                items={(draft.certifications ?? []).map((c) =>
-                  [c.name, c.issuer, c.year].filter(Boolean).join(" · ")
-                )}
-                onChange={patchCertifications}
-                placeholder="e.g. AWS Solutions Architect"
-              />
-            )}
-          </div>
-        </div>
-
-        <aside className="min-w-0 space-y-4 xl:sticky xl:top-20 xl:self-start">
-          <div className="rounded-2xl border border-border bg-card p-3">
-            <ResumePreviewPane
-              content={draft}
-              fullName={fullName || null}
-              email={personalInfo.email ?? null}
-              headline={personalInfo.headline ?? null}
-              scale={0.85}
-            />
-          </div>
-          <AtsPanel
-            atsData={atsData}
-            loading={atsMutation.isPending}
-            onRun={handleRunAts}
-          />
-        </aside>
-      </div>
-
-      <HistoryDrawer
-        resumeId={resume.id}
-        open={historyOpen}
-        onClose={() => setHistoryOpen(false)}
-        entries={historyEntries}
-        isLoading={historyLoading}
+        duplicatePending={duplicateMutation.isPending}
+        deletePending={deleteMutation.isPending}
+        atsData={atsData}
+        atsLoading={atsMutation.isPending}
+        historyOpen={historyOpen}
+        historyEntries={historyEntries}
+        historyLoading={historyLoading}
+        fullName={fullName}
+        patchPersonalInfo={patchPersonalInfo}
+        patchSummary={patchSummary}
+        patchExperience={patchExperience}
+        patchEducation={patchEducation}
+        patchSkills={patchSkills}
+        patchLanguages={patchLanguages}
+        patchCertifications={patchCertifications}
+        handleAiRewriteSummary={handleAiRewriteSummary}
+        handleAiRewriteExperience={handleAiRewriteExperience}
+        handleRunAts={handleRunAts}
+        handleExport={handleExport}
+        handleDuplicate={handleDuplicate}
+        handleDelete={handleDelete}
+        setHistoryOpen={setHistoryOpen}
       />
     </div>
   );

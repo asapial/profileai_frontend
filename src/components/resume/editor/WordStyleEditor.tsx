@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -29,7 +29,7 @@ import {
   ZoomOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { TemplateRenderedPreview } from "@/components/resume/TemplateRenderedPreview";
+import { InlineEditablePreview } from "@/components/resume/editor/InlineEditablePreview";
 import { PersonalInfoSection } from "@/components/resume/editor/PersonalInfoSection";
 import { SummarySection } from "@/components/resume/editor/SummarySection";
 import { ExperienceSection } from "@/components/resume/editor/ExperienceSection";
@@ -103,7 +103,7 @@ type Props = {
     instruction: string
   ) => Promise<void> | void;
   handleRunAts: () => Promise<void> | void;
-  handleExport: (fileType?: "PDF" | "DOCX") => Promise<void> | void;
+  handleExport: () => Promise<void> | void;
   handleDuplicate: () => void;
   handleDelete: () => void;
   setHistoryOpen: (open: boolean) => void;
@@ -392,6 +392,108 @@ export function WordStyleEditor({
     [resume, normalizedDraft]
   );
 
+  // Track which inline variable is focused (clicked or side-panel selected)
+  // so we can highlight it on the page and scroll it into view.
+  const [focusedVarPath, setFocusedVarPath] = useState<string | null>(null);
+
+  /**
+   * Adapter: route a top-level scalar token (e.g. `summary`, `firstName`)
+   * back to the right patcher. Token paths come straight from the
+   * template, including legacy names like `bio`, `title`, `institution`
+   * — we normalize them here before calling the canonical patcher.
+   */
+  const onPatchScalar = useCallback(
+    (path: string, value: string) => {
+      const normalized = path === "bio" ? "summary" : path;
+      if (normalized === "summary") {
+        patchSummary(value);
+        return;
+      }
+      const personalKeys: Array<keyof ResumePersonalInfo> = [
+        "firstName",
+        "lastName",
+        "headline",
+        "email",
+        "phone",
+        "location",
+        "website",
+        "linkedIn",
+        "github",
+      ];
+      if ((personalKeys as string[]).includes(normalized)) {
+        patchPersonalInfo({ [normalized]: value } as Partial<ResumePersonalInfo>);
+        return;
+      }
+      // Top-level arrays of strings: skills / languages / certifications.
+      if (normalized === "skills") {
+        const next = value
+          .split(/[\n,•·|]+/g)
+          .map((s) => s.trim())
+          .filter(Boolean);
+        patchSkills(next);
+        return;
+      }
+      if (normalized === "languages") {
+        const next = value
+          .split(/[\n,•·|]+/g)
+          .map((s) => s.trim())
+          .filter(Boolean);
+        patchLanguages(next);
+        return;
+      }
+    },
+    [patchPersonalInfo, patchSummary, patchSkills, patchLanguages]
+  );
+
+  /**
+   * Adapter: route a per-row scalar token (e.g. `this.role`,
+   * `this.company`) back to the row it belongs to. The listPath and row
+   * are resolved by `InlineEditablePreview` from the surrounding each-block.
+   */
+  const onPatchArrayItem = useCallback(
+    (listPath: string, row: number, field: string, value: string) => {
+      // Strip the `this.` prefix the template emits and translate legacy names.
+      const rawField = field.startsWith("this.") ? field.slice(5) : field;
+      const f =
+        rawField === "title"
+          ? "role"
+          : rawField === "institution"
+            ? "school"
+            : rawField === "startDate"
+              ? "from"
+              : rawField === "endDate"
+                ? "to"
+                : rawField;
+
+      if (listPath === "experience") {
+        const list = normalizedDraft.experience ?? [];
+        if (row < 0 || row >= list.length) return;
+        const updated = list.map((e, i) =>
+          i === row
+            ? {
+                ...e,
+                // desc writes back as bullets[] joined on newline
+                [f === "desc" ? "bullets" : f]:
+                  f === "desc" ? value.split(/\r?\n/).filter(Boolean) : value,
+              }
+            : e
+        );
+        patchExperience(updated);
+        return;
+      }
+      if (listPath === "education") {
+        const list = normalizedDraft.education ?? [];
+        if (row < 0 || row >= list.length) return;
+        const updated = list.map((e, i) =>
+          i === row ? { ...e, [f]: value } : e
+        );
+        patchEducation(updated);
+        return;
+      }
+    },
+    [normalizedDraft.experience, normalizedDraft.education, patchExperience, patchEducation]
+  );
+
   const previewStyleVars: React.CSSProperties = {
     ["--wse-accent" as string]: accent,
     ["--wse-font" as string]: font,
@@ -455,7 +557,7 @@ export function WordStyleEditor({
             variant="ghost"
             size="sm"
             className="gap-1 text-white hover:bg-white/15 hover:text-white"
-            onClick={() => void handleExport("PDF")}
+            onClick={() => void handleExport()}
             disabled={exporting}
           >
             {exporting ? (
@@ -464,16 +566,6 @@ export function WordStyleEditor({
               <Download className="h-3.5 w-3.5" />
             )}
             Export PDF
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-1 text-white hover:bg-white/15 hover:text-white"
-            onClick={() => void handleExport("DOCX")}
-            disabled={exporting}
-          >
-            <Download className="h-3.5 w-3.5" />
-            Export DOCX
           </Button>
           <Button
             variant="ghost"
@@ -780,10 +872,15 @@ export function WordStyleEditor({
             <div className="pointer-events-none absolute inset-y-0 right-0 w-3 bg-gradient-to-l from-black/5 to-transparent" />
 
             <div className="relative text-[#111]">
-              <TemplateRenderedPreview
+              <InlineEditablePreview
                 resume={previewResume}
                 scale={1}
                 className="!border-0 !shadow-none !rounded-none"
+                editable
+                onPatchScalar={onPatchScalar}
+                onPatchArrayItem={onPatchArrayItem}
+                focusedPath={focusedVarPath}
+                onFocusedPathChange={setFocusedVarPath}
               />
             </div>
 
@@ -970,17 +1067,10 @@ export function WordStyleEditor({
           </button>
           <button
             type="button"
-            onClick={() => void handleExport("PDF")}
+            onClick={() => void handleExport()}
             className="flex items-center gap-1 rounded px-2 py-0.5 hover:bg-white/15"
           >
-            <Download className="h-3 w-3" /> PDF
-          </button>
-          <button
-            type="button"
-            onClick={() => void handleExport("DOCX")}
-            className="flex items-center gap-1 rounded px-2 py-0.5 hover:bg-white/15"
-          >
-            <Download className="h-3 w-3" /> DOCX
+            <Download className="h-3 w-3" /> Export
           </button>
         </div>
       </div>

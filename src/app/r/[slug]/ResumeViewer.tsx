@@ -5,8 +5,6 @@ import { Download, Eye, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { track } from "@/lib/analytics";
 import { env } from "@/lib/env";
-import { toTemplateData } from "@/lib/resume/normalize";
-import { safeInterpolate as sharedInterpolate } from "@/lib/resume/interpolate";
 
 const apiBase = env.apiBaseUrl;
 
@@ -285,10 +283,7 @@ export function ResumeViewer({ data }: Props) {
 
   const renderedHtml = useMemo(() => {
     try {
-      return sharedInterpolate(
-        data.template.htmlLayout,
-        toTemplateData(data.contentData),
-      );
+      return interpolate(data.template.htmlLayout, [data.contentData ?? {}]);
     } catch {
       return `<p style="color:#b91c1c;padding:24px">This resume could not be rendered.</p>`;
     }

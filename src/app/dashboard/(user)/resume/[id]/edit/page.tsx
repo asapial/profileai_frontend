@@ -321,14 +321,51 @@ export default function EditResumePage() {
   }
 
   return (
+<<<<<<< HEAD
     <div className="min-w-0">
       <WordStyleEditor
+=======
+    <div className="min-w-0 space-y-4 p-4 sm:p-6 md:p-8">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Button asChild variant="ghost" size="sm" className="gap-1">
+          <Link href="/resumes">
+            <ArrowLeft className="h-4 w-4" /> All resumes
+          </Link>
+        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDuplicate}
+            disabled={duplicateMutation.isPending}
+            className="gap-1"
+          >
+            {duplicateMutation.isPending ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : null}
+            Duplicate
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleDelete}
+            disabled={deleteMutation.isPending}
+            className="gap-1 text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+          >
+            Delete
+          </Button>
+        </div>
+      </div>
+
+      <EditorToolbar
+>>>>>>> 327cc7b579cffcd448f8d9a81fa3a682fe726098
         resume={resume}
         draft={draft}
         saving={saving}
         templates={templates}
         templatesLoading={templatesLoading}
         exporting={exportMutation.isPending}
+<<<<<<< HEAD
         duplicatePending={duplicateMutation.isPending}
         deletePending={deleteMutation.isPending}
         atsData={atsData}
@@ -351,6 +388,120 @@ export default function EditResumePage() {
         handleDuplicate={handleDuplicate}
         handleDelete={handleDelete}
         setHistoryOpen={setHistoryOpen}
+=======
+        onExport={handleExport}
+        onToggleHistory={() => setHistoryOpen((v) => !v)}
+        onRunAts={handleRunAts}
+      />
+
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
+        <div className="min-w-0 space-y-4">
+          <div className="rounded-2xl border border-border bg-card p-1.5">
+            <div className="flex flex-wrap gap-1">
+              {SECTIONS.map(({ id: sid, label, Icon }) => (
+                <button
+                  key={sid}
+                  type="button"
+                  onClick={() => setSection(sid)}
+                  className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition ${
+                    section === sid
+                      ? "bg-violet-600 text-white shadow"
+                      : "text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+            {section === "personal" && (
+              <PersonalInfoSection
+                detail={resume}
+                saving={saving}
+                onChange={patchPersonalInfo}
+              />
+            )}
+            {section === "summary" && (
+              <SummarySection
+                value={draft.summary ?? ""}
+                targetJobTitle={resume.targetJobTitle}
+                onChange={patchSummary}
+                onAiRewrite={handleAiRewriteSummary}
+              />
+            )}
+            {section === "experience" && (
+              <ExperienceSection
+                experiences={draft.experience ?? []}
+                onChange={patchExperience}
+                onAiRewrite={handleAiRewriteExperience}
+              />
+            )}
+            {section === "education" && (
+              <EducationSection
+                educations={draft.education ?? []}
+                onChange={patchEducation}
+              />
+            )}
+            {section === "skills" && (
+              <ChipListSection
+                title="Skills"
+                emoji="🛠️"
+                items={draft.skills ?? []}
+                onChange={patchSkills}
+                placeholder="e.g. React, Python, Figma"
+              />
+            )}
+            {section === "languages" && (
+              <ChipListSection
+                title="Languages"
+                emoji="🌐"
+                items={draft.languages ?? []}
+                onChange={patchLanguages}
+                placeholder="e.g. English (Fluent)"
+              />
+            )}
+            {section === "certifications" && (
+              <ChipListSection
+                title="Certifications"
+                emoji="🏅"
+                items={(draft.certifications ?? []).map((c) =>
+                  [c.name, c.issuer, c.year].filter(Boolean).join(" · ")
+                )}
+                onChange={patchCertifications}
+                placeholder="e.g. AWS Solutions Architect"
+              />
+            )}
+          </div>
+        </div>
+
+        <aside className="min-w-0 space-y-4 xl:sticky xl:top-20 xl:self-start">
+          <div className="rounded-2xl border border-border bg-card p-3">
+            <ResumePreviewPane
+              content={draft}
+              fullName={fullName || null}
+              email={personalInfo.email ?? null}
+              headline={personalInfo.headline ?? null}
+              scale={0.85}
+            />
+          </div>
+          <AtsPanel
+            atsData={atsData}
+            loading={atsMutation.isPending}
+            onRun={handleRunAts}
+          />
+        </aside>
+      </div>
+
+      <HistoryDrawer
+        resumeId={resume.id}
+        open={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        entries={historyEntries}
+        isLoading={historyLoading}
+>>>>>>> 327cc7b579cffcd448f8d9a81fa3a682fe726098
       />
     </div>
   );

@@ -7,7 +7,6 @@ import {
 } from "@/lib/resume/interpolate";
 import type { ResumeDetail } from "@/lib/hooks/useResumes";
 import { TemplateRenderedPreview } from "@/components/resume/TemplateRenderedPreview";
-import { toTemplateData } from "@/lib/resume/normalize";
 
 /**
  * Props describing how the inline editor maps rendered text back to a
@@ -294,10 +293,7 @@ export function InlineEditablePreview({
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   // ── 1. Compute the rendered HTML with token offsets ─────────────────────
-  const contentData = useMemo(
-    () => toTemplateData(resume.contentData),
-    [resume.contentData]
-  );
+  const contentData = (resume.contentData ?? {}) as Record<string, unknown>;
   const { html, tokens } = useMemo(() => {
     const tpl = resume.template?.htmlLayout ?? "";
     try {

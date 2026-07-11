@@ -106,16 +106,6 @@ function lookupValue(
     if (obj != null && path in obj) {
       return (obj as Record<string, unknown>)[path];
     }
-    // Seed templates use plain `{{desc}}`, `{{school}}`, etc. inside
-    // `{{#each}}` blocks. Apply legacy aliases to the current row for these
-    // plain paths as well as for explicit `{{this.desc}}` paths.
-    if (obj != null && "this" in obj) {
-      const current = (obj as Record<string, unknown>).this;
-      if (current && typeof current === "object") {
-        const aliased = applyItemAliases(current as Record<string, unknown>);
-        if (path in aliased) return aliased[path];
-      }
-    }
   }
   // Top-level legacy alias fallback (e.g. `{{bio}}` → `summary`).
   if (TOP_LEVEL_ALIASES[path]) {
@@ -205,17 +195,6 @@ export function interpolateWithTokens(
     return -1;
   };
 
-  const findTopLevelElse = (value: string): number => {
-    let depth = 0;
-    const token = /\{\{#if\s+[^{}]+\}\}|\{\{\/if\}\}|\{\{else\}\}/g;
-    for (const match of value.matchAll(token)) {
-      if (match[0].startsWith("{{#if")) depth++;
-      else if (match[0] === "{{/if}}") depth = Math.max(0, depth - 1);
-      else if (depth === 0) return match.index;
-    }
-    return -1;
-  };
-
   while (i < N) {
     const ifMatch = template.slice(i).match(/^\{\{#if\s+([^{}]+)\}\}/);
     if (ifMatch) {
@@ -228,21 +207,11 @@ export function interpolateWithTokens(
       }
       const inner = template.slice(blockStart, blockEnd);
       const truthy = Boolean(lookupValue(scope, condPath));
-      const elseAt = findTopLevelElse(inner);
-      const selected = elseAt === -1
-        ? (truthy ? inner : "")
-        : (truthy ? inner.slice(0, elseAt) : inner.slice(elseAt + "{{else}}".length));
-      if (selected) {
-        const offset = out.length;
-        const sub = interpolateWithTokens(selected, scope);
+      if (truthy) {
+        const sub = interpolateWithTokens(inner, scope);
         out += sub.html;
         tokens.push(
-          ...sub.tokens.map((t) => ({
-            ...t,
-            start: t.start + offset,
-            end: t.end + offset,
-            inIteration: eachDepth > 0 || t.inIteration,
-          })),
+          ...sub.tokens.map((t) => ({ ...t, inIteration: eachDepth > 0 })),
         );
       }
       i = blockEnd + "{{/if}}".length;
@@ -270,16 +239,10 @@ export function interpolateWithTokens(
                 ]
               : [...scope, { this: item as unknown }];
           eachDepth++;
-          const offset = out.length;
           const sub = interpolateWithTokens(inner, nextScope);
           eachDepth--;
           out += sub.html;
-          tokens.push(...sub.tokens.map((t) => ({
-            ...t,
-            start: t.start + offset,
-            end: t.end + offset,
-            inIteration: true,
-          })));
+          tokens.push(...sub.tokens.map((t) => ({ ...t, inIteration: true })));
         }
       }
       i = blockEnd + "{{/each}}".length;

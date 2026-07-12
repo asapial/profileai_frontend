@@ -21,6 +21,9 @@ export function HistoryDrawer({ resumeId, open, onClose, entries, isLoading }: P
   if (!open) return null;
 
   function commitRestore(version: number) {
+    if (!window.confirm(`Restore version ${version}? Your current draft will be saved in version history first.`)) {
+      return;
+    }
     setPendingVersion(version);
     restore.mutate(version, {
       onSuccess: () => {

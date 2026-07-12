@@ -135,6 +135,11 @@ export type ResumeHistoryEntry = {
   summary?: string | null;
 };
 
+export type ResumeAnalytics = {
+  totalViews: number;
+  totalDownloads: number;
+};
+
 export type ResumeMeta = {
   page: number;
   limit: number;
@@ -167,6 +172,7 @@ export type AiModifyPayload = { section: string; instruction: string };
 const listKey = (params: ResumeListParams) => ["resumes", "list", params] as const;
 const detailKey = (id: string) => ["resumes", "detail", id] as const;
 const historyKey = (id: string) => ["resumes", "history", id] as const;
+const analyticsKey = (id: string) => ["resumes", "analytics", id] as const;
 
 export type ResumeListParams = {
   page?: number;
@@ -221,6 +227,15 @@ export function useResumeHistory(id: string | null) {
   });
 }
 
+export function useResumeAnalytics(id: string | null, enabled: boolean) {
+  return useQuery({
+    queryKey: analyticsKey(id ?? ""),
+    enabled: Boolean(id) && enabled,
+    queryFn: () => api.get<ResumeAnalytics>(`/resumes/${id}/analytics`),
+    refetchInterval: 30_000,
+  });
+}
+
 export function useGenerateResume(
   options?: UseMutationOptions<ResumeDetail, ApiError, GenerateResumePayload>
 ) {
@@ -259,6 +274,31 @@ export function useUpdateResume(
       (options?.onSuccess as ((...a: typeof args) => void) | undefined)?.(
         ...args
       );
+    },
+  });
+}
+
+export function useUpdateResumeTemplate(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (templateId: string) =>
+      api.put<ResumeDetail>(`/resumes/${id}/template`, { templateId }),
+    onSuccess: (data) => {
+      qc.setQueryData(detailKey(id), data);
+      qc.invalidateQueries({ queryKey: ["resumes", "list"] });
+    },
+  });
+}
+
+export function useShareResume(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (enabled: boolean) =>
+      api.post<ResumeDetail>(`/resumes/${id}/share`, { enabled }),
+    onSuccess: (data) => {
+      qc.setQueryData(detailKey(id), data);
+      qc.invalidateQueries({ queryKey: ["resumes", "list"] });
+      if (!data.isPublic) qc.removeQueries({ queryKey: analyticsKey(id) });
     },
   });
 }

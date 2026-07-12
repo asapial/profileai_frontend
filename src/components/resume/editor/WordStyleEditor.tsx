@@ -11,6 +11,7 @@ import {
   CloudOff,
   Copy,
   Download,
+  Eye,
   FileText,
   GraduationCap,
   Hash,
@@ -21,6 +22,7 @@ import {
   Loader2,
   Palette,
   Save,
+  Share2,
   Sparkles,
   Trash2,
   Underline,
@@ -43,6 +45,7 @@ import type {
   ResumeEducation,
   ResumeExperience,
   ResumeHistoryEntry,
+  ResumeAnalytics,
   ResumePersonalInfo,
   ResumeDetail,
 } from "@/lib/hooks/useResumes";
@@ -79,6 +82,7 @@ type Props = {
   saving: boolean;
   templates: Template[];
   templatesLoading: boolean;
+  templateChanging: boolean;
   exporting: boolean;
   duplicatePending: boolean;
   deletePending: boolean;
@@ -87,6 +91,10 @@ type Props = {
   historyOpen: boolean;
   historyEntries: ResumeHistoryEntry[];
   historyLoading: boolean;
+  sharePending: boolean;
+  shareUrl: string | null;
+  analytics: ResumeAnalytics | null;
+  analyticsLoading: boolean;
   fullName: string;
   // patchers
   patchPersonalInfo: (patch: Partial<ResumePersonalInfo>) => void;
@@ -106,6 +114,9 @@ type Props = {
   handleExport: () => Promise<void> | void;
   handleDuplicate: () => void;
   handleDelete: () => void;
+  handleTemplateChange: (templateId: string) => Promise<void> | void;
+  handleShare: (enabled: boolean) => Promise<void> | void;
+  handleCopyShareLink: () => Promise<void> | void;
   setHistoryOpen: (open: boolean) => void;
 };
 
@@ -133,6 +144,31 @@ const FONT_PRESETS = [
   },
   { value: "\"JetBrains Mono\", monospace", label: "JetBrains Mono" },
 ];
+
+function loadStoredStyle(resumeId: string) {
+  const fallback = {
+    accent: "#7c3aed",
+    font: FONT_PRESETS[0].value,
+    fontSize: 11,
+    zoom: 0.7,
+  };
+
+  if (typeof window === "undefined") return fallback;
+
+  try {
+    const raw = window.localStorage.getItem(`word-style-editor:${resumeId}`);
+    if (!raw) return fallback;
+    const style = JSON.parse(raw) as Partial<typeof fallback>;
+    return {
+      accent: style.accent ?? fallback.accent,
+      font: style.font ?? fallback.font,
+      fontSize: style.fontSize ?? fallback.fontSize,
+      zoom: style.zoom ?? fallback.zoom,
+    };
+  } catch {
+    return fallback;
+  }
+}
 
 function DesignSettings({
   accent,
@@ -289,6 +325,8 @@ export function WordStyleEditor({
   draft,
   saving,
   templates,
+  templatesLoading,
+  templateChanging,
   exporting,
   duplicatePending,
   deletePending,
@@ -297,6 +335,10 @@ export function WordStyleEditor({
   historyOpen,
   historyEntries,
   historyLoading,
+  sharePending,
+  shareUrl,
+  analytics,
+  analyticsLoading,
   fullName,
   patchPersonalInfo,
   patchSummary,
@@ -311,39 +353,23 @@ export function WordStyleEditor({
   handleExport,
   handleDuplicate,
   handleDelete,
+  handleTemplateChange,
+  handleShare,
+  handleCopyShareLink,
   setHistoryOpen,
 }: Props) {
   const [section, setSection] = useState<SectionId>("personal");
   const [ribbon, setRibbon] = useState<RibbonId>("home");
+  const [templateMenuOpen, setTemplateMenuOpen] = useState(false);
+  const [sharePanelOpen, setSharePanelOpen] = useState(false);
 
   // Local styling overrides applied to the preview, not the API.
   const storageKey = `word-style-editor:${resume.id}`;
-  const [accent, setAccent] = useState("#7c3aed");
-  const [font, setFont] = useState(FONT_PRESETS[0].value);
-  const [fontSize, setFontSize] = useState(11);
-  const [zoom, setZoom] = useState(0.7);
-
-  // Load persisted style on first render / when resume changes.
-  useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(storageKey);
-      if (raw) {
-        const cfg = JSON.parse(raw) as {
-          accent?: string;
-          font?: string;
-          fontSize?: number;
-          zoom?: number;
-        };
-        if (cfg.accent) setAccent(cfg.accent);
-        if (cfg.font) setFont(cfg.font);
-        if (typeof cfg.fontSize === "number") setFontSize(cfg.fontSize);
-        if (typeof cfg.zoom === "number") setZoom(cfg.zoom);
-      }
-    } catch {
-      /* ignore */
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resume.id]);
+  const [style] = useState(() => loadStoredStyle(resume.id));
+  const [accent, setAccent] = useState(style.accent);
+  const [font, setFont] = useState(style.font);
+  const [fontSize, setFontSize] = useState(style.fontSize);
+  const [zoom, setZoom] = useState(style.zoom);
 
   useEffect(() => {
     try {
@@ -538,7 +564,42 @@ export function WordStyleEditor({
             ) : null}
           </span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="relative flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-1 text-white hover:bg-white/15 hover:text-white"
+            onClick={() => {
+              setTemplateMenuOpen((open) => !open);
+              setSharePanelOpen(false);
+            }}
+            disabled={templatesLoading || templateChanging}
+          >
+            {templateChanging ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Palette className="h-3.5 w-3.5" />
+            )}
+            Template
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-1 text-white hover:bg-white/15 hover:text-white"
+            onClick={() => {
+              setSharePanelOpen((open) => !open);
+              setTemplateMenuOpen(false);
+              if (!resume.isPublic) void handleShare(true);
+            }}
+            disabled={sharePending}
+          >
+            {sharePending ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Share2 className="h-3.5 w-3.5" />
+            )}
+            {resume.isPublic ? "Share" : "Enable share"}
+          </Button>
           <Button
             variant="ghost"
             size="sm"
@@ -581,6 +642,91 @@ export function WordStyleEditor({
             )}
             Delete
           </Button>
+
+          {templateMenuOpen ? (
+            <div className="absolute right-0 top-full z-30 mt-2 w-72 rounded-xl border border-border bg-popover p-2 text-foreground shadow-2xl">
+              <p className="px-2 py-1 text-xs text-muted-foreground">
+                Switch templates without changing your resume content.
+              </p>
+              <div className="mt-1 max-h-64 space-y-1 overflow-y-auto">
+                {templates.map((template) => (
+                  <button
+                    key={template.id}
+                    type="button"
+                    disabled={template.id === resume.templateId || templateChanging}
+                    onClick={() => {
+                      setTemplateMenuOpen(false);
+                      void handleTemplateChange(template.id);
+                    }}
+                    className={`flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-xs transition hover:bg-muted disabled:cursor-default disabled:opacity-70 ${
+                      template.id === resume.templateId ? "bg-violet-50 text-violet-800" : ""
+                    }`}
+                  >
+                    <span className="font-semibold">{template.name}</span>
+                    <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] uppercase text-muted-foreground">
+                      {template.category}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {sharePanelOpen ? (
+            <div className="absolute right-0 top-full z-30 mt-2 w-[min(21rem,calc(100vw-2rem))] rounded-xl border border-border bg-popover p-3 text-foreground shadow-2xl">
+              {!resume.isPublic || !shareUrl ? (
+                <div className="flex items-center gap-2 px-1 py-3 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Creating secure public link…
+                </div>
+              ) : (
+                <>
+                  <p className="text-sm font-semibold">Public resume link</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Anyone with this link can view your resume.
+                  </p>
+                  <div className="mt-3 flex gap-2">
+                    <input
+                      value={shareUrl}
+                      readOnly
+                      aria-label="Public resume link"
+                      className="min-w-0 flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-xs"
+                    />
+                    <Button size="sm" variant="outline" onClick={() => void handleCopyShareLink()}>
+                      <Copy className="h-3.5 w-3.5" /> Copy
+                    </Button>
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <div className="rounded-lg bg-muted/60 p-2">
+                      <span className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
+                        <Eye className="h-3 w-3" /> Views
+                      </span>
+                      <p className="mt-1 text-lg font-semibold">
+                        {analyticsLoading ? "…" : analytics?.totalViews ?? 0}
+                      </p>
+                    </div>
+                    <div className="rounded-lg bg-muted/60 p-2">
+                      <span className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
+                        <Download className="h-3 w-3" /> Downloads
+                      </span>
+                      <p className="mt-1 text-lg font-semibold">
+                        {analyticsLoading ? "…" : analytics?.totalDownloads ?? 0}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSharePanelOpen(false);
+                      void handleShare(false);
+                    }}
+                    className="mt-3 text-xs font-medium text-rose-600 hover:text-rose-700"
+                  >
+                    Make this resume private
+                  </button>
+                </>
+              )}
+            </div>
+          ) : null}
         </div>
       </div>
 

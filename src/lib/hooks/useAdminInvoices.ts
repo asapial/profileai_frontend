@@ -48,7 +48,7 @@ export function useAdminInvoices(filters: AdminInvoicesFilters = {}) {
         : "/admin/invoices";
       try {
         const res = await api.get<AdminInvoice[]>(path);
-        return res.data;
+        return res;
       } catch (err: unknown) {
         if (err instanceof ApiError && err.status === 404) return [];
         throw err;
@@ -64,7 +64,7 @@ export function useRefundInvoice(id: string) {
       const res = await api.post<AdminInvoice>(`/admin/invoices/${id}/refund`, {
         amount,
       });
-      return res.data;
+      return res;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ADMIN_INVOICES_QUERY_KEY });
@@ -84,7 +84,7 @@ export function useExportInvoices() {
         ? `/admin/invoices/export?${qs.toString()}`
         : "/admin/invoices/export";
       const res = await api.get<{ url: string }>(path);
-      return res.data;
+      return res;
     },
   });
 }

@@ -39,7 +39,7 @@ export function useAdminAnnouncements() {
         const res = await api.get<Announcement[]>(
           "/admin/announcements",
         );
-        return res.data;
+        return res;
       } catch (err: unknown) {
         if (err instanceof ApiError && err.status === 404) return [];
         throw err;
@@ -56,7 +56,7 @@ export function useCreateAnnouncement() {
         "/admin/announcements",
         payload,
       );
-      return res.data;
+      return res;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ADMIN_ANNOUNCEMENTS_QUERY_KEY });
@@ -74,7 +74,7 @@ export function useUpdateAnnouncement(id: string) {
         `/admin/announcements/${id}`,
         payload,
       );
-      return res.data;
+      return res;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ADMIN_ANNOUNCEMENTS_QUERY_KEY });
@@ -88,8 +88,9 @@ export function usePublishAnnouncement(id: string) {
     mutationFn: async () => {
       const res = await api.post<Announcement>(
         `/admin/announcements/${id}/publish`,
+        {},
       );
-      return res.data;
+      return res;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ADMIN_ANNOUNCEMENTS_QUERY_KEY });
@@ -103,8 +104,9 @@ export function useRetireAnnouncement(id: string) {
     mutationFn: async () => {
       const res = await api.post<Announcement>(
         `/admin/announcements/${id}/retire`,
+        {},
       );
-      return res.data;
+      return res;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ADMIN_ANNOUNCEMENTS_QUERY_KEY });

@@ -61,7 +61,7 @@ export function useAdminAuditLog(filters: AdminAuditFilters = {}) {
         : "/admin/audit-log";
       try {
         const res = await api.get<AuditEntry[]>(path);
-        return res.data;
+        return res;
       } catch (err: unknown) {
         if (err instanceof ApiError && err.status === 404) return [];
         throw err;
@@ -81,7 +81,7 @@ export function useAdminAuditEntry(id: string) {
     queryFn: async () => {
       try {
         const res = await api.get<AuditDetail>(`/admin/audit-log/${id}`);
-        return res.data;
+        return res;
       } catch (err: unknown) {
         if (err instanceof ApiError && err.status === 404) return null;
         throw err;
@@ -104,7 +104,7 @@ export function useExportAuditLog() {
         ? `/admin/audit-log/export?${qs.toString()}`
         : "/admin/audit-log/export";
       const res = await api.get<{ url: string }>(path);
-      return res.data;
+      return res;
     },
   });
 }

@@ -32,7 +32,7 @@ export function useAdminFeatureFlags() {
     queryFn: async () => {
       try {
         const res = await api.get<FeatureFlag[]>("/admin/feature-flags");
-        return res.data;
+        return res;
       } catch (err: unknown) {
         if (err instanceof ApiError && err.status === 404) return [];
         throw err;
@@ -46,7 +46,7 @@ export function useUpdateFlag(id: string) {
   return useMutation({
     mutationFn: async (payload: Partial<FeatureFlag>) => {
       const res = await api.patch<FeatureFlag>(`/admin/feature-flags/${id}`, payload);
-      return res.data;
+      return res;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ADMIN_FLAGS_QUERY_KEY });
@@ -59,7 +59,7 @@ export function useCreateFlag() {
   return useMutation({
     mutationFn: async (payload: Omit<FeatureFlag, "id" | "updatedAt">) => {
       const res = await api.post<FeatureFlag>("/admin/feature-flags", payload);
-      return res.data;
+      return res;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ADMIN_FLAGS_QUERY_KEY });
@@ -72,7 +72,7 @@ export function useDeleteFlag(id: string) {
   return useMutation({
     mutationFn: async () => {
       const res = await api.delete<{ ok: true }>(`/admin/feature-flags/${id}`);
-      return res.data;
+      return res;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ADMIN_FLAGS_QUERY_KEY });

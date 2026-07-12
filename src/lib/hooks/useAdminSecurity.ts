@@ -40,7 +40,7 @@ export function useAdminSecurity() {
     queryFn: async () => {
       try {
         const res = await api.get<SecuritySummary>("/admin/security");
-        return res.data;
+        return res;
       } catch (err: unknown) {
         if (err instanceof ApiError && err.status === 404) return null;
         throw err;
@@ -53,8 +53,8 @@ export function useBanUser() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await api.post<{ ok: true }>(`/admin/users/${id}/ban`);
-      return res.data;
+      const res = await api.post<{ ok: true }>(`/admin/users/${id}/ban`, {});
+      return res;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ADMIN_SECURITY_QUERY_KEY });
@@ -66,8 +66,8 @@ export function useUnbanUser() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await api.post<{ ok: true }>(`/admin/users/${id}/unban`);
-      return res.data;
+      const res = await api.post<{ ok: true }>(`/admin/users/${id}/unban`, {});
+      return res;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ADMIN_SECURITY_QUERY_KEY });

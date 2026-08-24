@@ -1,10 +1,7 @@
 "use client";
 
 import { GraduationCap, Plus, Trash2 } from "lucide-react";
-import type {
-  ResumeEducation,
-  ResumeDetail,
-} from "@/lib/hooks/useResumes";
+import type { ResumeEducation } from "@/lib/hooks/useResumes";
 
 type Props = {
   educations: ResumeEducation[];

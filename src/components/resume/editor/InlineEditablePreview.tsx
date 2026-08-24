@@ -119,7 +119,7 @@ function wrapTokensWithSpans(
     span.contentEditable = "true";
     span.spellcheck = true;
     span.addEventListener("blur", () => {
-      handleCommit(span, options, tokenToRow);
+      handleCommit(span, options);
     });
     span.addEventListener("keydown", (event) => {
       // ESC blurs, ENTER commits and blurs.
@@ -143,7 +143,6 @@ function handleCommit(
     onPatchScalar?: PatchTopScalar;
     onPatchArrayItem?: PatchArrayItem;
   },
-  tokenToRow: Map<number, { listPath: string; row: number }>,
 ) {
   const path = span.getAttribute("data-wse-path") ?? "";
   const iter = span.getAttribute("data-wse-iter") ?? "0";
@@ -293,15 +292,15 @@ export function InlineEditablePreview({
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   // ── 1. Compute the rendered HTML with token offsets ─────────────────────
-  const contentData = (resume.contentData ?? {}) as Record<string, unknown>;
   const { html, tokens } = useMemo(() => {
     const tpl = resume.template?.htmlLayout ?? "";
+    const contentData = (resume.contentData ?? {}) as Record<string, unknown>;
     try {
       return interpolateWithTokens(tpl, [contentData]);
     } catch {
       return { html: "", tokens: [] };
     }
-  }, [resume.template?.htmlLayout, contentData]);
+  }, [resume.template?.htmlLayout, resume.contentData]);
 
   // ── 2. Map each token to a row in its enclosing array ──────────────────
   const tokenToRow = useMemo(() => buildTokenRowMap(tokens), [tokens]);

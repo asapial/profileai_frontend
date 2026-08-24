@@ -2,10 +2,7 @@
 
 import { useState } from "react";
 import { Briefcase, Plus, Sparkles, Trash2 } from "lucide-react";
-import type {
-  ResumeDetail,
-  ResumeExperience,
-} from "@/lib/hooks/useResumes";
+import type { ResumeExperience } from "@/lib/hooks/useResumes";
 
 type Props = {
   experiences: ResumeExperience[];

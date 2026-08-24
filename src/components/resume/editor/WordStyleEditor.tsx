@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { setAiChatPageContext } from "@/lib/aiChatContextBridge";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -362,6 +363,11 @@ export function WordStyleEditor({
   const [ribbon, setRibbon] = useState<RibbonId>("home");
   const [templateMenuOpen, setTemplateMenuOpen] = useState(false);
   const [sharePanelOpen, setSharePanelOpen] = useState(false);
+
+  useEffect(() => {
+    setAiChatPageContext({ selectedSection: section });
+    return () => setAiChatPageContext({});
+  }, [section]);
 
   // Local styling overrides applied to the preview, not the API.
   const storageKey = `word-style-editor:${resume.id}`;

@@ -37,6 +37,17 @@ export function AiLoadingOverlay({
   variant?: "generate" | "ats" | "modify";
   onCancel?: () => void;
 }) {
+  if (!open) return null;
+  return <AiLoadingContent variant={variant} onCancel={onCancel} />;
+}
+
+function AiLoadingContent({
+  variant,
+  onCancel,
+}: {
+  variant: "generate" | "ats" | "modify";
+  onCancel?: () => void;
+}) {
   const messages =
     variant === "ats"
       ? ATS_MESSAGES
@@ -47,18 +58,11 @@ export function AiLoadingOverlay({
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    if (!open) {
-      setIndex(0);
-      return;
-    }
-    setIndex(0);
     const id = setInterval(() => {
       setIndex((i) => (i + 1) % messages.length);
     }, 1800);
     return () => clearInterval(id);
-  }, [open, messages.length]);
-
-  if (!open) return null;
+  }, [messages.length]);
 
   const title =
     variant === "ats"

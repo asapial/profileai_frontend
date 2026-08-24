@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Loader2, Mail, Phone, MapPin, User } from "lucide-react";
 import type { ResumeDetail, ResumePersonalInfo } from "@/lib/hooks/useResumes";
 
@@ -12,15 +11,8 @@ type Props = {
 
 export function PersonalInfoSection({ detail, saving, onChange }: Props) {
   const info = detail.contentData.personalInfo ?? {};
-  const [draft, setDraft] = useState<ResumePersonalInfo>(info);
-
-  useEffect(() => {
-    setDraft(info);
-  }, [info?.firstName, info?.lastName, info?.email, info?.phone, info?.location, info?.headline]);
 
   function commit(patch: Partial<ResumePersonalInfo>) {
-    const next = { ...draft, ...patch };
-    setDraft(next);
     onChange(patch);
   }
 
@@ -39,27 +31,27 @@ export function PersonalInfoSection({ detail, saving, onChange }: Props) {
       </header>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="First name" value={draft.firstName ?? ""} onChange={(v) => commit({ firstName: v })} />
-        <Field label="Last name" value={draft.lastName ?? ""} onChange={(v) => commit({ lastName: v })} />
+        <Field label="First name" value={info.firstName ?? ""} onChange={(v) => commit({ firstName: v })} />
+        <Field label="Last name" value={info.lastName ?? ""} onChange={(v) => commit({ lastName: v })} />
       </div>
-      <Field label="Headline" value={draft.headline ?? ""} onChange={(v) => commit({ headline: v })} placeholder="Senior Frontend Engineer" />
+      <Field label="Headline" value={info.headline ?? ""} onChange={(v) => commit({ headline: v })} placeholder="Senior Frontend Engineer" />
       <div className="grid gap-4 sm:grid-cols-2">
         <Field
           label="Email"
-          value={draft.email ?? ""}
+          value={info.email ?? ""}
           icon={Mail}
           onChange={(v) => commit({ email: v })}
         />
         <Field
           label="Phone"
-          value={draft.phone ?? ""}
+          value={info.phone ?? ""}
           icon={Phone}
           onChange={(v) => commit({ phone: v })}
         />
       </div>
       <Field
         label="Location"
-        value={draft.location ?? ""}
+        value={info.location ?? ""}
         icon={MapPin}
         onChange={(v) => commit({ location: v })}
         placeholder="City, Country"

@@ -59,14 +59,12 @@ export default function ResumesListPage() {
 
   // Debounce search so we don't hammer the API on every keystroke.
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(search.trim()), 350);
+    const t = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+      setPage(1);
+    }, 350);
     return () => clearTimeout(t);
   }, [search]);
-
-  // Reset to first page on filter changes.
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedSearch, type, status]);
 
   const { data, isLoading, isFetching } = useResumeList({
     page,
@@ -153,7 +151,10 @@ export default function ResumesListPage() {
             <FilterSelect
               label="Type"
               value={type}
-              onChange={(v) => setType(v as ResumeType | "ALL")}
+              onChange={(v) => {
+                setType(v as ResumeType | "ALL");
+                setPage(1);
+              }}
               options={[
                 { value: "ALL", label: "All types" },
                 { value: "RESUME", label: "Resume" },
@@ -163,7 +164,10 @@ export default function ResumesListPage() {
             <FilterSelect
               label="Status"
               value={status}
-              onChange={(v) => setStatus(v as ResumeStatus | "ALL")}
+              onChange={(v) => {
+                setStatus(v as ResumeStatus | "ALL");
+                setPage(1);
+              }}
               options={[
                 { value: "ALL", label: "All statuses" },
                 { value: "DRAFT", label: "Draft" },
@@ -188,11 +192,12 @@ export default function ResumesListPage() {
               hasFilters={Boolean(
                 debouncedSearch || type !== "ALL" || status !== "ALL"
               )}
-              onCreate={() => router.push("/resume/create")}
+              onCreate={() => router.push("/dashboard/resume/create")}
               onClearFilters={() => {
                 setSearch("");
                 setType("ALL");
                 setStatus("ALL");
+                setPage(1);
               }}
             />
           ) : (

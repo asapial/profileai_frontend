@@ -2,6 +2,7 @@ import { Check, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SectionHeader } from "./SectionHeader";
 import { CtaButton } from "./CtaButton";
+import type { ManagedHomepageSection } from "@/lib/homepage";
 
 type Plan = {
   name: string;
@@ -61,18 +62,35 @@ const PLANS: Plan[] = [
   },
 ];
 
-export function PricingSection() {
+export function PricingSection({
+  content,
+}: {
+  content?: ManagedHomepageSection;
+}) {
+  const plans: Plan[] = content?.items?.map((item) => ({
+    name: String(item.title ?? ""),
+    price: String(item.label ?? ""),
+    cadence: String(item.cadence ?? "per month"),
+    description: String(item.description ?? ""),
+    features: String(item.features ?? "").split("|").filter(Boolean),
+    cta: {
+      label: String(item.ctaLabel ?? "Choose plan"),
+      href: String(item.ctaHref ?? "/register"),
+    },
+    highlighted: Boolean(item.highlighted),
+    badge: item.badge ? String(item.badge) : undefined,
+  })) ?? PLANS;
   return (
     <section id="pricing" className="bg-muted/30 py-20 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          eyebrow="Pricing"
-          title={<>Simple plans, no surprises</>}
-          description="Start free. Upgrade only when you need more AI, more resumes, and more interviews."
+          eyebrow={content?.eyebrow || "Pricing"}
+          title={<>{content?.title || "Simple plans, no surprises"}</>}
+          description={content?.description || "Start free. Upgrade only when you need more AI, more resumes, and more interviews."}
         />
 
         <ul className="mt-12 grid gap-6 lg:grid-cols-3">
-          {PLANS.map((plan) => (
+          {plans.map((plan) => (
             <li
               key={plan.name}
               className={cn(

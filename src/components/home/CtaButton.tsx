@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { track } from "@/lib/analytics";
+import { track, type AnalyticsEventName } from "@/lib/analytics";
 
 type Variant = "primary" | "secondary" | "ghost";
 
@@ -12,7 +12,7 @@ type CtaButtonProps = {
   href: string;
   label: string;
   variant?: Variant;
-  eventName?: string;
+  eventName?: AnalyticsEventName;
   trailingArrow?: boolean;
   className?: string;
 };

@@ -1,5 +1,6 @@
 import { Star, Quote } from "lucide-react";
 import { SectionHeader } from "./SectionHeader";
+import type { ManagedHomepageSection } from "@/lib/homepage";
 
 const QUOTES = [
   {
@@ -22,18 +23,27 @@ const QUOTES = [
   },
 ];
 
-export function TestimonialsSection() {
+export function TestimonialsSection({
+  content,
+}: {
+  content?: ManagedHomepageSection;
+}) {
+  const quotes = content?.items?.map((item) => ({
+    quote: String(item.description ?? ""),
+    name: String(item.title ?? ""),
+    role: String(item.label ?? ""),
+  })) ?? QUOTES;
   return (
     <section className="py-20 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          eyebrow="Loved by job seekers"
-          title={<>Real people, real interviews</>}
-          description="Join thousands of job seekers who've used ProFile AI to land more interviews in less time."
+          eyebrow={content?.eyebrow || "Loved by job seekers"}
+          title={<>{content?.title || "Real people, real interviews"}</>}
+          description={content?.description || "Join thousands of job seekers who've used ProFile AI to land more interviews in less time."}
         />
 
         <ul className="mt-12 grid gap-5 lg:grid-cols-3">
-          {QUOTES.map((q) => (
+          {quotes.map((q) => (
             <li
               key={q.name}
               className="relative flex flex-col gap-5 rounded-2xl border border-border bg-card p-6"

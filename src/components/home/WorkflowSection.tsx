@@ -1,5 +1,6 @@
 import { UserPlus, Wand2, Sliders, Download } from "lucide-react";
 import { SectionHeader } from "./SectionHeader";
+import type { ManagedHomepageSection } from "@/lib/homepage";
 
 const STEPS = [
   {
@@ -32,23 +33,35 @@ const STEPS = [
   },
 ] as const;
 
-export function WorkflowSection() {
+const STEP_ICONS = [UserPlus, Wand2, Sliders, Download];
+
+export function WorkflowSection({
+  content,
+}: {
+  content?: ManagedHomepageSection;
+}) {
+  const steps = content?.items?.map((item, index) => ({
+    n: String(item.label ?? String(index + 1).padStart(2, "0")),
+    icon: STEP_ICONS[index % STEP_ICONS.length]!,
+    title: String(item.title ?? ""),
+    description: String(item.description ?? ""),
+  })) ?? STEPS;
   return (
-    <section id="workflow" className="bg-muted/30 py-20 sm:py-24">
+    <section id="workflow" className="premium-section bg-muted/30 py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          eyebrow="How it works"
-          title={<>From blank page to interview-ready in 4 steps</>}
-          description="A guided workflow designed to remove the friction between you and your next job."
+          eyebrow={content?.eyebrow || "How it works"}
+          title={<>{content?.title || "From blank page to interview-ready in 4 steps"}</>}
+          description={content?.description || "A guided workflow designed to remove the friction between you and your next job."}
         />
 
         <ol className="relative mt-14 grid gap-6 lg:grid-cols-4">
-          {STEPS.map((step, i) => {
+          {steps.map((step, i) => {
             const Icon = step.icon;
             return (
               <li
                 key={step.n}
-                className="relative rounded-2xl border border-border bg-card p-6"
+                className="glass-panel relative rounded-3xl p-6 transition duration-300 hover:-translate-y-1"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold tracking-widest text-primary">
@@ -64,7 +77,7 @@ export function WorkflowSection() {
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                   {step.description}
                 </p>
-                {i < STEPS.length - 1 && (
+                {i < steps.length - 1 && (
                   <span
                     aria-hidden
                     className="absolute right-[-14px] top-1/2 hidden h-px w-7 bg-border lg:block"

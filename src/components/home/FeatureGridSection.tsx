@@ -8,6 +8,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { SectionHeader } from "./SectionHeader";
+import type { ManagedHomepageSection } from "@/lib/homepage";
 
 type Feature = {
   icon: LucideIcon;
@@ -61,23 +62,35 @@ const FEATURES: Feature[] = [
   },
 ];
 
-export function FeatureGridSection() {
+const FEATURE_ICONS = [Sparkles, Gauge, LayoutTemplate, Download, PenLine, ListChecks];
+
+export function FeatureGridSection({
+  content,
+}: {
+  content?: ManagedHomepageSection;
+}) {
+  const features = content?.items?.map((item, index) => ({
+    icon: FEATURE_ICONS[index % FEATURE_ICONS.length]!,
+    title: String(item.title ?? ""),
+    description: String(item.description ?? ""),
+    highlight: item.label ? String(item.label) : undefined,
+  })) ?? FEATURES;
   return (
-    <section id="features" className="py-20 sm:py-24">
+    <section id="features" className="premium-section py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          eyebrow="Features"
-          title={<>Everything you need to land the interview</>}
-          description="Six powerful tools, one simple workflow. Built for job seekers who want to stop guessing and start getting callbacks."
+          eyebrow={content?.eyebrow || "Features"}
+          title={<>{content?.title || "Everything you need to land the interview"}</>}
+          description={content?.description || "Six powerful tools, one simple workflow. Built for job seekers who want to stop guessing and start getting callbacks."}
         />
 
         <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map((f) => {
+          {features.map((f) => {
             const Icon = f.icon;
             return (
               <li
                 key={f.title}
-                className="group relative flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-violet-500/5"
+                className="glass-panel group relative flex flex-col gap-4 overflow-hidden rounded-3xl p-6 transition duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-xl hover:shadow-violet-500/10"
               >
                 <div className="flex items-start justify-between">
                   <span className="grid h-11 w-11 place-items-center rounded-xl bg-accent text-accent-foreground transition group-hover:bg-gradient-to-br group-hover:from-violet-600 group-hover:to-fuchsia-500 group-hover:text-white">

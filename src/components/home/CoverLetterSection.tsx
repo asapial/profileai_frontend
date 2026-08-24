@@ -1,22 +1,23 @@
 import { Mail, ArrowRight, Sparkles } from "lucide-react";
 import { SectionHeader } from "./SectionHeader";
 import { CtaButton } from "./CtaButton";
+import type { ManagedHomepageSection } from "@/lib/homepage";
 
-export function CoverLetterSection() {
+export function CoverLetterSection({ content }: { content?: ManagedHomepageSection }) {
   return (
     <section className="py-20 sm:py-24">
       <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-5 lg:items-center lg:px-8">
         <div className="lg:col-span-2">
           <SectionHeader
             align="left"
-            eyebrow="Cover letters"
-            title={<>A cover letter that matches your resume — automatically</>}
-            description="Generate a tailored cover letter in your voice for every role. No more copy-pasting the same generic intro."
+            eyebrow={content?.eyebrow || "Cover letters"}
+            title={<>{content?.title || "A cover letter that matches your resume—automatically"}</>}
+            description={content?.description || "Generate a tailored cover letter in your voice for every role."}
           />
           <div className="mt-8">
             <CtaButton
-              href="/register"
-              label="Generate my first letter"
+              href={content?.primaryCta?.href ?? "/register"}
+              label={content?.primaryCta?.label ?? "Generate my first letter"}
               eventName="cover_letter_cta"
             />
           </div>

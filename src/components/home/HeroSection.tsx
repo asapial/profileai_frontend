@@ -1,10 +1,16 @@
 import { BadgeCheck, Sparkles, Star, FileText, Briefcase } from "lucide-react";
 import { CtaButton } from "./CtaButton";
 import { cn } from "@/lib/utils";
+import type { ManagedHomepageSection } from "@/lib/homepage";
 
-export function HeroSection() {
+export function HeroSection({ content }: { content?: ManagedHomepageSection }) {
+  const assurances = content?.items ?? [
+    { title: "No credit card required", description: "" },
+    { title: "4.8 average user rating", description: "" },
+  ];
   return (
-    <section className="relative isolate overflow-hidden bg-hero pt-28 sm:pt-32 lg:pt-36">
+    <section className="premium-section relative isolate overflow-hidden pt-24 sm:pt-28 lg:pt-32">
+      <div aria-hidden className="premium-grid-mask pointer-events-none absolute inset-0 -z-10 opacity-80" />
       {/* Floating blurred orbs */}
       <div
         aria-hidden
@@ -22,32 +28,30 @@ export function HeroSection() {
       <div className="relative mx-auto grid max-w-7xl gap-14 px-4 pb-20 sm:px-6 lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-8 lg:pb-28">
         {/* Left — copy + CTAs */}
         <div className="flex flex-col items-start text-left">
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-1 text-xs font-semibold text-foreground shadow-sm backdrop-blur">
+          <span className="premium-kicker normal-case tracking-normal text-foreground">
             <Sparkles className="h-3.5 w-3.5 text-violet-600" />
-            AI-powered resume builder
+            {content?.eyebrow || "AI-powered resume builder"}
           </span>
 
-          <h1 className="mt-5 text-4xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-            Build a job-winning resume{" "}
-            <span className="text-gradient">with AI.</span>
+          <h1 className="mt-5 text-4xl font-bold leading-[1.03] tracking-[-0.04em] text-foreground sm:text-5xl lg:text-7xl">
+            {content?.title || "Build a job-winning resume with AI."}
           </h1>
 
           <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-            Create, tailor, score, and export a professional resume in minutes.
-            ProFile AI helps you beat applicant tracking systems and land more
-            interviews.
+            {content?.description ||
+              "Create, tailor, score, and export a professional resume in minutes. ProFile AI helps you beat applicant tracking systems and land more interviews."}
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <CtaButton
-              href="/register"
-              label="Get Started Free"
+              href={content?.primaryCta?.href ?? "/register"}
+              label={content?.primaryCta?.label ?? "Get Started Free"}
               eventName="hero_cta_get_started"
               className="px-6 py-3.5 text-base"
             />
             <CtaButton
-              href="/templates"
-              label="View Templates"
+              href={content?.secondaryCta?.href ?? "/templates"}
+              label={content?.secondaryCta?.label ?? "View Templates"}
               variant="secondary"
               eventName="hero_cta_view_templates"
               className="px-6 py-3.5 text-base"
@@ -57,11 +61,11 @@ export function HeroSection() {
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-1.5">
               <BadgeCheck className="h-4 w-4 text-emerald-600" />
-              No credit card required
+              {String(assurances[0]?.title ?? "No credit card required")}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-              4.8 average user rating
+              {String(assurances[1]?.title ?? "4.8 average user rating")}
             </span>
           </div>
         </div>
@@ -81,8 +85,7 @@ function ResumeMockup() {
   return (
     <div
       className={cn(
-        "relative rounded-2xl border border-border bg-card p-6 shadow-2xl shadow-violet-500/10",
-        "ring-1 ring-black/5",
+        "glass-panel premium-ring relative rounded-[1.75rem] p-6 shadow-2xl shadow-violet-500/10",
       )}
     >
       {/* Window dots */}
@@ -148,7 +151,7 @@ function AiScoreBadge() {
     <div
       className={cn(
         "absolute -right-3 -top-5 sm:-right-6 sm:-top-6",
-        "flex items-center gap-3 rounded-2xl border border-border bg-background p-3 pr-4 shadow-xl",
+        "glass-panel flex items-center gap-3 rounded-2xl p-3 pr-4 shadow-xl",
         "animate-float-slow",
       )}
     >
@@ -172,7 +175,7 @@ function KeywordBadge() {
     <div
       className={cn(
         "absolute -bottom-5 -left-3 sm:-bottom-6 sm:-left-6",
-        "flex items-center gap-2.5 rounded-xl border border-border bg-background px-3 py-2 shadow-xl",
+        "glass-panel flex items-center gap-2.5 rounded-xl px-3 py-2 shadow-xl",
         "animate-float-slower",
       )}
     >

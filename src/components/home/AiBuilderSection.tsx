@@ -1,26 +1,28 @@
 import { Wand2, CheckCircle2, RefreshCw, FileText } from "lucide-react";
 import { SectionHeader } from "./SectionHeader";
 import { CtaButton } from "./CtaButton";
+import type { ManagedHomepageSection } from "@/lib/homepage";
 
-export function AiBuilderSection() {
+export function AiBuilderSection({ content }: { content?: ManagedHomepageSection }) {
+  const bullets = content?.items?.map((item) => String(item.title ?? "")) ?? [
+    "Rewrites bullet points to lead with measurable impact",
+    "Surfaces missing keywords the ATS is scanning for",
+    "Adapts tone for technical, creative, or executive roles",
+    "Generates a tailored summary in 3 different lengths",
+  ];
   return (
     <section id="ai-builder" className="py-20 sm:py-24">
       <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:items-center lg:px-8">
         <div>
           <SectionHeader
             align="left"
-            eyebrow="AI builder"
-            title={<>Write a resume that fits the job — not just any job</>}
-            description="ProFile AI reads the job description, your experience, and the role's hidden requirements, then drafts a focused, quantified resume that speaks directly to the hiring manager."
+            eyebrow={content?.eyebrow || "AI builder"}
+            title={<>{content?.title || "Write a resume that fits the job—not just any job"}</>}
+            description={content?.description || "ProFile AI reads the job description, your experience, and the role's hidden requirements, then drafts a focused, quantified resume."}
           />
 
           <ul className="mt-8 space-y-3 text-sm text-muted-foreground">
-            {[
-              "Rewrites bullet points to lead with measurable impact",
-              "Surfaces missing keywords the ATS is scanning for",
-              "Adapts tone for technical, creative, or executive roles",
-              "Generates a tailored summary in 3 different lengths",
-            ].map((line) => (
+            {bullets.map((line) => (
               <li key={line} className="flex items-start gap-2.5">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
                 <span>{line}</span>
@@ -30,8 +32,8 @@ export function AiBuilderSection() {
 
           <div className="mt-8">
             <CtaButton
-              href="/register"
-              label="Try the AI builder free"
+              href={content?.primaryCta?.href ?? "/register"}
+              label={content?.primaryCta?.label ?? "Try the AI builder free"}
               eventName="ai_builder_cta"
             />
           </div>

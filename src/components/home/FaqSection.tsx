@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Plus, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SectionHeader } from "./SectionHeader";
+import type { ManagedHomepageSection } from "@/lib/homepage";
 
 const QUESTIONS = [
   {
@@ -32,20 +33,24 @@ const QUESTIONS = [
   },
 ] as const;
 
-export function FaqSection() {
+export function FaqSection({ content }: { content?: ManagedHomepageSection }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const questions = content?.items?.map((item) => ({
+    q: String(item.title ?? ""),
+    a: String(item.description ?? ""),
+  })) ?? QUESTIONS;
 
   return (
     <section id="faq" className="bg-muted/30 py-20 sm:py-24">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          eyebrow="FAQ"
-          title={<>Frequently asked questions</>}
-          description="Quick answers about pricing, ATS, AI quality, and privacy. Need more? Visit our help center."
+          eyebrow={content?.eyebrow || "FAQ"}
+          title={<>{content?.title || "Frequently asked questions"}</>}
+          description={content?.description || "Quick answers about pricing, ATS, AI quality, and privacy. Need more? Visit our help center."}
         />
 
         <ul className="mt-12 divide-y divide-border rounded-2xl border border-border bg-card">
-          {QUESTIONS.map((item, i) => {
+          {questions.map((item, i) => {
             const open = openIndex === i;
             return (
               <li key={item.q}>

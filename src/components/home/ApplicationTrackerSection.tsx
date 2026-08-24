@@ -1,5 +1,6 @@
 import { Briefcase, CheckCircle2, Clock, XCircle } from "lucide-react";
 import { SectionHeader } from "./SectionHeader";
+import type { ManagedHomepageSection } from "@/lib/homepage";
 
 const ROWS = [
   {
@@ -42,24 +43,29 @@ const TONE_STYLES: Record<(typeof ROWS)[number]["tone"], string> = {
   bad: "bg-rose-50 text-rose-700",
 };
 
-export function ApplicationTrackerSection() {
+export function ApplicationTrackerSection({
+  content,
+}: {
+  content?: ManagedHomepageSection;
+}) {
+  const bullets = content?.items?.map((item) => String(item.title ?? "")) ?? [
+    "Status, contact, and follow-up dates at a glance",
+    "Notes per application to remember the details",
+    "Charts showing your interview conversion rate",
+    "Reminders so you never miss a recruiter email",
+  ];
   return (
     <section className="bg-muted/30 py-20 sm:py-24">
       <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:items-center lg:px-8">
         <div>
           <SectionHeader
             align="left"
-            eyebrow="Application tracker"
-            title={<>Stop losing track of where you applied</>}
-            description="Log every application in one place. See what's working, what isn't, and never forget a follow-up again."
+            eyebrow={content?.eyebrow || "Application tracker"}
+            title={<>{content?.title || "Stop losing track of where you applied"}</>}
+            description={content?.description || "Log every application in one place and never forget a follow-up."}
           />
           <ul className="mt-8 space-y-2.5 text-sm text-muted-foreground">
-            {[
-              "Status, contact, and follow-up dates at a glance",
-              "Notes per application to remember the details",
-              "Charts showing your interview conversion rate",
-              "Reminders so you never miss a recruiter email",
-            ].map((line) => (
+            {bullets.map((line) => (
               <li key={line} className="flex items-start gap-2.5">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
                 <span>{line}</span>

@@ -1,7 +1,8 @@
 "use client";
 
-import { Book, Menu, Sunset, Trees, Zap, Sparkles } from "lucide-react";
+import { Book, Menu, Sunset, Trees, Zap } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 import {
   Accordion,
@@ -61,7 +62,7 @@ interface Navbar1Props {
 const Navbar1 = ({
   logo = {
     url: "/",
-    src: "",
+    src: "/brand/profileai-mark.svg",
     alt: "ProFile AI",
     title: "ProFile AI",
   },
@@ -128,7 +129,7 @@ const Navbar1 = ({
           title: "Contact",
           description: "We are here to help you with any questions.",
           icon: <Sunset className="size-5 shrink-0" />,
-          url: "/help",
+          url: "/contact",
         },
       ],
     },
@@ -138,7 +139,7 @@ const Navbar1 = ({
     },
     {
       title: "Blog",
-      url: "/help",
+      url: "/blog",
     },
   ],
   auth = {
@@ -150,22 +151,20 @@ const Navbar1 = ({
   return (
     <section
       className={cn(
-        "sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60",
+        "sticky top-0 z-50 w-full px-2 pt-2 sm:px-3",
         className,
       )}
     >
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+      <div className="glass-panel mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-4 rounded-2xl px-3 shadow-[0_14px_50px_-30px_rgba(76,29,149,0.5)] sm:px-5 lg:px-6">
         {/* Brand — left aligned, visible on every breakpoint */}
         <Link
           href={logo.url}
-          aria-label="ProFile AI home"
+          aria-label={`${logo.alt} home`}
           className="flex shrink-0 items-center gap-2 transition-opacity hover:opacity-90"
         >
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white shadow-lg shadow-violet-500/25">
-            <Sparkles className="h-5 w-5" />
-          </span>
+          <Image src={logo.src || "/brand/profileai-mark.svg"} alt="" width={48} height={48} className="h-9 w-9 drop-shadow-lg" priority />
           <span className="text-lg font-semibold tracking-tight text-foreground">
-            ProFile <span className="text-gradient">AI</span>
+            {logo.title}
           </span>
         </Link>
 
@@ -179,7 +178,7 @@ const Navbar1 = ({
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
-          <ModeToggleCompact />
+          <ModeToggleCompact className="bg-background/40" />
           <Button
             asChild
             variant="ghost"
@@ -199,7 +198,7 @@ const Navbar1 = ({
 
         {/* Mobile Menu */}
         <div className="flex items-center gap-2 lg:hidden">
-          <ModeToggleCompact />
+          <ModeToggleCompact className="bg-background/40" />
           <Button
             asChild
             size="sm"
@@ -224,11 +223,9 @@ const Navbar1 = ({
               <SheetHeader>
                 <SheetTitle>
                   <Link href={logo.url} className="flex items-center gap-2">
-                    <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white">
-                      <Sparkles className="h-4 w-4" />
-                    </span>
+                    <Image src={logo.src || "/brand/profileai-mark.svg"} alt="" width={48} height={48} className="h-8 w-8" />
                     <span className="text-lg font-semibold tracking-tight">
-                      ProFile <span className="text-gradient">AI</span>
+                      {logo.title}
                     </span>
                   </Link>
                 </SheetTitle>

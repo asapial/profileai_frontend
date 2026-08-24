@@ -1,12 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Layers, LayoutTemplate } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { FeaturedTemplate } from "@/lib/api";
 import { track } from "@/lib/analytics";
+import { TemplateDesignPreview } from "@/components/templates/TemplateDesignPreview";
 
 type Props = {
   templates: FeaturedTemplate[];
@@ -73,14 +73,12 @@ export function FeaturedTemplateCarousel({ templates }: Props) {
               "transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-xl hover:shadow-violet-500/10",
             )}
           >
-            <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted">
-              {t.thumbnailUrl ? (
-                <Image
-                  src={t.thumbnailUrl}
-                  alt={t.name}
-                  fill
-                  sizes="(max-width: 640px) 80vw, (max-width: 1024px) 48vw, 31vw"
-                  className="object-cover transition duration-500 group-hover:scale-105"
+            <div className="relative w-full overflow-hidden bg-gradient-to-br from-violet-100/70 via-white to-cyan-100/70 p-4 dark:from-violet-950/50 dark:via-slate-950 dark:to-cyan-950/40">
+              {t.htmlLayout && t.cssStyles ? (
+                <TemplateDesignPreview
+                  template={t}
+                  priority={t.displayOrder < 3}
+                  className="rounded-xl shadow-[0_24px_60px_-32px_rgba(15,23,42,.7)] transition duration-500 group-hover:scale-[1.015]"
                 />
               ) : (
                 <TemplatePlaceholder name={t.name} />
@@ -90,6 +88,9 @@ export function FeaturedTemplateCarousel({ templates }: Props) {
                   Default
                 </span>
               )}
+              <span className="absolute right-7 top-7 rounded-full bg-slate-950/85 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-lg">
+                {t.documentType}
+              </span>
             </div>
             <div className="flex flex-1 flex-col gap-2 p-5">
               <div className="flex items-start justify-between gap-2">

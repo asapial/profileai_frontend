@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { Navbar1 } from "@/components/navbar1";
 import { HelpCenter } from "./HelpCenter";
 import { HELP_ARTICLES, HELP_CATEGORIES } from "./data";
 
@@ -19,8 +19,8 @@ export const metadata: Metadata = {
 export default function HelpPage() {
   return (
     <>
-      <Navbar />
-      <main id="main" className="pt-24">
+      <Navbar1 />
+      <main id="main">
         <HelpCenter articles={HELP_ARTICLES} categories={HELP_CATEGORIES} />
       </main>
       <Footer />

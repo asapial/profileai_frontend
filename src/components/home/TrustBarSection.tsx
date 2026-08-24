@@ -1,4 +1,5 @@
 import { ShieldCheck, FileDown, Cpu, Languages, Lock } from "lucide-react";
+import type { ManagedHomepageSection } from "@/lib/homepage";
 
 const ITEMS = [
   {
@@ -28,12 +29,23 @@ const ITEMS = [
   },
 ] as const;
 
-export default function TrustBarSection() {
+const ICONS = [Cpu, ShieldCheck, FileDown, Languages, Lock];
+
+export default function TrustBarSection({
+  content,
+}: {
+  content?: ManagedHomepageSection;
+}) {
+  const items = content?.items?.map((item, index) => ({
+    icon: ICONS[index % ICONS.length]!,
+    title: String(item.title ?? ""),
+    description: String(item.description ?? ""),
+  })) ?? ITEMS;
   return (
     <section className="border-y border-border bg-muted/30">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <ul className="grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-3 lg:grid-cols-5">
-          {ITEMS.map((item) => {
+          {items.map((item) => {
             const Icon = item.icon;
             return (
               <li

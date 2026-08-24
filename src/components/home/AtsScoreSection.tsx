@@ -1,7 +1,13 @@
 import { AlertCircle, CheckCircle2, Gauge } from "lucide-react";
 import { SectionHeader } from "./SectionHeader";
+import type { ManagedHomepageSection } from "@/lib/homepage";
 
-export function AtsScoreSection() {
+export function AtsScoreSection({ content }: { content?: ManagedHomepageSection }) {
+  const items = content?.items ?? [
+    { title: "Match the keywords the job wants", description: "See missing skills and phrases from the job description." },
+    { title: "Fix risky formatting", description: "Catch layouts that older parsers struggle to read." },
+    { title: "Improve as you edit", description: "Watch the score respond to every improvement." },
+  ];
   return (
     <section className="bg-muted/30 py-20 sm:py-24">
       <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:items-center lg:px-8">
@@ -10,16 +16,9 @@ export function AtsScoreSection() {
         <div>
           <SectionHeader
             align="left"
-            eyebrow="ATS scoring"
-            title={<>What is an ATS score, in plain English</>}
-            description={
-              <>
-                Most companies use an Applicant Tracking System (ATS) to filter
-                resumes before a human ever sees them. ProFile AI scores your
-                resume the way an ATS would, then tells you exactly what to
-                fix — no jargon, no guessing.
-              </>
-            }
+            eyebrow={content?.eyebrow || "ATS scoring"}
+            title={<>{content?.title || "What is an ATS score, in plain English"}</>}
+            description={content?.description || "ProFile AI compares your resume with the role and tells you exactly what to improve."}
           />
 
           <ul className="mt-8 space-y-4 text-sm">
@@ -29,11 +28,10 @@ export function AtsScoreSection() {
               </span>
               <div>
                 <p className="font-semibold text-foreground">
-                  Match the keywords the job wants
+                  {String(items[0]?.title ?? "")}
                 </p>
                 <p className="text-muted-foreground">
-                  We compare your resume to the job description and highlight
-                  missing skills and phrases.
+                  {String(items[0]?.description ?? "")}
                 </p>
               </div>
             </li>
@@ -43,11 +41,10 @@ export function AtsScoreSection() {
               </span>
               <div>
                 <p className="font-semibold text-foreground">
-                  Fix formatting before it filters you out
+                  {String(items[1]?.title ?? "")}
                 </p>
                 <p className="text-muted-foreground">
-                  Tables, columns, headers and images can confuse older ATS
-                  parsers. We flag them for you.
+                  {String(items[1]?.description ?? "")}
                 </p>
               </div>
             </li>
@@ -57,11 +54,10 @@ export function AtsScoreSection() {
               </span>
               <div>
                 <p className="font-semibold text-foreground">
-                  Watch your score climb as you edit
+                  {String(items[2]?.title ?? "")}
                 </p>
                 <p className="text-muted-foreground">
-                  Real-time scoring means you know exactly when your resume is
-                  ready to send.
+                  {String(items[2]?.description ?? "")}
                 </p>
               </div>
             </li>

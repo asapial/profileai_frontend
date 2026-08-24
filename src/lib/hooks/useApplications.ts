@@ -17,7 +17,14 @@ export type Application = {
   location: string | null;
   appliedAt: string;
   notes: string | null;
+  reminderAt?: string | null;
   resume?: { id: string; title: string } | null;
+  events?: Array<{
+    id: string;
+    type: string;
+    payload: Record<string, unknown> | null;
+    createdAt: string;
+  }>;
 };
 
 export type ApplicationsList = {
@@ -34,6 +41,14 @@ export function useApplications(params?: { status?: string; limit?: number }) {
   return useQuery({
     queryKey: ["applications", params],
     queryFn: () => api.get<ApplicationsList>(`/applications${qs ? `?${qs}` : ""}`),
+  });
+}
+
+export function useApplication(id: string | null) {
+  return useQuery({
+    queryKey: ["applications", "detail", id ?? ""],
+    enabled: Boolean(id),
+    queryFn: () => api.get<Application>(`/applications/${id}`),
   });
 }
 

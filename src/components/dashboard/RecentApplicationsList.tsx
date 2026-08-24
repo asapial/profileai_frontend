@@ -51,7 +51,7 @@ export function RecentApplicationsList() {
         description="Track your job pipeline."
         action={
           <Button asChild variant="ghost" size="sm" className="gap-1">
-            <Link href="/applications">
+            <Link href="/dashboard/applications">
               All <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </Button>
@@ -91,7 +91,7 @@ export function RecentApplicationsList() {
       description="Track your job pipeline."
       action={
         <Button asChild variant="ghost" size="sm" className="gap-1">
-          <Link href="/applications">
+          <Link href="/dashboard/applications">
             All <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </Button>
@@ -103,7 +103,7 @@ export function RecentApplicationsList() {
           description="Log where you&apos;ve applied so nothing slips through."
           cta={
             <Button asChild size="sm" className="mt-2 gap-1">
-              <Link href="/applications">
+              <Link href="/dashboard/applications">
                 <Plus className="h-3.5 w-3.5" />
                 Add application
               </Link>
@@ -118,7 +118,7 @@ export function RecentApplicationsList() {
               className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
             >
               <Link
-                href={`/applications/${a.id}`}
+                href={`/dashboard/applications/${a.id}`}
                 className="min-w-0 flex-1"
               >
                 <p className="truncate text-sm font-medium hover:text-violet-600">

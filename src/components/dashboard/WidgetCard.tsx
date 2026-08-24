@@ -23,14 +23,12 @@ export function WidgetCard({
   description,
   icon,
   action,
-  skeletonRows = 3,
   children,
 }: {
   title: ReactNode;
   description?: ReactNode;
   icon?: ReactNode;
   action?: ReactNode;
-  skeletonRows?: number;
   children: ReactNode;
 }) {
   return (

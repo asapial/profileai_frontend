@@ -67,11 +67,7 @@ export function ProfileCompletionCard() {
   const pct = profile?.completionPercentage ?? 0;
   const missing = profile?.missingFields ?? [];
   const tone = pct >= 80 ? "emerald" : pct >= 50 ? "amber" : "rose";
-  const empty =
-    pct === 0 &&
-    (profile?.skillsCount ?? 0) === 0 &&
-    (profile?.experienceCount ?? 0) === 0 &&
-    (profile?.educationCount ?? 0) === 0;
+  const empty = pct === 0;
 
   return (
     <WidgetCard

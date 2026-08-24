@@ -1,6 +1,7 @@
 "use client";
 
 import toast from "react-hot-toast";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CreditCard, ExternalLink } from "lucide-react";
 import {
@@ -54,10 +55,10 @@ function BillingSection() {
             </p>
           </div>
           <Button asChild variant="outline" className="gap-2">
-            <a href="/pricing">
+            <Link href="/pricing">
               Manage plan
               <ExternalLink className="h-3.5 w-3.5" />
-            </a>
+            </Link>
           </Button>
         </div>
 

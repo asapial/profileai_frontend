@@ -249,7 +249,6 @@ function SummaryCard({
 function Stat({
   label,
   value,
-  tone,
 }: {
   label: string;
   value: string;

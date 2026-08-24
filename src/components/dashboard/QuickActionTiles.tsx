@@ -45,7 +45,7 @@ const TILES: Tile[] = [
     id: "create",
     label: "Create resume",
     description: "Start a tailored resume with AI.",
-    href: "/resume/create",
+    href: "/dashboard/resumes/new",
     icon: FileText,
     accent: "from-violet-500/15 to-fuchsia-500/10 text-violet-700",
   },
@@ -53,7 +53,7 @@ const TILES: Tile[] = [
     id: "analyze",
     label: "Analyze JD",
     description: "Break down a job description.",
-    href: "/tools/jd-analyzer",
+    href: "/dashboard/ats",
     icon: ScanSearch,
     accent: "from-fuchsia-500/15 to-rose-500/10 text-fuchsia-700",
   },
@@ -61,7 +61,7 @@ const TILES: Tile[] = [
     id: "track",
     label: "Track application",
     description: "Add to your job pipeline.",
-    href: "/applications",
+    href: "/dashboard/applications",
     icon: Briefcase,
     accent: "from-amber-500/15 to-orange-500/10 text-amber-700",
   },
@@ -141,7 +141,7 @@ export function QuickActionTiles() {
                 });
               }}
               className={
-                "group relative flex h-full items-start gap-3 rounded-2xl border border-border bg-card p-4 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 " +
+                "glass-panel group relative flex h-full items-start gap-3 rounded-2xl p-4 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 " +
                 (disabled
                   ? "cursor-not-allowed opacity-60"
                   : "hover:border-violet-300 hover:shadow-sm")

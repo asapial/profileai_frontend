@@ -18,7 +18,26 @@ export type AnalyticsEventName =
   | "template_gallery_view"
   | "resume_generate_click"
   | "resume_editor_open"
-  | "resume_export_click";
+  | "resume_export_click"
+  | "help_search"
+  | "help_filter_category"
+  | "pricing_toggle_billing"
+  | `pricing_cta_${string}`
+  | "public_resume_view"
+  | "public_resume_download"
+  | "featured_template_click"
+  | "featured_view_all"
+  | "cover_letter_cta"
+  | "ai_builder_cta"
+  | "career_workspace_cta"
+  | "privacy_section_cta"
+  | "gallery_browse_all"
+  | "footer_cta_get_started"
+  | "footer_cta_see_pricing"
+  | "hero_cta_get_started"
+  | "hero_cta_view_templates"
+  | "ai_chat_opened"
+  | "ai_chat_help_article_opened";
 
 export type AnalyticsEvent = {
   name: AnalyticsEventName;

@@ -68,14 +68,6 @@ export type Role = (typeof ROLES)[keyof typeof ROLES];
  * Kept here so the policy in `decide()` has an authoritative list of
  * "paths that should NEVER be gated by an auth check".
  */
-const AUTH_ROUTES = new Set<string>([
-  "/login",
-  "/register",
-  "/forgot-password",
-  "/reset-password",
-  "/verify-email",
-]);
-
 /**
  * Per-role home route. Exported so the post-login route in `lib/auth.ts`
  * can stay in lock-step with this map.

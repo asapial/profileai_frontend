@@ -13,7 +13,6 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     if (process.env.NODE_ENV !== "production") {
-      // eslint-disable-next-line no-console
       console.debug("[analytics]", body?.name, body?.properties);
     }
   } catch {

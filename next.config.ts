@@ -7,10 +7,17 @@ import type { NextConfig } from "next";
  * (process.env reads inside `next.config` are inlined at build, so we want
  * one canonical place to guard against missing values and bad URLs).
  */
-const readEnv = (key: string, fallback: string): string => {
+const readEnv = (
+  key: string,
+  fallback: string,
+  options: { requiredInProduction?: boolean } = {},
+): string => {
   const value = process.env[key];
   if (value && value.trim().length > 0) return value.trim();
-  if (process.env.NODE_ENV === "production") {
+  if (
+    process.env.NODE_ENV === "production" &&
+    options.requiredInProduction !== false
+  ) {
     throw new Error(
       `[next.config] Missing required env var ${key}. ` +
         `Set it in your deployment environment or copy .env.example to .env.`
@@ -33,10 +40,21 @@ const BETTER_AUTH_URL = trimTrailingSlash(
   readEnv("NEXT_PUBLIC_BETTER_AUTH_URL", `${API_BASE_URL.replace(/\/api\/v\d+$/, "")}/api/auth`)
 );
 
-const CLOUDINARY_CLOUD_NAME = readEnv("NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME", "");
-const CLOUDINARY_UPLOAD_PRESET = readEnv("NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET", "");
+const CLOUDINARY_CLOUD_NAME = readEnv(
+  "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME",
+  "",
+  { requiredInProduction: false },
+);
+const CLOUDINARY_UPLOAD_PRESET = readEnv(
+  "NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET",
+  "",
+  { requiredInProduction: false },
+);
 
-const ENABLE_DEBUG = readEnv("NEXT_PUBLIC_ENABLE_DEBUG", "false") === "true";
+const ENABLE_DEBUG =
+  readEnv("NEXT_PUBLIC_ENABLE_DEBUG", "false", {
+    requiredInProduction: false,
+  }) === "true";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
@@ -89,6 +107,26 @@ const nextConfig: NextConfig = {
     const target = API_BASE_URL.replace(/\/api\/v\d+$/, "");
     return [
       { source: "/api/proxy/:path*", destination: `${target}/api/:path*` },
+    ];
+  },
+
+  async redirects() {
+    return [
+      { source: "/admin/templates/new", destination: "/admin/templates/create", permanent: true },
+      { source: "/resume/create", destination: "/dashboard/resumes/new", permanent: true },
+      { source: "/resume/:id/edit", destination: "/dashboard/resume/:id/edit", permanent: true },
+      { source: "/resumes", destination: "/dashboard/resumes", permanent: true },
+      { source: "/applications", destination: "/dashboard/applications", permanent: true },
+      { source: "/applications/:path*", destination: "/dashboard/applications/:path*", permanent: true },
+      { source: "/cover-letter", destination: "/dashboard/cover-letters", permanent: true },
+      { source: "/cover-letters/:path*", destination: "/dashboard/cover-letters/:path*", permanent: true },
+      { source: "/notifications", destination: "/dashboard/notifications", permanent: true },
+      { source: "/profile", destination: "/dashboard/profile", permanent: true },
+      { source: "/analyzer", destination: "/dashboard/ats", permanent: true },
+      { source: "/tools/jd-analyzer", destination: "/dashboard/ats", permanent: true },
+      { source: "/dashboard/profile/notifications", destination: "/dashboard/profile?tab=notifications", permanent: true },
+      { source: "/legal/privacy", destination: "/privacy", permanent: true },
+      { source: "/legal/terms", destination: "/terms", permanent: true },
     ];
   },
 };

@@ -22,7 +22,6 @@ function decodeJwtRole(token: string): Role | null {
   const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
   try {
     const padded = b64 + "=".repeat((4 - (b64.length % 4)) % 4);
-    // eslint-disable-next-line no-undef
     const payload = JSON.parse(atob(padded));
     return payload?.role === "ADMIN" || payload?.role === "USER"
       ? payload.role

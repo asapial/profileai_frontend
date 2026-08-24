@@ -22,7 +22,15 @@ import {
 } from "@/components/ui/card";
 import type { AdminStat } from "@/lib/hooks/useAdminDashboard";
 
-function formatValue(value: number): string {
+function formatValue(stat: AdminStat): string {
+  if (stat.format === "currency") {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: stat.currency ?? "USD",
+      maximumFractionDigits: 0,
+    }).format(stat.value / 100);
+  }
+  const value = stat.value;
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
   if (value >= 1_000) return `${(value / 1_000).toFixed(1)}k`;
   return value.toLocaleString();
@@ -37,7 +45,7 @@ function trendIcon(trend?: AdminStat["trend"]): Icon | null {
 export function AdminStatCards({ stats }: { stats: AdminStat[] }) {
   if (!stats.length) {
     return (
-      <div className="grid grid-cols-1 gap-4 px-4 lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, idx) => (
           <Card key={idx} className="@container/card opacity-60">
             <CardHeader>
@@ -53,7 +61,7 @@ export function AdminStatCards({ stats }: { stats: AdminStat[] }) {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-violet-500/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-violet-500/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs dark:*:data-[slot=card]:bg-card">
       {stats.map((stat) => {
         const Icon = trendIcon(stat.trend);
         const trendLabel =
@@ -69,11 +77,11 @@ export function AdminStatCards({ stats }: { stats: AdminStat[] }) {
               ? "text-emerald-600 dark:text-emerald-400"
               : "text-muted-foreground";
         return (
-          <Card key={stat.label} className="@container/card">
+          <Card key={stat.key} className="@container/card">
             <CardHeader>
               <CardDescription>{stat.label}</CardDescription>
               <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-                {formatValue(stat.value)}
+                {formatValue(stat)}
               </CardTitle>
               {stat.hint ? (
                 <CardAction>

@@ -142,6 +142,7 @@ export function AdminFeatureFlagsClient() {
 
   const create = useCreateFlag();
   const update = useUpdateFlag(editingId ?? "");
+  const deleteFlag = useDeleteFlag();
 
   const visible = useMemo(
     () => (env === "ALL" ? flags : flags.filter((f) => f.environment === env)),
@@ -371,7 +372,7 @@ export function AdminFeatureFlagsClient() {
         onConfirm={async () => {
           if (!confirmDelete) return;
           try {
-            await useDeleteFlagHook(confirmDelete.id)();
+            await deleteFlag.mutateAsync(confirmDelete.id);
             toast.success("Flag deleted.");
             setConfirmDelete(null);
           } catch (err: unknown) {
@@ -406,7 +407,3 @@ function FlagRow({
   return <FlagCard flag={flag} onEdit={onEdit} onDelete={onDelete} onToggle={toggle} />;
 }
 
-function useDeleteFlagHook(id: string) {
-  const m = useDeleteFlag(id);
-  return m.mutateAsync;
-}

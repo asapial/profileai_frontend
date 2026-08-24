@@ -15,7 +15,6 @@ import {
   IconPencil,
   IconPlus,
   IconStar,
-  IconTrash,
 } from "@tabler/icons-react";
 
 import { AdminConfirmDialog } from "@/components/admin/AdminConfirmDialog";
@@ -71,6 +70,8 @@ export function AdminPlansClient() {
   const plans = useMemo(() => data ?? [], [data]);
 
   const create = useCreatePlan();
+  const update = useUpdatePlan();
+  const archive = useArchivePlan();
   const [draft, setDraft] = useState<DraftPlan>(EMPTY_DRAFT);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [confirmArchive, setConfirmArchive] = useState<Plan | null>(null);
@@ -82,7 +83,7 @@ export function AdminPlansClient() {
     }
     try {
       if (editingId) {
-        await useUpdatePlanHook(editingId)(draft);
+        await update.mutateAsync({ id: editingId, input: draft });
         toast.success("Plan updated.");
       } else {
         await create.mutateAsync(draft);
@@ -403,7 +404,7 @@ export function AdminPlansClient() {
         onConfirm={async () => {
           if (!confirmArchive) return;
           try {
-            await useArchivePlanHook(confirmArchive.id)();
+            await archive.mutateAsync(confirmArchive.id);
             toast.success("Plan archived.");
             setConfirmArchive(null);
           } catch (err: unknown) {
@@ -416,11 +417,3 @@ export function AdminPlansClient() {
 }
 
 // local helper bridges — keeps the imports at top of file stable.
-function useUpdatePlanHook(id: string) {
-  const m = useUpdatePlan(id);
-  return m.mutateAsync;
-}
-function useArchivePlanHook(id: string) {
-  const m = useArchivePlan(id);
-  return m.mutateAsync;
-}

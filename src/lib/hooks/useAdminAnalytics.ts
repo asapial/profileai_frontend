@@ -64,7 +64,7 @@ export function useAdminAnalytics(range?: { from?: string; to?: string }) {
         const r = await api.get<AdminAnalyticsSummary>(
           `/admin/analytics${qs}`,
         );
-        return r.data;
+        return r;
       } catch (err: unknown) {
         if (err instanceof ApiError && err.status === 404) return null;
         throw err;

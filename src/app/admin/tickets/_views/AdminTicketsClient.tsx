@@ -7,7 +7,8 @@
 // is preferable but kept simple — admin clicks a row to focus.
 
 import { useEffect, useMemo, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "@/lib/date";
+import { setAiChatPageContext } from "@/lib/aiChatContextBridge";
 import { toast } from "react-hot-toast";
 import {
   IconCheck,
@@ -48,12 +49,17 @@ export function AdminTicketsClient() {
 
   const { data: list, isLoading } = useAdminTickets({ status, q });
   const items = useMemo(() => list ?? [], [list]);
+  const activeId =
+    selectedId && items.some((item) => item.id === selectedId)
+      ? selectedId
+      : (items[0]?.id ?? null);
 
   useEffect(() => {
-    if (!selectedId && items.length > 0) {
-      setSelectedId(items[0].id);
-    }
-  }, [items, selectedId]);
+    setAiChatPageContext(activeId
+      ? { resourceType: "support_ticket", resourceId: activeId }
+      : { resourceType: "none", resourceId: undefined });
+    return () => setAiChatPageContext({});
+  }, [activeId]);
 
   return (
     <div className="flex min-w-0 flex-col gap-4 px-4 lg:px-6">
@@ -113,7 +119,7 @@ export function AdminTicketsClient() {
                 <li
                   key={t.id}
                   className={`cursor-pointer border-b p-3 transition hover:bg-muted/50 ${
-                    selectedId === t.id ? "bg-muted/40" : ""
+                    activeId === t.id ? "bg-muted/40" : ""
                   }`}
                   onClick={() => setSelectedId(t.id)}
                 >
@@ -141,7 +147,7 @@ export function AdminTicketsClient() {
           )}
         </Card>
 
-        <TicketDetail id={selectedId} />
+        <TicketDetail id={activeId} />
       </div>
     </div>
   );

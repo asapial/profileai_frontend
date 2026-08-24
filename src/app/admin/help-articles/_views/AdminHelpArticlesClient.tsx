@@ -7,7 +7,7 @@
 // backend writes gracefully via TanStack Query errors.
 
 import { useMemo, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "@/lib/date";
 import { toast } from "react-hot-toast";
 import {
   IconCheck,

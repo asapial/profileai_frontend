@@ -14,11 +14,16 @@ import {
 } from "@tanstack/react-query";
 
 import { api, ApiError } from "@/lib/api";
-import type { Template, TemplateCategory } from "@/lib/hooks/useTemplates";
+import type {
+  Template as PublicTemplate,
+  TemplateCategory,
+} from "@/lib/hooks/useTemplates";
 
 export type AdminTemplateFilters = {
   category?: TemplateCategory | "ALL";
   status?: "all" | "active" | "inactive";
+  documentType?: "ALL" | "RESUME" | "CV";
+  reviewStatus?: "ALL" | "DRAFT" | "PENDING" | "APPROVED" | "REJECTED";
 };
 
 export type TemplateLayoutConfig = {
@@ -28,11 +33,16 @@ export type TemplateLayoutConfig = {
   sectionOrder?: string[];
 };
 
+export type Template = PublicTemplate & {
+  isAtsFriendly: boolean;
+  layoutConfig: TemplateLayoutConfig;
+};
+
 export type TemplateHistorySnapshot = {
   id: string;
   savedAt: string;
   savedBy: string;
-  configSnapshot: TemplateLayoutConfig;
+  configSnapshot: TemplateLayoutConfig & { name?: string };
 };
 
 const ADMIN_KEY = ["admin-templates"] as const;
@@ -48,11 +58,15 @@ export function useAdminTemplates(filters: AdminTemplateFilters = {}) {
   if (filters.category && filters.category !== "ALL") {
     params.set("category", filters.category);
   }
+  if (filters.documentType && filters.documentType !== "ALL") params.set("documentType", filters.documentType);
+  if (filters.reviewStatus && filters.reviewStatus !== "ALL") params.set("reviewStatus", filters.reviewStatus);
   const qs = params.toString();
   return useQuery({
     queryKey: [...ADMIN_KEY, filters],
     queryFn: () =>
-      api.get<Template[]>(`/admin/templates${qs ? `?${qs}` : ""}`),
+      api.get<Template[]>(`/admin/templates${qs ? `?${qs}` : ""}`).then((items) =>
+        filters.status === "active" ? items.filter((item) => item.isActive) : filters.status === "inactive" ? items.filter((item) => !item.isActive) : items,
+      ),
   });
 }
 
@@ -82,6 +96,7 @@ export function useCreateTemplate() {
       name: string;
       description?: string | null;
       category: TemplateCategory;
+      documentType: "RESUME" | "CV";
       isAtsFriendly?: boolean;
       layoutConfig: TemplateLayoutConfig;
       thumbnailUrl?: string | null;
@@ -98,12 +113,14 @@ export function useCreateTemplate() {
 export function useUpdateTemplate(id: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (vars: Partial<TemplateLayoutConfig> & {
+    mutationFn: (vars: {
       name?: string;
       description?: string | null;
       category?: TemplateCategory;
+      documentType?: "RESUME" | "CV";
       isAtsFriendly?: boolean;
       thumbnailUrl?: string | null;
+      layoutConfig?: TemplateLayoutConfig;
     }) =>
       api.put<{ id: string; historySnapshotId: string }>(
         `/admin/templates/${id}`,
@@ -137,7 +154,7 @@ export function useSetDefaultTemplate() {
         id: string;
         isDefault: true;
         previousDefaultId: string | null;
-      }>(`/admin/templates/${id}/default`),
+      }>(`/admin/templates/${id}/default`, {}),
     onSuccess: () => qc.invalidateQueries({ queryKey: ADMIN_KEY }),
   });
 }
@@ -153,4 +170,13 @@ export function useDeleteTemplate() {
   });
 }
 
-export type { ApiError, Template, TemplateCategory };
+export function useReviewTemplate() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, decision, reason }: { id: string; decision: "APPROVED" | "REJECTED"; reason?: string }) =>
+      api.patch<Template>(`/admin/templates/${id}/review`, { decision, reason }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ADMIN_KEY }),
+  });
+}
+
+export type { ApiError, TemplateCategory };

@@ -53,7 +53,7 @@ export function useAdminTickets(filters: {
             ? `/admin/tickets?${qs.toString()}`
             : "/admin/tickets";
         const r = await api.get<Ticket[]>(path);
-        return r.data;
+        return r;
       } catch (err: unknown) {
         if (err instanceof ApiError && err.status === 404)
           return [] as Ticket[];
@@ -71,7 +71,7 @@ export function useAdminTicketDetail(id: string | null) {
       if (!id) return null;
       try {
         const r = await api.get<TicketWithMessages>(`/admin/tickets/${id}`);
-        return r.data;
+        return r;
       } catch (err: unknown) {
         if (err instanceof ApiError && err.status === 404) return null;
         throw err;

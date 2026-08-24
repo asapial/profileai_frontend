@@ -11,12 +11,15 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 
 export type AdminStat = {
+  key: string;
   label: string;
   value: number;
   /** Pre-formatted helper text (e.g. "+8.2% this month"). */
   hint?: string;
   /** Trending up = positive, down = negative. */
   trend?: "up" | "down" | "flat";
+  format?: "number" | "currency";
+  currency?: string;
 };
 
 export type AdminActivityItem = {
@@ -42,19 +45,33 @@ export type AdminQuickLink = {
 };
 
 export type AdminDashboardSummary = {
+  totalUsers: number;
+  activeUsersToday: number;
+  totalResumes: number;
+  aiCallsToday: number;
+  openSecurityAlerts: number;
   stats: AdminStat[];
+  trends: Array<{
+    date: string;
+    label: string;
+    users: number;
+    resumes: number;
+    aiCalls: number;
+  }>;
   activity: AdminActivityItem[];
   alerts: AdminAlert[];
   quickLinks: AdminQuickLink[];
+  errors: Array<{ section: "metrics" | "trends" | "activity" | "alerts"; message: string }>;
   generatedAt: string;
 };
 
 export const ADMIN_DASHBOARD_QUERY_KEY = ["admin-dashboard"] as const;
 
-export function useAdminDashboard() {
+export function useAdminDashboard(initialData?: AdminDashboardSummary) {
   return useQuery({
     queryKey: ADMIN_DASHBOARD_QUERY_KEY,
     queryFn: () => api.get<AdminDashboardSummary>("/admin/dashboard"),
     staleTime: 60 * 1000,
+    initialData,
   });
 }

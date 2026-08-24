@@ -90,6 +90,13 @@ export const SETTINGS_FIELDS: SettingField[] = [
     description:
       "When enabled, the app shows a maintenance banner and write actions are paused.",
   },
+  {
+    key: "admin_2fa_required",
+    label: "Require admin 2FA",
+    kind: "boolean",
+    description:
+      "Require every admin session to complete two-factor verification before any admin API can be used.",
+  },
 ];
 
 export const SETTINGS_FIELD_BY_KEY: Record<string, SettingField> =

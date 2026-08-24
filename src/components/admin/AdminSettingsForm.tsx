@@ -207,7 +207,7 @@ export function AdminSettingsForm({ initial }: Props) {
             const row = state[f.key];
             if (!row) return null;
 
-            if (f.key === "maintenance_mode") {
+            if (f.kind === "boolean") {
               const enabled = row.value === "true";
               const isDirty = row.value !== row.original;
               return (
@@ -254,10 +254,16 @@ export function AdminSettingsForm({ initial }: Props) {
                       </Button>
                     </div>
                   </div>
-                  {enabled ? (
+                  {enabled && f.key === "maintenance_mode" ? (
                     <div className="text-muted-foreground flex items-center gap-2 text-xs">
                       <IconAlertTriangle className="size-3.5" />
                       Writes and login will be paused while this is on.
+                    </div>
+                  ) : null}
+                  {enabled && f.key === "admin_2fa_required" ? (
+                    <div className="text-muted-foreground flex items-center gap-2 text-xs">
+                      <IconShieldCheck className="size-3.5" />
+                      Admins without 2FA will be sent through secure setup before dashboard data loads.
                     </div>
                   ) : null}
                 </div>

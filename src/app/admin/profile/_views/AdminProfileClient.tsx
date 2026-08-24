@@ -245,6 +245,8 @@ function SecurityTab({ twoFactorEnabled }: { twoFactorEnabled: boolean }) {
   const [showRevokeConfirm, setShowRevokeConfirm] = useState<{
     title: string;
     description: React.ReactNode;
+    confirmLabel: string;
+    destructive?: boolean;
     onConfirm: () => Promise<unknown>;
   } | null>(null);
 

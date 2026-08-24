@@ -24,13 +24,16 @@ type ServerResponse<T> = {
   message: string;
   data: T;
   meta?: Record<string, unknown>;
+  code?: string;
 };
 
 class ServerApiError extends Error {
   status: number;
-  constructor(message: string, status: number) {
+  code?: string;
+  constructor(message: string, status: number, code?: string) {
     super(message);
     this.status = status;
+    this.code = code;
     this.name = "ServerApiError";
   }
 }
@@ -77,7 +80,7 @@ async function request<T>(
   if (!res.ok || !payload || payload.success !== true) {
     const message =
       payload?.message || `Request failed with status ${res.status}`;
-    throw new ServerApiError(message, res.status);
+    throw new ServerApiError(message, res.status, payload?.code);
   }
 
   return { data: payload.data, meta: payload.meta };

@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, api } from "@/lib/api";
 
 export type AnnouncementStatus = "DRAFT" | "SCHEDULED" | "LIVE" | "EXPIRED";
+export type AnnouncementSeverity = "INFO" | "SUCCESS" | "WARNING" | "DANGER";
 
 export type AnnouncementAudience = {
   planIds: string[];
@@ -24,7 +25,7 @@ export type Announcement = {
   expiresAt: string | null;
   audience: AnnouncementAudience;
   // Severity affects banner color: INFO | SUCCESS | WARNING | DANGER.
-  severity: "INFO" | "SUCCESS" | "WARNING" | "DANGER";
+  severity: AnnouncementSeverity;
   impressions: number;
   clicks: number;
 };
@@ -82,10 +83,10 @@ export function useUpdateAnnouncement(id: string) {
   });
 }
 
-export function usePublishAnnouncement(id: string) {
+export function usePublishAnnouncement() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (id: string) => {
       const res = await api.post<Announcement>(
         `/admin/announcements/${id}/publish`,
         {},
@@ -98,10 +99,10 @@ export function usePublishAnnouncement(id: string) {
   });
 }
 
-export function useRetireAnnouncement(id: string) {
+export function useRetireAnnouncement() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (id: string) => {
       const res = await api.post<Announcement>(
         `/admin/announcements/${id}/retire`,
         {},

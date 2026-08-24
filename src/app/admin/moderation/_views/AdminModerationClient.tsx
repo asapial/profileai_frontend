@@ -7,7 +7,7 @@
 // Backend endpoint isn't live yet — graceful empty state.
 
 import { useMemo, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "@/lib/date";
 import { toast } from "react-hot-toast";
 import {
   IconCheck,

@@ -58,19 +58,19 @@ export function useCreatePlan() {
   });
 }
 
-export function useUpdatePlan(id: string) {
+export function useUpdatePlan() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: Partial<Plan>) =>
+    mutationFn: ({ id, input }: { id: string; input: Partial<Plan> }) =>
       api.put<Plan>(`/admin/plans/${id}`, input),
     onSuccess: () => qc.invalidateQueries({ queryKey: ADMIN_PLANS_QUERY_KEY }),
   });
 }
 
-export function useArchivePlan(id: string) {
+export function useArchivePlan() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: () => api.delete<Plan>(`/admin/plans/${id}`),
+    mutationFn: (id: string) => api.delete<Plan>(`/admin/plans/${id}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ADMIN_PLANS_QUERY_KEY }),
   });
 }

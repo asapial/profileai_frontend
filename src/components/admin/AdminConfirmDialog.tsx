@@ -24,8 +24,10 @@ type Props = {
   description: React.ReactNode;
   confirmLabel: string;
   destructive?: boolean;
+  variant?: "default" | "destructive";
   busy?: boolean;
   onConfirm: () => Promise<void> | void;
+  children?: React.ReactNode;
 };
 
 export function AdminConfirmDialog({
@@ -35,8 +37,10 @@ export function AdminConfirmDialog({
   description,
   confirmLabel,
   destructive,
+  variant,
   busy,
   onConfirm,
+  children,
 }: Props) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -46,6 +50,7 @@ export function AdminConfirmDialog({
           <SheetDescription asChild>
             <div className="text-sm">{description}</div>
           </SheetDescription>
+          {children}
         </SheetHeader>
         <SheetFooter className="px-4 pb-6">
           <Button
@@ -58,7 +63,11 @@ export function AdminConfirmDialog({
           </Button>
           <Button
             type="button"
-            variant={destructive ? "destructive" : "default"}
+            variant={
+              destructive || variant === "destructive"
+                ? "destructive"
+                : "default"
+            }
             disabled={busy}
             onClick={async () => {
               try {

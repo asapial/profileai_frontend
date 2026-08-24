@@ -12,16 +12,6 @@
 
 import { redirect } from "next/navigation";
 
-import {
-  AdminActivityFeed,
-} from "@/components/admin/AdminActivityFeed";
-import {
-  AdminAlertsPanel,
-} from "@/components/admin/AdminAlertsPanel";
-import {
-  AdminQuickLinks,
-} from "@/components/admin/AdminQuickLinks";
-import { AdminStatCards } from "@/components/admin/AdminStatCards";
 import { AdminDashboardClient } from "./_views/AdminDashboardClient";
 import { adminApi, ServerApiError } from "@/lib/adminApi";
 import type { AdminDashboardSummary } from "@/lib/hooks/useAdminDashboard";
@@ -29,7 +19,13 @@ import type { AdminDashboardSummary } from "@/lib/hooks/useAdminDashboard";
 export const dynamic = "force-dynamic";
 
 const FALLBACK_SUMMARY: AdminDashboardSummary = {
+  totalUsers: 0,
+  activeUsersToday: 0,
+  totalResumes: 0,
+  aiCallsToday: 0,
+  openSecurityAlerts: 0,
   stats: [],
+  trends: [],
   activity: [],
   alerts: [],
   quickLinks: [
@@ -54,6 +50,12 @@ const FALLBACK_SUMMARY: AdminDashboardSummary = {
       description: "Limits, sessions, and 2FA policy",
     },
   ],
+  errors: [
+    { section: "metrics", message: "Metrics are temporarily unavailable." },
+    { section: "trends", message: "Trends are temporarily unavailable." },
+    { section: "activity", message: "Activity is temporarily unavailable." },
+    { section: "alerts", message: "Alerts are temporarily unavailable." },
+  ],
   generatedAt: new Date().toISOString(),
 };
 
@@ -71,31 +73,16 @@ export default async function AdminDashboardPage() {
       // Admin session expired — kick to login so they can re-auth.
       redirect("/login?redirect=/admin");
     }
+    if (err instanceof ServerApiError && err.code === "ADMIN_2FA_SETUP_REQUIRED") {
+      redirect("/login/2fa/setup?redirect=/admin");
+    }
+    if (err instanceof ServerApiError && err.code === "ADMIN_2FA_VERIFICATION_REQUIRED") {
+      redirect("/login?redirect=/admin&reason=2fa");
+    }
     loadError =
       err instanceof Error ? err.message : "Failed to load dashboard.";
     // Keep the fallback summary so the chrome + quick-links still render.
   }
 
-  return (
-    <>
-      <AdminDashboardClient initial={summary} loadError={loadError} />
-
-      <div className="mt-4">
-        <AdminQuickLinks links={summary.quickLinks} />
-      </div>
-
-      <div className="px-4 lg:px-6 mt-4">
-        <AdminStatCards stats={summary.stats} />
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 px-4 lg:px-6 lg:grid-cols-3 mt-4">
-        <div className="lg:col-span-2">
-          <AdminActivityFeed items={summary.activity} />
-        </div>
-        <div>
-          <AdminAlertsPanel alerts={summary.alerts} />
-        </div>
-      </div>
-    </>
-  );
+  return <AdminDashboardClient initial={summary} loadError={loadError} />;
 }

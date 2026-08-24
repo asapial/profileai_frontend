@@ -86,7 +86,7 @@ type MutationOptions<TData, TVariables> = UseMutationOptions<
   TVariables
 >;
 
-function profileMutation<TData, TVariables>(
+function useProfileMutation<TData, TVariables>(
   mutationFn: (vars: TVariables) => Promise<TData>,
   invalidate: ReadonlyArray<readonly unknown[]> = [],
   options?: MutationOptions<TData, TVariables>,
@@ -107,7 +107,7 @@ function profileMutation<TData, TVariables>(
 }
 
 export function useUpdateAdminProfile() {
-  return profileMutation(
+  return useProfileMutation(
     (vars: {
       firstName: string;
       lastName: string;
@@ -123,7 +123,7 @@ export function useUpdateAdminProfile() {
 }
 
 export function useChangeAdminPassword() {
-  return profileMutation(
+  return useProfileMutation(
     (vars: { currentPassword: string; newPassword: string }) =>
       api.post<{ ok: true; revokedOtherSessions: number }>(
         "/admin/profile/change-password",
@@ -133,7 +133,7 @@ export function useChangeAdminPassword() {
 }
 
 export function useToggleAdminTwoFactor() {
-  return profileMutation(
+  return useProfileMutation(
     (vars: { enabled: boolean }) =>
       api.post<{ ok: true; enabled: boolean }>(
         "/admin/profile/2fa/toggle",
@@ -144,7 +144,7 @@ export function useToggleAdminTwoFactor() {
 }
 
 export function useRevokeAdminSession() {
-  return profileMutation(
+  return useProfileMutation(
     (id: string) =>
       api.delete<{ status: "revoked"; auditLogId: string }>(
         `/admin/profile/sessions/${id}`,
@@ -154,7 +154,7 @@ export function useRevokeAdminSession() {
 }
 
 export function useRevokeAllAdminSessions() {
-  return profileMutation(
+  return useProfileMutation<{ revoked: number }, void>(
     () =>
       api.delete<{ revoked: number }>("/admin/profile/sessions", {
         all: true,
@@ -164,7 +164,7 @@ export function useRevokeAllAdminSessions() {
 }
 
 export function useRevokeAdminDevice() {
-  return profileMutation(
+  return useProfileMutation(
     (id: string) =>
       api.delete<{ status: "revoked"; auditLogId: string }>(
         `/admin/devices/${id}`,
@@ -174,7 +174,7 @@ export function useRevokeAdminDevice() {
 }
 
 export function useTrustAdminDevice() {
-  return profileMutation(
+  return useProfileMutation(
     (vars: { id: string; trusted: boolean }) =>
       api.patch<AdminDevice>(`/admin/devices/${vars.id}/trust`, {
         trusted: vars.trusted,

@@ -40,10 +40,7 @@ const CATEGORIES: TemplateCategory[] = [
   "MODERN",
   "CLASSIC",
   "CREATIVE",
-  "MINIMAL",
-  "EXECUTIVE",
-  "TECHNICAL",
-  "ACADEMIC",
+  "ATS",
 ];
 
 type PreviewResume = {
@@ -93,6 +90,7 @@ export function AdminTemplateCreateClient() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<TemplateCategory>("MODERN");
+  const [documentType, setDocumentType] = useState<"RESUME" | "CV">("RESUME");
   const [isAtsFriendly, setIsAtsFriendly] = useState(true);
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [fontFamily, setFontFamily] = useState("Inter");
@@ -121,6 +119,7 @@ export function AdminTemplateCreateClient() {
         name: name.trim(),
         description: description.trim() || null,
         category,
+        documentType,
         isAtsFriendly,
         layoutConfig,
         thumbnailUrl: thumbnailUrl.trim() || null,
@@ -210,6 +209,13 @@ export function AdminTemplateCreateClient() {
                     </SelectItem>
                   ))}
                 </SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label>Document type</Label>
+              <Select value={documentType} onValueChange={(value) => setDocumentType(value as "RESUME" | "CV")}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent><SelectItem value="RESUME">Résumé</SelectItem><SelectItem value="CV">CV</SelectItem></SelectContent>
               </Select>
             </div>
             <div className="flex flex-col gap-2">

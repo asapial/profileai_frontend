@@ -365,6 +365,9 @@ export function DataTable({
     [data]
   )
 
+  // TanStack Table returns stateful callbacks by design; the React compiler
+  // safely leaves this component un-memoized.
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,

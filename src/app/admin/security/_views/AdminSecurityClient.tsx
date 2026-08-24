@@ -263,7 +263,7 @@ export function AdminSecurityClient() {
         <div className="flex flex-col">
           <span className="text-sm font-medium">{summary.activeAdmins} active admin sessions</span>
           <span className="text-muted-foreground text-xs">
-            Review active admins in the user directory and revoke any sessions you don't recognize.
+            Review active admins in the user directory and revoke any sessions you don&apos;t recognize.
           </span>
         </div>
       </Card>

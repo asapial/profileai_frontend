@@ -51,7 +51,7 @@ export function useAdminHelpArticles(filters: {
             ? `/admin/help-articles?${qs.toString()}`
             : "/admin/help-articles";
         const r = await api.get<HelpArticle[]>(path);
-        return r.data;
+        return r;
       } catch (err: unknown) {
         if (err instanceof ApiError && err.status === 404)
           return [] as HelpArticle[];
@@ -68,7 +68,7 @@ export function useAdminHelpCategories() {
     queryFn: async () => {
       try {
         const r = await api.get<HelpCategory[]>("/admin/help-categories");
-        return r.data;
+        return r;
       } catch (err: unknown) {
         if (err instanceof ApiError && err.status === 404)
           return [] as HelpCategory[];
@@ -86,7 +86,7 @@ export function useAdminHelpArticle(id: string | null) {
       if (!id) return null;
       try {
         const r = await api.get<HelpArticleDetail>(`/admin/help-articles/${id}`);
-        return r.data;
+        return r;
       } catch (err: unknown) {
         if (err instanceof ApiError && err.status === 404) return null;
         throw err;

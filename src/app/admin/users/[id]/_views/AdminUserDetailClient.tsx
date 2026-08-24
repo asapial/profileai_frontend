@@ -52,7 +52,7 @@ type Props = {
 };
 
 type ImpersonationState = {
-  token: string;
+  impersonationToken: string;
   expiresAt: string;
 };
 
@@ -280,30 +280,18 @@ function SummaryActions({
   deleting: boolean;
 }) {
   const impersonate = useImpersonateAdminUser(user.id);
-  const [, forceRerender] = useState(0);
-  const [active, setActive] = useState<ImpersonationState | null>(null);
-  const [expiresIn, setExpiresIn] = useState<string>("");
-
-  // Read impersonation banner state from sessionStorage so it
-  // persists across navigation; clear on expiry.
-  useEffect(() => {
-    const raw =
-      typeof window !== "undefined"
-        ? window.sessionStorage.getItem(IMPERSONATION_STORAGE_KEY)
-        : null;
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw) as ImpersonationState;
-        if (new Date(parsed.expiresAt).getTime() > Date.now()) {
-          setActive(parsed);
-        } else {
-          window.sessionStorage.removeItem(IMPERSONATION_STORAGE_KEY);
-        }
-      } catch {
-        // ignore malformed
-      }
+  const [active, setActive] = useState<ImpersonationState | null>(() => {
+    if (typeof window === "undefined") return null;
+    const raw = window.sessionStorage.getItem(IMPERSONATION_STORAGE_KEY);
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw) as ImpersonationState;
+      return new Date(parsed.expiresAt).getTime() > Date.now() ? parsed : null;
+    } catch {
+      return null;
     }
-  }, []);
+  });
+  const [expiresIn, setExpiresIn] = useState<string>("");
 
   useEffect(() => {
     if (!active) return;
@@ -312,7 +300,6 @@ function SummaryActions({
       if (remaining <= 0) {
         window.sessionStorage.removeItem(IMPERSONATION_STORAGE_KEY);
         setActive(null);
-        forceRerender((n) => n + 1);
         return;
       }
       const m = Math.floor(remaining / 60000);

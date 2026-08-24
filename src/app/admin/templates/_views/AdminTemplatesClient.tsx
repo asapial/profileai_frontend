@@ -7,7 +7,7 @@
 // active use. Default toggling is transactional on the backend; the
 // UI shows the previous default as a toast for accountability.
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   IconCheck,
@@ -18,6 +18,7 @@ import {
   IconPlus,
   IconStar,
   IconTrash,
+  IconX,
 } from "@tabler/icons-react";
 import { toast } from "react-hot-toast";
 
@@ -46,6 +47,7 @@ import {
   useDeleteTemplate,
   useSetDefaultTemplate,
   useToggleTemplateStatus,
+  useReviewTemplate,
   type AdminTemplateFilters,
   type Template,
   type TemplateCategory,
@@ -56,10 +58,7 @@ const CATEGORIES: Array<TemplateCategory | "ALL"> = [
   "MODERN",
   "CLASSIC",
   "CREATIVE",
-  "MINIMAL",
-  "EXECUTIVE",
-  "TECHNICAL",
-  "ACADEMIC",
+  "ATS",
 ];
 
 export function AdminTemplatesClient() {
@@ -67,16 +66,20 @@ export function AdminTemplatesClient() {
     "ALL",
   );
   const [status, setStatus] = useState<AdminTemplateFilters["status"]>("all");
+  const [documentType, setDocumentType] = useState<AdminTemplateFilters["documentType"]>("ALL");
+  const [reviewStatus, setReviewStatus] = useState<AdminTemplateFilters["reviewStatus"]>("ALL");
+  const rejectionReasonRef = useRef<HTMLTextAreaElement>(null);
 
   const filters = useMemo(
-    () => ({ category, status }),
-    [category, status],
+    () => ({ category, status, documentType, reviewStatus }),
+    [category, documentType, reviewStatus, status],
   );
 
   const query = useAdminTemplates(filters);
   const toggleStatus = useToggleTemplateStatus();
   const setDefault = useSetDefaultTemplate();
   const remove = useDeleteTemplate();
+  const review = useReviewTemplate();
 
   const [confirm, setConfirm] = useState<
     | {
@@ -85,6 +88,7 @@ export function AdminTemplatesClient() {
         confirmLabel: string;
         destructive?: boolean;
         run: () => Promise<void>;
+        children?: React.ReactNode;
       }
     | null
   >(null);
@@ -141,6 +145,37 @@ export function AdminTemplatesClient() {
     });
   };
 
+  const onApprove = async (t: Template) => {
+    try {
+      await review.mutateAsync({ id: t.id, decision: "APPROVED" });
+      toast.success(`${t.name} is now published in the public gallery.`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Review failed.");
+    }
+  };
+
+  const onReject = (t: Template) => {
+    setConfirm({
+      title: `Request changes for ${t.name}`,
+      description: "Explain what the creator should improve. This note is delivered through their real-time notifications and shown in their private gallery.",
+      confirmLabel: "Send change request",
+      destructive: true,
+      children: (
+        <textarea
+          ref={rejectionReasonRef}
+          rows={5}
+          placeholder="Describe the required changes…"
+          className="mt-4 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-violet-500/30"
+        />
+      ),
+      run: async () => {
+        const reason = rejectionReasonRef.current?.value.trim() || "Please refine the template design and description, then resubmit it for review.";
+        await review.mutateAsync({ id: t.id, decision: "REJECTED", reason });
+        toast.success("Change request sent to the creator.");
+      },
+    });
+  };
+
   return (
     <div className="flex min-w-0 flex-col gap-4 px-4 lg:px-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -181,6 +216,14 @@ export function AdminTemplatesClient() {
               ))}
             </SelectContent>
           </Select>
+          <Select value={documentType ?? "ALL"} onValueChange={(value) => setDocumentType(value as AdminTemplateFilters["documentType"])}>
+            <SelectTrigger className="w-full md:w-40"><SelectValue placeholder="Document" /></SelectTrigger>
+            <SelectContent><SelectItem value="ALL">All documents</SelectItem><SelectItem value="RESUME">Résumés</SelectItem><SelectItem value="CV">CVs</SelectItem></SelectContent>
+          </Select>
+          <Select value={reviewStatus ?? "ALL"} onValueChange={(value) => setReviewStatus(value as AdminTemplateFilters["reviewStatus"])}>
+            <SelectTrigger className="w-full md:w-48"><SelectValue placeholder="Review" /></SelectTrigger>
+            <SelectContent><SelectItem value="ALL">All review states</SelectItem><SelectItem value="PENDING">Pending approval</SelectItem><SelectItem value="APPROVED">Approved</SelectItem><SelectItem value="DRAFT">Private drafts</SelectItem><SelectItem value="REJECTED">Changes requested</SelectItem></SelectContent>
+          </Select>
           <Select
             value={status ?? "all"}
             onValueChange={(v) =>
@@ -205,6 +248,8 @@ export function AdminTemplatesClient() {
             <TableRow>
               <TableHead>Template</TableHead>
               <TableHead>Category</TableHead>
+              <TableHead>Document</TableHead>
+              <TableHead>Review</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Usage</TableHead>
               <TableHead>Default</TableHead>
@@ -215,7 +260,7 @@ export function AdminTemplatesClient() {
             {query.isLoading && !query.data
               ? Array.from({ length: 6 }).map((_, i) => (
                   <TableRow key={i}>
-                    <TableCell colSpan={6}>
+                    <TableCell colSpan={8}>
                       <Skeleton className="h-12 w-full" />
                     </TableCell>
                   </TableRow>
@@ -224,7 +269,7 @@ export function AdminTemplatesClient() {
 
             {!query.isLoading && templates.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="py-12 text-center">
+                <TableCell colSpan={8} className="py-12 text-center">
                   <div className="text-muted-foreground flex flex-col items-center gap-2 text-sm">
                     <IconFileDescription className="size-6" />
                     No templates match these filters.
@@ -258,12 +303,15 @@ export function AdminTemplatesClient() {
                             {t.description}
                           </span>
                         ) : null}
+                        {t.owner ? <span className="text-[11px] text-violet-600">Submitted by {t.owner.name}{t.owner.email ? ` · ${t.owner.email}` : ""}</span> : null}
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className="text-sm">
                     {t.category.toLowerCase()}
                   </TableCell>
+                  <TableCell className="text-sm">{t.documentType === "CV" ? "CV" : "Résumé"}</TableCell>
+                  <TableCell><Badge variant={t.reviewStatus === "PENDING" ? "default" : t.reviewStatus === "REJECTED" ? "destructive" : "secondary"}>{t.reviewStatus.toLowerCase()}</Badge></TableCell>
                   <TableCell>
                     <Badge
                       variant={t.isActive ? "default" : "secondary"}
@@ -296,6 +344,10 @@ export function AdminTemplatesClient() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
+                      {t.reviewStatus === "PENDING" ? <>
+                        <Button size="sm" variant="ghost" className="text-emerald-600 hover:text-emerald-700" onClick={() => onApprove(t)} disabled={review.isPending} aria-label={`Approve ${t.name}`}><IconCheck className="size-4" /></Button>
+                        <Button size="sm" variant="ghost" className="text-rose-600 hover:text-rose-700" onClick={() => onReject(t)} disabled={review.isPending} aria-label={`Request changes for ${t.name}`}><IconX className="size-4" /></Button>
+                      </> : null}
                       <Button asChild size="sm" variant="ghost">
                         <Link
                           href={`/admin/templates/${t.id}/edit`}
@@ -362,9 +414,8 @@ export function AdminTemplatesClient() {
         onConfirm={async () => {
           if (confirm) await confirm.run();
         }}
-      />
+      >{confirm?.children}</AdminConfirmDialog>
     </div>
   );
 }
 
-void IconCheck; // keep import available for future use

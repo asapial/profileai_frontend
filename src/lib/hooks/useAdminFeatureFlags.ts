@@ -67,10 +67,10 @@ export function useCreateFlag() {
   });
 }
 
-export function useDeleteFlag(id: string) {
+export function useDeleteFlag() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (id: string) => {
       const res = await api.delete<{ ok: true }>(`/admin/feature-flags/${id}`);
       return res;
     },

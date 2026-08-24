@@ -97,7 +97,10 @@ export function useImpersonateAdminUser(id: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: () =>
-      api.post<AdminImpersonationResponse>(`/admin/users/${id}/impersonate`),
+      api.post<AdminImpersonationResponse>(
+        `/admin/users/${id}/impersonate`,
+        {},
+      ),
     onSuccess: () => qc.invalidateQueries({ queryKey: adminUserDetailKey(id) }),
   });
 }

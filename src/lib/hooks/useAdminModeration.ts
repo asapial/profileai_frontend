@@ -53,7 +53,7 @@ export function useAdminModeration(filters: ModerationFilters = {}) {
             ? `/admin/moderation?${qs.toString()}`
             : "/admin/moderation";
         const r = await api.get<ModerationItem[]>(path);
-        return r.data;
+        return r;
       } catch (err: unknown) {
         if (err instanceof ApiError && err.status === 404)
           return [] as ModerationItem[];

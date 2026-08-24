@@ -6,9 +6,8 @@
 // existing template, supports rollback to a specific history snapshot,
 // and surfaces the version history sidebar against the right gutter.
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   IconArrowLeft,
   IconClock,
@@ -17,7 +16,7 @@ import {
   IconRocket,
   IconTrash,
 } from "@tabler/icons-react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "@/lib/date";
 import { toast } from "react-hot-toast";
 
 import { Badge } from "@/components/ui/badge";
@@ -34,10 +33,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TemplateDesignPreview } from "@/components/templates/TemplateDesignPreview";
 import {
   useAdminTemplate,
   useAdminTemplateHistory,
   useUpdateTemplate,
+  type Template,
   type TemplateCategory,
   type TemplateLayoutConfig,
 } from "@/lib/hooks/useAdminTemplates";
@@ -46,10 +47,7 @@ const CATEGORIES: TemplateCategory[] = [
   "MODERN",
   "CLASSIC",
   "CREATIVE",
-  "MINIMAL",
-  "EXECUTIVE",
-  "TECHNICAL",
-  "ACADEMIC",
+  "ATS",
 ];
 
 type PreviewResume = {
@@ -93,53 +91,7 @@ const SAMPLE_DATA: PreviewResume = {
 };
 
 export function AdminTemplateEditClient({ id }: { id: string }) {
-  const router = useRouter();
   const { data: template, isLoading } = useAdminTemplate(id);
-  const { data: history } = useAdminTemplateHistory(id);
-  const update = useUpdateTemplate(id);
-
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState<TemplateCategory>("MODERN");
-  const [isAtsFriendly, setIsAtsFriendly] = useState(true);
-  const [thumbnailUrl, setThumbnailUrl] = useState("");
-  const [fontFamily, setFontFamily] = useState("Inter");
-  const [accentColor, setAccentColor] = useState("#1F4E79");
-  const [spacing, setSpacing] = useState<TemplateLayoutConfig["spacing"]>(
-    "comfortable",
-  );
-  const [sectionOrder, setSectionOrder] = useState<string[]>([
-    "summary",
-    "experience",
-    "skills",
-  ]);
-  const [dirty, setDirty] = useState(false);
-
-  // Hydrate form from server-loaded template.
-  useEffect(() => {
-    if (!template) return;
-    setName(template.name);
-    setDescription(template.description ?? "");
-    setCategory(template.category);
-    setIsAtsFriendly(template.isAtsFriendly);
-    setThumbnailUrl(template.thumbnailUrl ?? "");
-    setFontFamily(template.layoutConfig.fontFamily ?? "Inter");
-    setAccentColor(template.layoutConfig.accentColor ?? "#1F4E79");
-    setSpacing(template.layoutConfig.spacing ?? "comfortable");
-    setSectionOrder(
-      template.layoutConfig.sectionOrder ?? [
-        "summary",
-        "experience",
-        "skills",
-      ],
-    );
-    setDirty(false);
-  }, [template]);
-
-  const layoutConfig: TemplateLayoutConfig = useMemo(
-    () => ({ fontFamily, accentColor, spacing, sectionOrder }),
-    [fontFamily, accentColor, spacing, sectionOrder],
-  );
 
   if (isLoading) {
     return (
@@ -162,6 +114,47 @@ export function AdminTemplateEditClient({ id }: { id: string }) {
     );
   }
 
+  return <AdminTemplateEditForm key={template.updatedAt} id={id} template={template} />;
+}
+
+function AdminTemplateEditForm({
+  id,
+  template,
+}: {
+  id: string;
+  template: Template;
+}) {
+  const { data: history } = useAdminTemplateHistory(id);
+  const update = useUpdateTemplate(id);
+  const [name, setName] = useState(template.name);
+  const [description, setDescription] = useState(template.description ?? "");
+  const [category, setCategory] = useState<TemplateCategory>(template.category);
+  const [documentType, setDocumentType] = useState<"RESUME" | "CV">(template.documentType);
+  const [isAtsFriendly, setIsAtsFriendly] = useState(template.isAtsFriendly);
+  const [thumbnailUrl, setThumbnailUrl] = useState(template.thumbnailUrl ?? "");
+  const [fontFamily, setFontFamily] = useState(
+    template.layoutConfig.fontFamily ?? "Inter",
+  );
+  const [accentColor, setAccentColor] = useState(
+    template.layoutConfig.accentColor ?? "#1F4E79",
+  );
+  const [spacing, setSpacing] = useState<TemplateLayoutConfig["spacing"]>(
+    template.layoutConfig.spacing ?? "comfortable",
+  );
+  const [sectionOrder, setSectionOrder] = useState<string[]>(
+    template.layoutConfig.sectionOrder ?? [
+      "summary",
+      "experience",
+      "skills",
+    ],
+  );
+  const [dirty, setDirty] = useState(false);
+
+  const layoutConfig: TemplateLayoutConfig = useMemo(
+    () => ({ fontFamily, accentColor, spacing, sectionOrder }),
+    [fontFamily, accentColor, spacing, sectionOrder],
+  );
+
   async function save(activateImmediately: boolean) {
     if (!name.trim()) return;
     try {
@@ -169,6 +162,7 @@ export function AdminTemplateEditClient({ id }: { id: string }) {
         name: name.trim(),
         description: description.trim() || null,
         category,
+        documentType,
         isAtsFriendly,
         thumbnailUrl: thumbnailUrl.trim() || null,
         layoutConfig,
@@ -275,6 +269,13 @@ export function AdminTemplateEditClient({ id }: { id: string }) {
               </Select>
             </div>
             <div className="flex flex-col gap-2">
+              <Label>Document type</Label>
+              <Select value={documentType} onValueChange={(value) => { setDocumentType(value as "RESUME" | "CV"); setDirty(true); }}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent><SelectItem value="RESUME">Résumé</SelectItem><SelectItem value="CV">CV</SelectItem></SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="thumbnail">Thumbnail URL</Label>
               <Input
                 id="thumbnail"
@@ -361,7 +362,13 @@ export function AdminTemplateEditClient({ id }: { id: string }) {
         <Card className="flex flex-col gap-4 p-5">
           <h2 className="text-base font-semibold">Preview</h2>
           <Separator />
-          <PreviewPane layoutConfig={layoutConfig} />
+          {template.htmlLayout && template.cssStyles ? (
+            <div className="rounded-xl bg-gradient-to-br from-violet-100/70 via-white to-cyan-100/70 p-3 dark:from-violet-950/40 dark:via-slate-950 dark:to-cyan-950/40">
+              <TemplateDesignPreview template={template} className="rounded-lg shadow-xl" />
+            </div>
+          ) : (
+            <PreviewPane layoutConfig={layoutConfig} />
+          )}
         </Card>
 
         <Card className="flex flex-col gap-3 p-5">
@@ -386,13 +393,13 @@ export function AdminTemplateEditClient({ id }: { id: string }) {
                     </span>
                     <span className="text-muted-foreground text-[10px]">
                       <IconClock className="mr-1 inline size-3" />
-                      {formatDistanceToNow(new Date(h.createdAt), {
+                      {formatDistanceToNow(new Date(h.savedAt), {
                         addSuffix: true,
                       })}
                     </span>
-                    {h.changedBy ? (
+                    {h.savedBy ? (
                       <span className="text-muted-foreground text-[10px]">
-                        by {h.changedBy}
+                        by {h.savedBy}
                       </span>
                     ) : null}
                   </div>
@@ -406,22 +413,24 @@ export function AdminTemplateEditClient({ id }: { id: string }) {
                         // current version. Keep last writer by
                         // hydrating fields from h.layoutConfig.
                         setFontFamily(
-                          (h.layoutConfig.fontFamily as string) ?? "Inter",
+                          h.configSnapshot.fontFamily ?? "Inter",
                         );
                         setAccentColor(
-                          (h.layoutConfig.accentColor as string) ??
+                          h.configSnapshot.accentColor ??
                             "#1F4E79",
                         );
                         setSpacing(
-                          (h.layoutConfig.spacing as TemplateLayoutConfig["spacing"]) ??
+                          h.configSnapshot.spacing ??
                             "comfortable",
                         );
                         setSectionOrder(
-                          Array.isArray(h.layoutConfig.sectionOrder)
-                            ? (h.layoutConfig.sectionOrder as string[])
+                          Array.isArray(h.configSnapshot.sectionOrder)
+                            ? h.configSnapshot.sectionOrder
                             : ["summary", "experience", "skills"],
                         );
-                        if (h.name) setName(h.name);
+                        if (h.configSnapshot.name) {
+                          setName(h.configSnapshot.name);
+                        }
                         setDirty(true);
                         toast(
                           "Snapshot staged. Click Save to make it current.",

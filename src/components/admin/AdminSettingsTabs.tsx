@@ -12,13 +12,12 @@
 // dedicated TanStack Query endpoint. If the endpoint is not yet live the
 // panel surfaces a graceful empty state.
 
-import { useState } from "react";
 import { toast } from "react-hot-toast";
 import {
   IconMail,
   IconPalette,
   IconShield,
-  IconSliders,
+  IconAdjustments,
 } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -28,7 +27,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
 
 import { AdminSettingsForm } from "@/components/admin/AdminSettingsForm";
 import { api, ApiError } from "@/lib/api";
@@ -65,7 +63,7 @@ export function AdminSettingsTabs({ initial }: Props) {
     <Tabs defaultValue="general" className="w-full">
       <TabsList>
         <TabsTrigger value="general">
-          <IconSliders className="mr-1.5 size-4" />
+          <IconAdjustments className="mr-1.5 size-4" />
           General
         </TabsTrigger>
         <TabsTrigger value="security">
@@ -103,7 +101,7 @@ function useGetOrFallback<T>(path: string, fallback: T) {
     queryFn: async () => {
       try {
         const r = await api.get<T>(path);
-        return r.data;
+        return r;
       } catch (err: unknown) {
         if (err instanceof ApiError && err.status === 404) return fallback;
         throw err;

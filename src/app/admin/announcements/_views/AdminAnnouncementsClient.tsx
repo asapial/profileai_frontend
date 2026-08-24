@@ -5,7 +5,7 @@ import { toast } from "react-hot-toast";
 import {
   IconCheck,
   IconEye,
-  IconMegaphone,
+  IconSpeakerphone,
   IconPencil,
   IconPlus,
   IconPower,
@@ -132,8 +132,8 @@ export function AdminAnnouncementsClient() {
 
   const create = useCreateAnnouncement();
   const update = useUpdateAnnouncement(editingId ?? "");
-  const publish = usePublishAnnouncement("");
-  const retire = useRetireAnnouncement("");
+  const publish = usePublishAnnouncement();
+  const retire = useRetireAnnouncement();
 
   const visible = useMemo(
     () =>
@@ -243,7 +243,7 @@ export function AdminAnnouncementsClient() {
           </div>
         ) : visible.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 p-12 text-center">
-            <IconMegaphone className="text-muted-foreground size-8" />
+            <IconSpeakerphone className="text-muted-foreground size-8" />
             <div className="text-sm font-medium">No announcements</div>
           </div>
         ) : (
@@ -496,17 +496,17 @@ function AnnouncementActions({
   onRetire,
 }: {
   announcement: Announcement;
-  onPublish: () => Promise<unknown>;
-  onRetire: () => Promise<unknown>;
+  onPublish: (id: string) => Promise<unknown>;
+  onRetire: (id: string) => Promise<unknown>;
 }) {
   const live = announcement.status === "LIVE";
   async function run() {
     try {
       if (live) {
-        await onRetire();
+        await onRetire(announcement.id);
         toast.success("Announcement retired.");
       } else {
-        await onPublish();
+        await onPublish(announcement.id);
         toast.success("Announcement published.");
       }
     } catch (err: unknown) {

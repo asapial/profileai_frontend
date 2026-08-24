@@ -46,8 +46,9 @@ export function useUnreadCount() {
   return useQuery({
     queryKey: ["notifications", "unread-count"],
     queryFn: () => api.get<{ unreadCount: number }>("/notifications/unread-count"),
-    // Light polling so the bell badge stays in sync without manual refresh.
-    refetchInterval: 60 * 1000,
+    // WebSocket events invalidate this query. Slow polling remains as a
+    // resilient fallback for proxies that do not support upgrades.
+    refetchInterval: 5 * 60 * 1000,
   });
 }
 

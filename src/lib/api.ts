@@ -9,9 +9,15 @@ export type ApiSuccess<T> = {
 
 export class ApiError extends Error {
   status: number;
-  constructor(message: string, status: number) {
+  code?: string;
+  retryable: boolean;
+  details?: Record<string, unknown>;
+  constructor(message: string, status: number, code?: string, details?: Record<string, unknown>) {
     super(message);
     this.status = status;
+    if (code !== undefined) this.code = code;
+    this.retryable = status === 408 || status === 429 || status >= 500;
+    if (details !== undefined) this.details = details;
     this.name = "ApiError";
   }
 }
@@ -52,7 +58,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const message =
       (payload as { message?: string })?.message ||
       `Request failed with status ${res.status}`;
-    throw new ApiError(message, res.status);
+    const errorPayload = payload as {
+      code?: string;
+      details?: Record<string, unknown>;
+      error?: { code?: string; details?: Record<string, unknown> };
+    } | null;
+    throw new ApiError(
+      message,
+      res.status,
+      errorPayload?.code ?? errorPayload?.error?.code,
+      errorPayload?.details ?? errorPayload?.error?.details,
+    );
   }
 
   return (payload as ApiSuccess<T>).data;
@@ -60,10 +76,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   get: <T>(path: string) => request<T>(path, { method: "GET" }),
-  post: <T>(path: string, body: unknown) =>
+  post: <T>(path: string, body: unknown, init?: Omit<RequestInit, "method" | "body">) =>
     request<T>(path, {
+      ...init,
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
       body: JSON.stringify(body),
     }),
   put: <T>(path: string, body: unknown) =>
@@ -95,17 +112,20 @@ export type TemplateCategory =
   | "MODERN"
   | "CLASSIC"
   | "CREATIVE"
-  | "MINIMAL"
-  | "EXECUTIVE"
-  | "TECHNICAL"
-  | "ACADEMIC";
+  | "ATS";
 
 export type FeaturedTemplate = {
   id: string;
   name: string;
   description: string | null;
   thumbnailUrl: string;
+  htmlLayout: string;
+  cssStyles: string;
   category: TemplateCategory;
+  documentType: "RESUME" | "CV";
+  reviewStatus: "APPROVED";
+  isCommunity: boolean;
+  owner?: { name: string } | null;
   isDefault: boolean;
   isActive: boolean;
   isFeatured: boolean;
@@ -114,4 +134,7 @@ export type FeaturedTemplate = {
 };
 
 export const fetchFeaturedTemplates = () =>
-  api.get<FeaturedTemplate[]>("/templates?featured=true");
+  api.get<FeaturedTemplate[]>("/templates?featured=true&catalog=2");
+
+export const fetchPublicTemplates = () =>
+  api.get<FeaturedTemplate[]>("/templates?catalog=2");

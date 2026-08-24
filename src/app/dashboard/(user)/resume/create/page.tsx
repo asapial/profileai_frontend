@@ -191,6 +191,8 @@ export default function CreateResumePage() {
               {currentStep.id === "template" && (
                 <TemplateStep
                   templateId={state.templateId}
+                  documentType={state.type}
+                  onDocumentTypeChange={(type) => setState((current) => ({ ...current, type, templateId: "" }))}
                   onSelect={setTemplateId}
                   onAfterSelect={() => {
                     // Picking a template advances the wizard automatically,

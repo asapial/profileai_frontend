@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import Image from "next/image";
 import { Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Template, TemplateCategory } from "@/lib/hooks/useTemplates";
+import { TemplateDesignPreview } from "@/components/templates/TemplateDesignPreview";
 
 const atsScore: Record<TemplateCategory, number> = {
   ATS: 98,
@@ -17,10 +17,12 @@ export function TemplatePreviewModal({
   template,
   onClose,
   onUse,
+  onCustomize,
 }: {
   template: Template | null;
   onClose: () => void;
   onUse: () => void;
+  onCustomize?: () => void;
 }) {
   useEffect(() => {
     if (!template) return;
@@ -77,14 +79,8 @@ export function TemplatePreviewModal({
 
         <div className="grid flex-1 gap-4 overflow-y-auto p-3 sm:p-5 md:grid-cols-[minmax(0,1fr)_220px] md:gap-5">
           <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-border bg-muted">
-            {template.thumbnailUrl ? (
-              <Image
-                src={template.thumbnailUrl}
-                alt={template.name}
-                fill
-                className="object-contain"
-                sizes="(min-width: 768px) 60vw, 100vw"
-              />
+            {template.htmlLayout && template.cssStyles ? (
+              <TemplateDesignPreview template={template} />
             ) : (
               <div className="flex h-full items-center justify-center">
                 <Sparkles className="h-12 w-12 text-violet-400" />
@@ -95,6 +91,7 @@ export function TemplatePreviewModal({
           <div className="space-y-4">
             <Tile label="ATS score" value={`${ats} / 100`} />
             <Tile label="Style" value={template.category} />
+            <Tile label="Document" value={template.documentType === "CV" ? "Curriculum vitae" : "Résumé"} />
             <Tile
               label="Used by"
               value={`${template._count.resumes} resumes`}
@@ -113,6 +110,11 @@ export function TemplatePreviewModal({
           <Button variant="outline" onClick={onClose}>
             Close
           </Button>
+          {onCustomize ? (
+            <Button variant="secondary" onClick={onCustomize}>
+              Save an editable copy
+            </Button>
+          ) : null}
           <Button onClick={onUse} className="gap-2">
             Use this template
           </Button>

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Eye, Sparkles } from "lucide-react";
@@ -18,7 +17,9 @@ import {
   useTemplates,
   type Template,
   type TemplateCategory,
+  type TemplateDocumentType,
 } from "@/lib/hooks/useTemplates";
+import { TemplateDesignPreview } from "@/components/templates/TemplateDesignPreview";
 
 const CATEGORIES: Array<{ value: TemplateCategory | "ALL"; label: string }> = [
   { value: "ALL", label: "All" },
@@ -39,16 +40,20 @@ export function TemplateStep({
   templateId,
   onSelect,
   onAfterSelect,
+  documentType,
+  onDocumentTypeChange,
 }: {
   templateId: string;
   onSelect: (id: string) => void;
   /** Called right after a template is picked. The wizard uses this to
    * advance to the next step so a click is enough — no extra Continue. */
   onAfterSelect?: () => void;
+  documentType: TemplateDocumentType;
+  onDocumentTypeChange: (type: TemplateDocumentType) => void;
 }) {
   const [category, setCategory] = useState<TemplateCategory | "ALL">("ALL");
 
-  const { data: templates = [], isLoading, isError } = useTemplates({ category });
+  const { data: templates = [], isLoading, isError } = useTemplates({ category, documentType });
 
   function pick(id: string) {
     onSelect(id);
@@ -65,6 +70,10 @@ export function TemplateStep({
       </header>
 
       <div className="flex flex-wrap gap-1.5">
+        {(["RESUME", "CV"] as const).map((type) => (
+          <button key={type} type="button" onClick={() => onDocumentTypeChange(type)} className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${documentType === type ? "border-slate-950 bg-slate-950 text-white" : "border-border bg-background hover:border-violet-300"}`}>{type === "RESUME" ? "Résumés" : "CVs"}</button>
+        ))}
+        <span className="mx-1 h-6 w-px bg-border" />
         {CATEGORIES.map((c) => (
           <button
             key={c.value}
@@ -141,14 +150,8 @@ function TemplateTile({
       }`}
     >
       <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100">
-        {template.thumbnailUrl ? (
-          <Image
-            src={template.thumbnailUrl}
-            alt={template.name}
-            fill
-            className="object-cover transition group-hover:scale-105"
-            sizes="(min-width: 768px) 25vw, (min-width: 420px) 50vw, 100vw"
-          />
+        {template.htmlLayout && template.cssStyles ? (
+          <TemplateDesignPreview template={template} className="transition group-hover:scale-[1.015]" />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
             <Sparkles className="h-8 w-8 text-violet-400" />

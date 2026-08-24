@@ -23,6 +23,7 @@ export default async function DashboardLayout({
 
   return (
     <SidebarProvider
+      className="premium-dashboard bg-transparent"
       style={
         {
           "--sidebar-width": "calc(var(--spacing) * 72)",
@@ -31,13 +32,12 @@ export default async function DashboardLayout({
       }
     >
       <AppSidebar variant="inset" role={role ?? undefined} />
-      <SidebarInset>
+      <SidebarInset className="border border-white/40 dark:border-white/8">
         <SiteHeader
           role={role ?? undefined}
-          title={role === "ADMIN" ? "Admin overview" : "Dashboard"}
           cta={
             role === "ADMIN"
-              ? { label: "New template", href: "/admin/templates/new" }
+              ? { label: "New template", href: "/admin/templates/create" }
               : { label: "New resume", href: "/dashboard/resumes/new" }
           }
         />

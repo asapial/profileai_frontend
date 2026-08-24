@@ -3,6 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Providers } from "@/components/providers";
+import { AmbientBackdrop } from "@/components/premium/AmbientBackdrop";
 
 export const metadata: Metadata = {
   title: "ProFile AI — Build a Job-Winning Resume with AI",
@@ -23,8 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-svh bg-background font-sans antialiased">
+    <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
+      <body className="min-h-svh font-sans antialiased">
         {/* Providers (React Query + Toaster) sits above route trees so every
             page has a QueryClient available. Mount it once here rather than
             per-layout to avoid duplicate clients and HMR remount churn. */}
@@ -35,7 +36,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <TooltipProvider delayDuration={150}>{children}</TooltipProvider>
+            <TooltipProvider delayDuration={150}>
+              <AmbientBackdrop />
+              <div className="relative z-10 min-h-svh">{children}</div>
+            </TooltipProvider>
           </ThemeProvider>
         </Providers>
       </body>

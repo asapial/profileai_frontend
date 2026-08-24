@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import {
   IconBell,
   IconChartBar,
@@ -10,15 +11,15 @@ import {
   IconFlag,
   IconGift,
   IconHelp,
-  IconInnerShadowTop,
+  IconHomeEdit,
   IconListDetails,
   IconLock,
-  IconMegaphone,
   IconReceipt,
   IconReport,
   IconSearch,
   IconSettings,
   IconShield,
+  IconSpeakerphone,
   IconTag,
   IconTicket,
   IconUsers,
@@ -29,7 +30,6 @@ import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
-import { ModeToggleCompact } from "@/components/mode-toggle"
 import {
   Sidebar,
   SidebarContent,
@@ -41,94 +41,86 @@ import {
 } from "@/components/ui/sidebar"
 import type { Role } from "@/types"
 
-/**
- * Navigation payload for a single role. We keep the same primitives used
- * by the shadcn sidebar so the chrome (colors, spacing, focus rings) is
- * unchanged regardless of the active role.
- */
+type SidebarItem = { title: string; url: string; icon: Icon }
+
 type SidebarConfig = {
   brand: { name: string; href: string }
   user: { name: string; email: string; avatar: string }
-  navMain: { title: string; url: string; icon: Icon }[]
-  documents: { name: string; url: string; icon: Icon }[]
-  navSecondary: {
-    title: string
-    url: string
-    icon: Icon
-  }[]
-  quickCreate?: { label: string; href: string }
+  navMainLabel: string
+  navMain: SidebarItem[]
+  toolsLabel: string
+  tools: SidebarItem[]
+  navSecondaryLabel: string
+  navSecondary: SidebarItem[]
+  quickCreate: { label: string; href: string }
 }
 
+/** Every destination below maps to a real page in the current App Router. */
 const USER_CONFIG: SidebarConfig = {
   brand: { name: "ProfileAI", href: "/dashboard" },
-  user: {
-    name: "User",
-    email: "user@example.com",
-    avatar: "/avatars/user.jpg",
-  },
+  user: { name: "Member", email: "Your career workspace", avatar: "" },
+  navMainLabel: "Workspace",
   navMain: [
     { title: "Overview", url: "/dashboard", icon: IconDashboard },
     { title: "Resumes", url: "/dashboard/resumes", icon: IconListDetails },
+    { title: "Applications", url: "/dashboard/applications", icon: IconListDetails },
     { title: "Templates", url: "/dashboard/templates", icon: IconFileDescription },
+  ],
+  toolsLabel: "Career tools",
+  tools: [
+    { title: "ATS Analyzer", url: "/dashboard/ats", icon: IconSearch },
+    { title: "Cover Letters", url: "/dashboard/cover-letters", icon: IconFileDescription },
     { title: "Analytics", url: "/dashboard/analytics", icon: IconChartBar },
-    { title: "Notifications", url: "/dashboard/notifications", icon: IconBell },
-    { title: "Profile", url: "/dashboard/profile", icon: IconUsers },
+    { title: "Exports", url: "/dashboard/exports", icon: IconReport },
+    { title: "Referrals", url: "/dashboard/referrals", icon: IconGift },
   ],
-  documents: [
-    { name: "Cover Letters", url: "/dashboard/cover-letters", icon: IconFileDescription },
-    { name: "Exports", url: "/dashboard/exports", icon: IconReport },
-    { name: "Referrals", url: "/dashboard/referrals", icon: IconGift },
-    { name: "Billing", url: "/dashboard/billing", icon: IconCreditCard },
-  ],
+  navSecondaryLabel: "Account",
   navSecondary: [
+    { title: "Notifications", url: "/dashboard/notifications", icon: IconBell },
+    { title: "Billing", url: "/dashboard/billing", icon: IconCreditCard },
+    { title: "Support", url: "/dashboard/support", icon: IconHelp },
     { title: "Settings", url: "/dashboard/settings", icon: IconSettings },
-    { title: "Get Help", url: "/help", icon: IconHelp },
-    { title: "Search", url: "#", icon: IconSearch },
   ],
   quickCreate: { label: "New resume", href: "/dashboard/resumes/new" },
 }
 
 const ADMIN_CONFIG: SidebarConfig = {
-  brand: { name: "ProfileAI · Admin", href: "/admin" },
-  user: {
-    name: "Admin",
-    email: "admin@example.com",
-    avatar: "/avatars/admin.jpg",
-  },
+  brand: { name: "ProfileAI Admin", href: "/admin" },
+  user: { name: "Administrator", email: "Platform control center", avatar: "" },
+  navMainLabel: "Admin console",
   navMain: [
     { title: "Overview", url: "/admin", icon: IconDashboard },
+    { title: "Homepage", url: "/admin/homepage", icon: IconHomeEdit },
     { title: "Users", url: "/admin/users", icon: IconUsers },
     { title: "Resumes", url: "/admin/resumes", icon: IconListDetails },
     { title: "Templates", url: "/admin/templates", icon: IconFileDescription },
+  ],
+  toolsLabel: "Operations",
+  tools: [
     { title: "Tickets", url: "/admin/tickets", icon: IconTicket },
     { title: "Analytics", url: "/admin/analytics", icon: IconChartBar },
     { title: "Reports", url: "/admin/reports", icon: IconReport },
     { title: "Moderation", url: "/admin/moderation", icon: IconShield },
+    { title: "Announcements", url: "/admin/announcements", icon: IconSpeakerphone },
+    { title: "Coupons", url: "/admin/coupons", icon: IconTag },
+    { title: "Invoices", url: "/admin/invoices", icon: IconReceipt },
+    { title: "Plans", url: "/admin/plans", icon: IconCreditCard },
+    { title: "Billing", url: "/admin/billing", icon: IconCreditCard },
+    { title: "Exports", url: "/admin/exports", icon: IconFileDescription },
   ],
-  documents: [
-    { name: "Announcements", url: "/admin/announcements", icon: IconMegaphone },
-    { name: "Coupons", url: "/admin/coupons", icon: IconTag },
-    { name: "Invoices", url: "/admin/invoices", icon: IconReceipt },
-    { name: "Plans", url: "/admin/plans", icon: IconCreditCard },
-    { name: "Help articles", url: "/admin/help-articles", icon: IconHelp },
-    { name: "Exports", url: "/admin/exports", icon: IconFileDescription },
-  ],
+  navSecondaryLabel: "System",
   navSecondary: [
-    { title: "Profile", url: "/admin/profile", icon: IconUsers },
+    { title: "Help articles", url: "/admin/help-articles", icon: IconHelp },
     { title: "Security", url: "/admin/security", icon: IconShield },
     { title: "Feature flags", url: "/admin/feature-flags", icon: IconFlag },
     { title: "Audit log", url: "/admin/audit-log", icon: IconLock },
     { title: "Settings", url: "/admin/settings", icon: IconSettings },
   ],
-  quickCreate: { label: "New template", href: "/admin/templates/new" },
+  quickCreate: { label: "New template", href: "/admin/templates/create" },
 }
 
-const DEFAULT_CONFIG = USER_CONFIG
-
 function pickConfig(role: Role | null | undefined): SidebarConfig {
-  if (role === "ADMIN") return ADMIN_CONFIG
-  if (role === "USER") return USER_CONFIG
-  return DEFAULT_CONFIG
+  return role === "ADMIN" ? ADMIN_CONFIG : USER_CONFIG
 }
 
 export function AppSidebar({
@@ -137,10 +129,6 @@ export function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   role?: Role | null
-  /**
-   * Optional user overrides — the layout passes the resolved profile here
-   * so the sidebar doesn't need a client-side fetch.
-   */
   user?: Partial<SidebarConfig["user"]>
 }) {
   const config = pickConfig(role)
@@ -148,39 +136,42 @@ export function AppSidebar({
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="p-3 pb-1">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:p-1.5!"
-            >
+            <SidebarMenuButton asChild className="h-12 rounded-xl px-2">
               <a href={config.brand.href}>
-                <IconInnerShadowTop className="size-5!" />
-                <span className="text-base font-semibold">
-                  {config.brand.name}
+                <Image src="/brand/profileai-mark.svg" alt="" width={48} height={48} className="size-9 shrink-0 drop-shadow-lg" />
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-semibold tracking-tight">
+                    {config.brand.name}
+                  </span>
+                  <span className="block text-[10px] uppercase tracking-[0.16em] text-sidebar-foreground/55">
+                    {role === "ADMIN" ? "Control center" : "Career OS"}
+                  </span>
                 </span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+
+      <SidebarContent className="px-1">
         <NavMain
           items={config.navMain}
           quickCreate={config.quickCreate}
+          label={config.navMainLabel}
         />
-        <NavDocuments items={config.documents} />
-        <NavSecondary items={config.navSecondary} className="mt-auto" />
+        <NavDocuments items={config.tools} label={config.toolsLabel} />
+        <NavSecondary
+          items={config.navSecondary}
+          label={config.navSecondaryLabel}
+          className="mt-auto"
+        />
       </SidebarContent>
-      <SidebarFooter>
-        <div className="flex items-center justify-between gap-2 px-1 pb-1">
-          <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Theme
-          </span>
-          <ModeToggleCompact />
-        </div>
-        <NavUser user={navUser} />
+
+      <SidebarFooter className="border-t border-sidebar-border/60 p-3">
+        <NavUser user={navUser} role={role ?? "USER"} />
       </SidebarFooter>
     </Sidebar>
   )

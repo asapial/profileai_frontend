@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import {
   LayoutDashboard,
@@ -13,8 +14,6 @@ import {
   LifeBuoy,
   CreditCard,
   Activity,
-  LogOut,
-  UserRound,
   Sparkles,
 } from "lucide-react";
 import { Navbar1 } from "@/components/navbar1";
@@ -153,7 +152,7 @@ export function NavbarShell({ isAuthenticated, userName }: NavbarShellProps) {
     <div className="sticky top-0 z-40 border-b border-border/60 bg-background/75 shadow-[0_1px_0_0_hsl(258_90%_66%/0.06)] backdrop-blur-xl supports-[backdrop-filter]:bg-background/55">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
         {/* Brand logo */}
-        <a
+        <Link
           href="/dashboard"
           className="group flex items-center gap-2.5"
           aria-label="ProFile AI home"
@@ -169,7 +168,7 @@ export function NavbarShell({ isAuthenticated, userName }: NavbarShellProps) {
               Career Studio
             </span>
           </span>
-        </a>
+        </Link>
 
         {/* Navbar1 component (desktop menu, mobile sheet) */}
         <div className="flex flex-1 justify-end">

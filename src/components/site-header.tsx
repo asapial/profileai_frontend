@@ -1,55 +1,104 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Sparkles } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { NotificationsBell } from "@/components/notifications-bell";
-import { ModeToggleCompact } from "@/components/mode-toggle";
 import type { Role } from "@/types";
+
+const ROUTE_TITLES: Array<[string, string]> = [
+  ["/dashboard/resumes/new", "Create resume"],
+  ["/dashboard/resumes", "Resumes"],
+  ["/dashboard/applications", "Applications"],
+  ["/dashboard/cover-letters", "Cover letters"],
+  ["/dashboard/templates", "Templates"],
+  ["/dashboard/ats", "ATS analyzer"],
+  ["/dashboard/analytics", "Career analytics"],
+  ["/dashboard/notifications", "Notifications"],
+  ["/dashboard/exports", "Exports"],
+  ["/dashboard/referrals", "Referrals"],
+  ["/dashboard/billing", "Billing"],
+  ["/dashboard/support", "Support"],
+  ["/dashboard/profile", "Profile"],
+  ["/dashboard/settings", "Settings"],
+  ["/admin/templates/create", "Create template"],
+  ["/admin/homepage", "Homepage studio"],
+  ["/admin/help-articles", "Help articles"],
+  ["/admin/feature-flags", "Feature flags"],
+  ["/admin/audit-log", "Audit log"],
+  ["/admin/announcements", "Announcements"],
+  ["/admin/moderation", "Moderation"],
+  ["/admin/analytics", "Platform analytics"],
+  ["/admin/templates", "Templates"],
+  ["/admin/resumes", "Resumes"],
+  ["/admin/security", "Security"],
+  ["/admin/settings", "Settings"],
+  ["/admin/profile", "Profile"],
+  ["/admin/reports", "Reports"],
+  ["/admin/exports", "Exports"],
+  ["/admin/billing", "Billing"],
+  ["/admin/invoices", "Invoices"],
+  ["/admin/coupons", "Coupons"],
+  ["/admin/plans", "Plans"],
+  ["/admin/tickets", "Support tickets"],
+  ["/admin/users", "Users"],
+];
+
+function titleForPath(pathname: string, role?: Role | null) {
+  const match = ROUTE_TITLES.find(
+    ([prefix]) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+  return match?.[1] ?? (role === "ADMIN" ? "Admin overview" : "Dashboard");
+}
 
 export function SiteHeader({
   title,
   role,
   cta,
 }: {
-  /** Page-level title shown in the top bar (e.g. "Overview"). */
   title?: string;
-  /**
-   * Optional role context so the header can render a small badge and a
-   * role-appropriate primary CTA. Pass `null` to hide the badge.
-   */
   role?: Role | null;
-  /** Optional primary CTA on the right side of the header. */
   cta?: { label: string; href: string };
 }) {
+  const pathname = usePathname();
+  const pageTitle = title ?? titleForPath(pathname, role);
+
   return (
-    <header className="flex h-(--header-height) min-w-0 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
-      <div className="flex min-w-0 w-full items-center gap-1 px-3 sm:px-4 lg:gap-2 lg:px-6">
-        <SidebarTrigger className="-ml-1" />
-        <Separator
-          orientation="vertical"
-          className="mx-2 data-[orientation=vertical]:h-4"
-        />
-        <h1 className="min-w-0 truncate text-sm font-medium sm:text-base">{title ?? "Dashboard"}</h1>
-        {role ? (
-          <span
-            className={
-              "ml-1 hidden items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset sm:inline-flex " +
-              (role === "ADMIN"
-                ? "bg-violet-500/10 text-violet-700 ring-violet-500/20 dark:text-violet-300"
-                : "bg-primary/10 text-primary ring-primary/20")
-            }
-          >
-            {role === "ADMIN" ? "Admin" : "Member"}
-          </span>
-        ) : null}
+    <header className="sticky top-0 z-30 flex min-h-(--header-height) min-w-0 shrink-0 items-center gap-2 border-b border-white/40 bg-background/58 backdrop-blur-2xl transition-[width,height] ease-linear dark:border-white/8 dark:bg-background/55">
+      <div className="flex min-w-0 w-full items-center gap-1 px-3 py-2 sm:px-4 lg:gap-2 lg:px-6">
+        <SidebarTrigger className="-ml-1 size-9 rounded-xl border border-border/60 bg-background/45" />
+        <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-6" />
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <h1 className="truncate text-sm font-semibold tracking-tight sm:text-base">
+              {pageTitle}
+            </h1>
+            {role ? (
+              <span className="hidden rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-primary ring-1 ring-primary/15 sm:inline-flex">
+                {role === "ADMIN" ? "Admin" : "Member"}
+              </span>
+            ) : null}
+          </div>
+          <p className="hidden text-[10px] text-muted-foreground sm:block">
+            {role === "ADMIN" ? "Platform control center" : "Your career command center"}
+          </p>
+        </div>
         <div className="ml-auto flex items-center gap-2">
-          <ModeToggleCompact className="size-8 border-border/70 bg-background/70" />
+          <span className="hidden items-center gap-1.5 rounded-full border border-emerald-500/15 bg-emerald-500/8 px-2.5 py-1 text-[10px] font-semibold text-emerald-600 lg:inline-flex dark:text-emerald-300">
+            <span className="size-1.5 rounded-full bg-emerald-500" />
+            Live workspace
+          </span>
           <NotificationsBell />
           {cta ? (
             <Button asChild size="sm" className="hidden sm:flex">
-              <Link href={cta.href}>{cta.label}</Link>
+              <Link href={cta.href}>
+                <Sparkles className="size-3.5" />
+                {cta.label}
+              </Link>
             </Button>
           ) : null}
         </div>

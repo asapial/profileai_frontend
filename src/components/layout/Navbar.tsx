@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { ModeToggleCompact } from "@/components/mode-toggle";
 
@@ -31,15 +32,13 @@ export function Navbar() {
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-300",
         scrolled
-          ? "border-b border-border/60 bg-background/80 backdrop-blur-md shadow-[0_1px_0_0_rgba(0,0,0,0.04)]"
+          ? "border-b border-white/40 bg-background/70 backdrop-blur-2xl shadow-[0_12px_40px_-32px_rgba(76,29,149,0.5)] dark:border-white/8"
           : "bg-transparent"
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2 group">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white shadow-lg shadow-violet-500/20 transition group-hover:scale-105">
-            <Sparkles className="h-5 w-5" />
-          </span>
+          <Image src="/brand/profileai-mark.svg" alt="" width={48} height={48} className="h-9 w-9 drop-shadow-lg transition group-hover:scale-105" />
           <span className="text-lg font-semibold tracking-tight">
             ProFile <span className="text-gradient">AI</span>
           </span>
@@ -86,7 +85,7 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div className="border-t border-border/60 bg-background md:hidden">
+        <div className="glass-panel border-t border-border/60 md:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4">
             {NAV_LINKS.map((link) => (
               <Link

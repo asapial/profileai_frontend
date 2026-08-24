@@ -32,6 +32,7 @@ export default async function AdminLayout({
 
   return (
     <SidebarProvider
+      className="premium-dashboard bg-transparent"
       style={
         {
           "--sidebar-width": "calc(var(--spacing) * 72)",
@@ -40,11 +41,10 @@ export default async function AdminLayout({
       }
     >
       <AppSidebar variant="inset" role="ADMIN" />
-      <SidebarInset>
+      <SidebarInset className="border border-white/40 dark:border-white/8">
         <SiteHeader
           role="ADMIN"
-          title="Admin overview"
-          cta={{ label: "New template", href: "/admin/templates/new" }}
+          cta={{ label: "New template", href: "/admin/templates/create" }}
         />
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="@container/main flex min-w-0 flex-1 flex-col gap-2">

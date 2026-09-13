@@ -1,91 +1,54 @@
-import { UserPlus, Wand2, Sliders, Download } from "lucide-react";
-import { SectionHeader } from "./SectionHeader";
 import type { ManagedHomepageSection } from "@/lib/homepage";
-
 const STEPS = [
   {
-    n: "01",
-    icon: UserPlus,
-    title: "Create your free account",
+    title: "Bring your experience.",
     description:
-      "Sign up in seconds. No credit card. Save unlimited resumes and come back any time.",
+      "Add your background, skills and the work you’re proud of. Start with what you have.",
   },
   {
-    n: "02",
-    icon: Wand2,
-    title: "Tell us about the role",
+    title: "Find the right words.",
     description:
-      "Paste the job description and your background. Our AI builds a tailored first draft in under a minute.",
+      "Choose a design and tailor your draft to the role. Review every suggestion and make it yours.",
   },
   {
-    n: "03",
-    icon: Sliders,
-    title: "Tailor & score",
+    title: "Make your next move.",
     description:
-      "Edit, regenerate any section, and watch your ATS score climb with real-time suggestions.",
+      "Export your resume and keep track of applications, notes and next steps in one place.",
   },
-  {
-    n: "04",
-    icon: Download,
-    title: "Export and apply",
-    description:
-      "Download a clean PDF or DOCX, log the application in your tracker, and go land that interview.",
-  },
-] as const;
-
-const STEP_ICONS = [UserPlus, Wand2, Sliders, Download];
-
+];
 export function WorkflowSection({
   content,
 }: {
   content?: ManagedHomepageSection;
 }) {
-  const steps = content?.items?.map((item, index) => ({
-    n: String(item.label ?? String(index + 1).padStart(2, "0")),
-    icon: STEP_ICONS[index % STEP_ICONS.length]!,
-    title: String(item.title ?? ""),
-    description: String(item.description ?? ""),
-  })) ?? STEPS;
+  const steps = content?.items || STEPS;
   return (
-    <section id="workflow" className="premium-section bg-muted/30 py-20 sm:py-28">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeader
-          eyebrow={content?.eyebrow || "How it works"}
-          title={<>{content?.title || "From blank page to interview-ready in 4 steps"}</>}
-          description={content?.description || "A guided workflow designed to remove the friction between you and your next job."}
-        />
-
-        <ol className="relative mt-14 grid gap-6 lg:grid-cols-4">
-          {steps.map((step, i) => {
-            const Icon = step.icon;
-            return (
-              <li
-                key={step.n}
-                className="glass-panel relative rounded-3xl p-6 transition duration-300 hover:-translate-y-1"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold tracking-widest text-primary">
-                    STEP {step.n}
-                  </span>
-                  <span className="grid h-10 w-10 place-items-center rounded-lg bg-accent text-accent-foreground">
-                    <Icon className="h-4 w-4" />
-                  </span>
-                </div>
-                <h3 className="mt-4 text-lg font-semibold text-foreground">
-                  {step.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {step.description}
-                </p>
-                {i < steps.length - 1 && (
-                  <span
-                    aria-hidden
-                    className="absolute right-[-14px] top-1/2 hidden h-px w-7 bg-border lg:block"
-                  />
-                )}
-              </li>
-            );
-          })}
+    <section id="workflow" className="studio-workflow">
+      <div className="studio-container">
+        <div className="studio-section-heading" data-aos="fade-up">
+          <p className="studio-eyebrow">01 / THE PROCESS</p>
+          <h2>
+            {content?.title || (
+              <>
+                Less blank page.
+                <br />
+                <em>More possibility.</em>
+              </>
+            )}
+          </h2>
+          <p>
+            {content?.description ||
+              "A little structure makes the next step easier. Here’s how to get from your experience to your next application."}
+          </p>
+        </div>
+        <ol className="studio-steps">
+          {steps.map((step, index) => (
+            <li key={index} data-aos="fade-up" data-aos-delay={index * 70}>
+              <span className="studio-step-number">0{index + 1}</span>
+              <h3>{String(step.title)}</h3>
+              <p>{String(step.description)}</p>
+            </li>
+          ))}
         </ol>
       </div>
     </section>

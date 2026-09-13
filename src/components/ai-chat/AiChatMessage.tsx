@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Check, ExternalLink, FilePenLine, LifeBuoy, ThumbsDown, ThumbsUp, X } from "lucide-react";
+import { Check, ExternalLink, FilePenLine, LifeBuoy, Sparkles, ThumbsDown, ThumbsUp, X } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -64,19 +64,24 @@ export function AiChatMessage({ message, onSend, onNavigate, onConfirm, onCancel
   };
 
   return (
-    <article className={cn("flex", message.sender === "USER" ? "justify-end" : "justify-start")}>
+    <article className={cn("flex items-end gap-2.5", message.sender === "USER" ? "justify-end" : "justify-start")}>
+      {message.sender === "ASSISTANT" ? (
+        <div className="grid size-7 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-slate-900 to-violet-700 text-white shadow-md dark:from-white dark:to-violet-100 dark:text-slate-950">
+          <Sparkles className="size-3.5" />
+        </div>
+      ) : null}
       <div className={cn(
-        "max-w-[88%] rounded-2xl px-3.5 py-3 text-sm shadow-sm",
+        "max-w-[86%] rounded-[20px] px-4 py-3 text-sm",
         message.sender === "USER"
-          ? "rounded-br-md bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white"
-          : "rounded-bl-md border border-border/70 bg-card/85 text-card-foreground",
+          ? "rounded-br-md bg-gradient-to-br from-slate-950 via-violet-950 to-violet-700 text-white shadow-[0_12px_30px_-15px_rgba(109,40,217,0.7)] dark:from-violet-500 dark:to-fuchsia-600"
+          : "rounded-bl-md border border-slate-200/80 bg-white/90 text-card-foreground shadow-[0_10px_30px_-22px_rgba(15,23,42,0.42)] backdrop-blur dark:border-white/10 dark:bg-white/[0.06]",
         message.failed && "ring-2 ring-destructive/50",
       )}>
         <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
 
         {response?.sources.length ? (
-          <div className="mt-3 border-t border-border/60 pt-2">
-            <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Sources</p>
+          <div className="mt-3 border-t border-border/60 pt-2.5">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Sources</p>
             <div className="flex flex-wrap gap-1.5">
               {response.sources.map((source, index) => source.targetUrl ? (
                 <Button key={`${source.type}-${source.id ?? index}`} asChild size="xs" variant="outline">
@@ -124,7 +129,7 @@ export function AiChatMessage({ message, onSend, onNavigate, onConfirm, onCancel
         ) : null}
 
         {message.sender === "ASSISTANT" && message.id !== "welcome" ? (
-          <div className="mt-2 flex items-center gap-1 border-t border-border/50 pt-2">
+          <div className="mt-3 flex items-center gap-1 border-t border-border/50 pt-2.5">
             <span className="mr-1 text-[11px] text-muted-foreground">Helpful?</span>
             <Button size="icon-xs" variant={feedback === 1 ? "secondary" : "ghost"} aria-label="Mark response helpful" onClick={() => { setFeedback(1); void onFeedback(message.id, 1); }}><ThumbsUp /></Button>
             <Button size="icon-xs" variant={feedback === -1 ? "secondary" : "ghost"} aria-label="Mark response not helpful" onClick={() => { setFeedback(-1); void onFeedback(message.id, -1); }}><ThumbsDown /></Button>

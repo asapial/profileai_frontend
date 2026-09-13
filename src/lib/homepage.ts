@@ -44,6 +44,7 @@ export async function fetchHomepageContent(): Promise<HomepageConfig | null> {
   try {
     const response = await fetch(`${env.apiBaseUrl}/content/homepage`, {
       next: { revalidate: 60, tags: ["homepage-content"] },
+      signal: AbortSignal.timeout(4000),
     });
     if (!response.ok) return null;
     const payload = (await response.json()) as {

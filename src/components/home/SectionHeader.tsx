@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 
 type SectionHeaderProps = {
   eyebrow?: string;
+  headingTag?: "h1" | "h2";
   title: React.ReactNode;
   description?: React.ReactNode;
   align?: "left" | "center";
@@ -10,6 +11,7 @@ type SectionHeaderProps = {
 
 export function SectionHeader({
   eyebrow,
+  headingTag: Heading = "h2",
   title,
   description,
   align = "center",
@@ -19,7 +21,9 @@ export function SectionHeader({
     <div
       className={cn(
         "flex flex-col gap-3",
-        align === "center" ? "items-center text-center" : "items-start text-left",
+        align === "center"
+          ? "items-center text-center"
+          : "items-start text-left",
         className,
       )}
     >
@@ -29,9 +33,9 @@ export function SectionHeader({
           {eyebrow}
         </span>
       )}
-      <h2 className="max-w-3xl text-3xl font-bold tracking-[-0.03em] text-foreground sm:text-4xl lg:text-5xl">
+      <Heading className="max-w-3xl text-3xl font-bold tracking-[-0.03em] text-foreground sm:text-4xl lg:text-5xl">
         {title}
-      </h2>
+      </Heading>
       {description && (
         <p className="max-w-2xl text-base text-muted-foreground sm:text-lg">
           {description}

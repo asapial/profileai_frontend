@@ -1,6 +1,6 @@
 "use client";
 
-import { Send, Square } from "lucide-react";
+import { ArrowUp, LockKeyhole, Square } from "lucide-react";
 import type { FormEvent, KeyboardEvent } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -24,9 +24,9 @@ export function AiChatComposer({ value, onChange, onSend, onCancel, isSending }:
     }
   };
   return (
-    <form onSubmit={submit} className="border-t border-border/70 bg-background/80 p-3 backdrop-blur-xl">
+    <form onSubmit={submit} className="border-t border-white/70 bg-white/75 p-3.5 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/75">
       <label htmlFor="ai-chat-composer" className="sr-only">Message ProFile Assistant</label>
-      <div className="flex items-end gap-2 rounded-2xl border border-border/80 bg-card/75 p-2 shadow-sm">
+      <div className="group flex items-end gap-2 rounded-[22px] border border-slate-200/80 bg-white p-2 shadow-[0_12px_35px_-18px_rgba(15,23,42,0.35)] transition focus-within:border-violet-400 focus-within:shadow-[0_16px_45px_-20px_rgba(124,58,237,0.5)] dark:border-white/10 dark:bg-white/[0.06]">
         <textarea
           id="ai-chat-composer"
           value={value}
@@ -34,20 +34,23 @@ export function AiChatComposer({ value, onChange, onSend, onCancel, isSending }:
           onKeyDown={keyDown}
           rows={2}
           maxLength={6000}
-          placeholder="Ask about this page…"
-          className="max-h-36 min-h-11 flex-1 resize-none bg-transparent px-2 py-2 text-sm outline-none placeholder:text-muted-foreground"
+          placeholder="Ask your career assistant…"
+          className="max-h-36 min-h-11 flex-1 resize-none bg-transparent px-2.5 py-2 text-sm leading-relaxed outline-none placeholder:text-slate-400"
         />
         {isSending ? (
-          <Button type="button" size="icon-lg" variant="outline" onClick={onCancel} aria-label="Cancel response generation">
+          <Button type="button" size="icon-lg" variant="outline" className="rounded-2xl" onClick={onCancel} aria-label="Cancel response generation">
             <Square className="size-4" />
           </Button>
         ) : (
-          <Button type="submit" size="icon-lg" disabled={!value.trim()} aria-label="Send message">
-            <Send className="size-4" />
+          <Button type="submit" size="icon-lg" disabled={!value.trim()} className="rounded-2xl bg-slate-950 text-white shadow-lg shadow-violet-500/15 hover:bg-violet-700 dark:bg-white dark:text-slate-950 dark:hover:bg-violet-100" aria-label="Send message">
+            <ArrowUp className="size-4" />
           </Button>
         )}
       </div>
-      <p className="mt-1.5 px-1 text-[11px] text-muted-foreground">Enter to send · Shift+Enter for a new line · AI suggestions require your review.</p>
+      <div className="mt-2 flex items-center justify-between gap-3 px-1 text-[10px] text-muted-foreground">
+        <p className="flex items-center gap-1.5"><LockKeyhole className="size-3" />Private, permission-aware context</p>
+        <p>{value.length ? `${value.length}/6000` : "Enter to send"}</p>
+      </div>
     </form>
   );
 }

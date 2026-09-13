@@ -1,34 +1,37 @@
-import { Sparkles } from "lucide-react";
-import { CtaButton } from "./CtaButton";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import type { ManagedHomepageSection } from "@/lib/homepage";
-
-export function FinalCtaBand({ content }: { content?: ManagedHomepageSection }) {
+export function FinalCtaBand({
+  content,
+}: {
+  content?: ManagedHomepageSection;
+}) {
   return (
-    <section className="border-t border-border bg-background py-14">
-      <div className="mx-auto flex max-w-7xl flex-col items-center gap-5 px-4 text-center sm:px-6 lg:px-8">
-        <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/60 px-3 py-1 text-xs font-semibold text-primary">
-          <Sparkles className="h-3.5 w-3.5" />
-          {content?.eyebrow || "Free forever—upgrade any time"}
-        </span>
-        <h2 className="max-w-2xl text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          {content?.title || "Your next interview starts with a better resume."}
-        </h2>
-        <p className="max-w-xl text-sm text-muted-foreground">
-          {content?.description || "Create tailored resumes, beat ATS filters and apply with confidence."}
-        </p>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <CtaButton
-            href={content?.primaryCta?.href ?? "/register"}
-            label={content?.primaryCta?.label ?? "Get Started Free"}
-            eventName="footer_cta_get_started"
-          />
-          <CtaButton
-            href={content?.secondaryCta?.href ?? "/pricing"}
-            label={content?.secondaryCta?.label ?? "See Pricing"}
-            variant="secondary"
-            eventName="footer_cta_see_pricing"
-          />
+    <section className="border-t bg-muted py-16 sm:py-24">
+      <div className="studio-container flex flex-col items-start justify-between gap-8 sm:flex-row sm:items-center">
+        <div>
+          <p className="studio-eyebrow mb-5 text-primary">READY WHEN YOU ARE</p>
+          <h2 className="max-w-2xl text-4xl sm:text-5xl">
+            {content?.title || (
+              <>
+                Your next chapter.
+                <br />
+                <em>Make it yours.</em>
+              </>
+            )}
+          </h2>
+          <p className="mt-5 max-w-lg text-sm leading-7 text-muted-foreground">
+            {content?.description ||
+              "Start with your experience. Build something you’re proud to send."}
+          </p>
         </div>
+        <Link
+          className="studio-button shrink-0"
+          href={content?.primaryCta?.href || "/register"}
+        >
+          {content?.primaryCta?.label || "Create your resume"}
+          <ArrowUpRight size={18} />
+        </Link>
       </div>
     </section>
   );

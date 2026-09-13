@@ -7,38 +7,17 @@ import { SectionHeader } from "./SectionHeader";
 import type { ManagedHomepageSection } from "@/lib/homepage";
 
 const QUESTIONS = [
-  {
-    q: "Is ProFile AI really free to use?",
-    a: "Yes. The Free plan lets you build one resume with limited AI generations. No credit card is required and you can upgrade to Pro any time for unlimited AI, cover letters, and the application tracker.",
-  },
-  {
-    q: "What is an ATS score and why does it matter?",
-    a: "Most companies use an Applicant Tracking System (ATS) to filter resumes before a human reads them. Your ATS score reflects how well your resume matches the role's keywords and formatting rules. A higher score means more interviews.",
-  },
-  {
-    q: "Will my resume actually pass ATS systems?",
-    a: "Our templates are designed to be parsed cleanly by all major ATS platforms, including Workday, Greenhouse, Lever, and Taleo. The ATS scoring tool also flags anything that might trip a parser.",
-  },
-  {
-    q: "Can I edit the AI's output?",
-    a: "Absolutely. The AI gives you a first draft — every section, bullet, and summary is fully editable. You can also regenerate individual sections as many times as you like.",
-  },
-  {
-    q: "What file formats can I export?",
-    a: "On the Free plan you can export PDF. Pro and Business plans also include DOCX export, which is useful when an employer wants an editable file.",
-  },
-  {
-    q: "Is my data private and secure?",
-    a: "Your data is encrypted in transit and at rest. We never share your resume or personal information with third parties. You can delete your account and all associated data at any time.",
-  },
+  { q: "What can I do on the Free plan?", a: "Start with private job imports, an Evidence Bank, and 15 saved applications. Career Studio includes 3 alignment analyses, 2 tailored summaries and 5 application drafts per month." },
+  { q: "Does an alignment score predict an interview?", a: "No. Alignment is a review of evidence and keyword coverage, not a hiring probability or a guarantee that an ATS will accept a document. Review the missing and uncertain requirements alongside the score." },
+  { q: "Will the studio invent achievements or metrics?", a: "Career Studio drafts use your selected confirmed evidence. Inferred or missing evidence cannot become a generated achievement. You can use clear wording without a metric when a number is unavailable." },
+  { q: "Does ProFile AI send applications automatically?", a: "No. Review your draft and recipient, then explicitly choose to send. Google email and calendar connections require consent and availability depends on the deployment configuration." },
+  { q: "Where do discovered jobs come from?", a: "From administrator-approved Lever and Greenhouse public boards. Private URL and description imports are also supported. Restricted job boards remain manual or link-only." },
+  { q: "Can I take my data with me?", a: "Yes. Career Studio provides a workspace export. You can delete drafts or evidence, disconnect Google and use account deletion from Settings. See the privacy policy for storage and provider processing details." },
 ] as const;
 
 export function FaqSection({ content }: { content?: ManagedHomepageSection }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
-  const questions = content?.items?.map((item) => ({
-    q: String(item.title ?? ""),
-    a: String(item.description ?? ""),
-  })) ?? QUESTIONS;
+  const questions = QUESTIONS;
 
   return (
     <section id="faq" className="bg-muted/30 py-20 sm:py-24">

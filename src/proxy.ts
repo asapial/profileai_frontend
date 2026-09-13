@@ -13,14 +13,12 @@ import { NextRequest, NextResponse } from "next/server";
  *
  * Trust model
  * -----------
- * • `accessToken`  — set by the backend as `httpOnly`. The only signal we
- *                    trust for "is this user signed in?". Cannot be read
- *                    by client JS, so any value we see on the edge is
- *                    genuine.
- * • `userRole`     — non-httpOnly, set by `/api/auth/post-login` after a
- *                    real backend login, cleared by `/api/auth/post-logout`.
- *                    UX hint only; missing value falls back to decoding
- *                    the `accessToken` payload (also not a security gate).
+ * • `accessToken`  — set by the backend as `httpOnly`. The proxy requires a
+ *                    structurally valid, unexpired token.
+ * • `userRole`     — frontend login marker set by `/api/auth/post-login` and
+ *                    cleared by `/api/auth/post-logout`. The proxy requires
+ *                    it to match the token role, so a backend-domain cookie
+ *                    left behind after logout cannot reopen protected pages.
  *
  * Anything the client posts to us is ignored — the post-login route
  * derives the role from the cookie-delivered `accessToken` itself.
@@ -84,7 +82,7 @@ export const HOME_ROUTE_BY_ROLE: Record<Role, string> = {
  * available natively. We never verify the signature here — we only use the
  * payload as a UX hint when the `userRole` cookie is missing.
  */
-function decodeJwtPayload(token: string): { role?: string } | null {
+function decodeJwtPayload(token: string): { role?: string; exp?: number } | null {
   const parts = token.split(".");
   if (parts.length !== 3) return null;
 
@@ -93,30 +91,33 @@ function decodeJwtPayload(token: string): { role?: string } | null {
 
   try {
     const json = atob(padded);
-    const payload = JSON.parse(json) as { role?: unknown };
-    return { role: typeof payload.role === "string" ? payload.role : undefined };
+    const payload = JSON.parse(json) as { role?: unknown; exp?: unknown };
+    return {
+      role: typeof payload.role === "string" ? payload.role : undefined,
+      exp: typeof payload.exp === "number" ? payload.exp : undefined,
+    };
   } catch {
     return null;
   }
 }
 
 /**
- * Resolve the effective role from cookies (and JWT fallback). Returns
- * `null` if no role can be determined — the caller decides what to do.
+ * Resolve a frontend session only when all logout-sensitive signals agree:
+ * an access token exists, it has not expired, and the post-login role marker
+ * matches its role. `userRole` is not an authorization boundary; requiring it
+ * prevents a stale cross-origin backend cookie from surviving local logout.
  */
-function resolveRole(request: NextRequest): Role | null {
-  const cookieRole = request.cookies.get(COOKIE_NAMES.userRole)?.value;
-  if (cookieRole === ROLES.ADMIN || cookieRole === ROLES.USER) {
-    return cookieRole;
-  }
-
+function resolveSession(request: NextRequest): { role: Role } | null {
   const token = request.cookies.get(COOKIE_NAMES.accessToken)?.value;
+  const cookieRole = request.cookies.get(COOKIE_NAMES.userRole)?.value;
   if (!token) return null;
+  if (cookieRole !== ROLES.ADMIN && cookieRole !== ROLES.USER) return null;
 
   const payload = decodeJwtPayload(token);
-  return payload?.role === ROLES.ADMIN || payload?.role === ROLES.USER
-    ? payload.role
-    : null;
+  if (!payload?.exp || payload.exp <= Math.floor(Date.now() / 1000)) return null;
+  if (payload.role !== cookieRole) return null;
+
+  return { role: cookieRole };
 }
 
 /**
@@ -167,6 +168,21 @@ function redirectTo(
   return NextResponse.redirect(url);
 }
 
+/** Remove every frontend-visible auth signal while returning a login redirect. */
+function redirectUnauthenticated(request: NextRequest, pathname: string): NextResponse {
+  const response = redirectTo(request, "/login", { query: { redirect: pathname + request.nextUrl.search } });
+  for (const name of Object.values(COOKIE_NAMES)) {
+    response.cookies.set({
+      name,
+      value: "",
+      path: "/",
+      maxAge: 0,
+    });
+  }
+  response.headers.set("Cache-Control", "private, no-store, max-age=0");
+  return response;
+}
+
 /**
  * Add a per-request correlation ID to the response so we can correlate
  * edge decisions with backend logs. Cheap, deterministic, no PII.
@@ -186,17 +202,15 @@ function withTraceHeader(response: NextResponse, requestId: string): NextRespons
  */
 function decide(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;
-
-  const accessToken = request.cookies.get(COOKIE_NAMES.accessToken)?.value;
-  const isAuthenticated = Boolean(accessToken);
+  const session = resolveSession(request);
 
   // 1. Admin area — requires ADMIN. Falls through to /dashboard on a
   //    non-admin session so we never bounce a logged-in user to /login.
   if (matchesPrefix(pathname, "/admin")) {
-    if (!isAuthenticated) {
-      return redirectTo(request, "/login", { query: { redirect: pathname } });
+    if (!session) {
+      return redirectUnauthenticated(request, pathname);
     }
-    return resolveRole(request) === ROLES.ADMIN
+    return session.role === ROLES.ADMIN
       ? NextResponse.next()
       : redirectTo(request, HOME_ROUTE_BY_ROLE.USER);
   }
@@ -206,11 +220,10 @@ function decide(request: NextRequest): NextResponse {
     matchesPrefix(pathname, "/dashboard") ||
     matchesPrefix(pathname, "/profile") ||
     matchesPrefix(pathname, "/resumes") ||
-    matchesPrefix(pathname, "/resume") ||
-    matchesPrefix(pathname, "/templates")
+    matchesPrefix(pathname, "/resume")
   ) {
-    if (!isAuthenticated) {
-      return redirectTo(request, "/login", { query: { redirect: pathname } });
+    if (!session) {
+      return redirectUnauthenticated(request, pathname);
     }
     return NextResponse.next();
   }
@@ -230,6 +243,8 @@ function decide(request: NextRequest): NextResponse {
 
 export function proxy(request: NextRequest): NextResponse {
   const response = decide(request);
+  // Never cache an allow/deny decision made from authentication cookies.
+  response.headers.set("Cache-Control", "private, no-store, max-age=0");
   // Light-touch correlation header on every decision (redirect or pass).
   const requestId =
     request.headers.get("x-request-id") ??
@@ -263,8 +278,6 @@ export const config = {
     "/resumes/:path*",
     "/resume",
     "/resume/:path*",
-    "/templates",
-    "/templates/:path*",
 
     // Auth pages — proxy still runs so it can stamp x-proxy-request-id
     // and so future policy changes can hook in without touching the

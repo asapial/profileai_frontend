@@ -43,7 +43,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     credentials: init?.credentials ?? "include",
     // `next` is a Next.js extension; cast keeps the standard RequestInit
     // type clean while still letting us opt into the data cache for GETs.
-    ...(method === "GET" ? { next: { revalidate: 300 } } : {}),
+    ...(method === "GET" ? (path.startsWith("/career") ? { cache: "no-store" } : { next: { revalidate: 300 } }) : {}),
   } as RequestInit;
   const res = await fetch(`${env.apiBaseUrl}${path}`, fetchInit);
 
@@ -136,5 +136,5 @@ export type FeaturedTemplate = {
 export const fetchFeaturedTemplates = () =>
   api.get<FeaturedTemplate[]>("/templates?featured=true&catalog=2");
 
-export const fetchPublicTemplates = () =>
-  api.get<FeaturedTemplate[]>("/templates?catalog=2");
+export const fetchPublicTemplates = (signal?: AbortSignal) =>
+  request<FeaturedTemplate[]>("/templates?catalog=2", { method: "GET", ...(signal ? { signal } : {}) });

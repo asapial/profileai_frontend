@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { ArrowRight } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { track, type AnalyticsEventName } from "@/lib/analytics";
 
@@ -18,8 +18,7 @@ type CtaButtonProps = {
 };
 
 const VARIANT_STYLES: Record<Variant, string> = {
-  primary:
-    "bg-foreground text-background shadow-lg shadow-violet-500/20 hover:opacity-90",
+  primary: "bg-primary text-primary-foreground hover:opacity-90",
   secondary:
     "border border-border bg-background text-foreground hover:bg-muted",
   ghost: "text-foreground hover:bg-muted",
@@ -33,14 +32,11 @@ export function CtaButton({
   trailingArrow = true,
   className,
 }: CtaButtonProps) {
-  const [busy, setBusy] = useState(false);
-
   return (
     <Link
       href={href}
       onClick={() => {
         if (eventName) track({ name: eventName, properties: { href } });
-        setBusy(true);
       }}
       className={cn(
         "inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold transition",
@@ -50,8 +46,7 @@ export function CtaButton({
       )}
     >
       <span>{label}</span>
-      {trailingArrow && !busy && <ArrowRight className="h-4 w-4" />}
-      {busy && <Loader2 className="h-4 w-4 animate-spin" />}
+      {trailingArrow && <ArrowRight className="h-4 w-4" />}
     </Link>
   );
 }

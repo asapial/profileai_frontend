@@ -60,6 +60,10 @@ export type ResetPasswordRequest = {
  */
 export type LoginResponse =
   | {
+      deviceLimitReached: true;
+      recoveryToken: string;
+    }
+  | {
       twoFactorRequired: true;
       email: string;
     }

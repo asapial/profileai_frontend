@@ -60,6 +60,26 @@ const welcomeFor = (role: ChatRole, route: string): string => {
   return "Hi! I'm ProFile Assistant. I can explain the product, plans, templates, ATS scoring, account access, and published help resources.";
 };
 
+const friendlyChatError = (caught: unknown): { message: string; code?: string; retryable: boolean } => {
+  if (!(caught instanceof ApiError)) {
+    return {
+      message: "The assistant could not connect. Check your connection and try again.",
+      code: "CONNECTION_ERROR",
+      retryable: true,
+    };
+  }
+  if (caught.status === 401) {
+    return { message: "Your session has expired. Sign in again to continue.", code: "SESSION_EXPIRED", retryable: false };
+  }
+  if (caught.status === 429) {
+    return { message: "The assistant is taking a short breather. Please try again in a moment.", code: "RATE_LIMITED", retryable: true };
+  }
+  if (caught.status >= 500) {
+    return { message: "The assistant is temporarily unavailable. Please try again in a moment.", code: "ASSISTANT_UNAVAILABLE", retryable: true };
+  }
+  return { message: caught.message || "The assistant could not respond.", ...(caught.code ? { code: caught.code } : {}), retryable: caught.retryable };
+};
+
 export function useAiChat() {
   const pathname = usePathname();
   const router = useRouter();
@@ -144,8 +164,7 @@ export function useAiChat() {
       if (caught instanceof DOMException && caught.name === "AbortError") {
         setError({ message: "Generation cancelled. Your message is still available to retry.", code: "CANCELLED", retryable: true });
       } else {
-        const apiError = caught instanceof ApiError ? caught : null;
-        setError({ message: caught instanceof Error ? caught.message : "The assistant could not respond.", ...(apiError?.code ? { code: apiError.code } : {}), retryable: apiError?.retryable ?? true });
+        setError(friendlyChatError(caught));
       }
       setLastFailedMessage(message);
       setComposer(message);
@@ -177,6 +196,12 @@ export function useAiChat() {
   const feedback = useCallback((messageId: string, rating: -1 | 1) =>
     api.post("/ai/chat/feedback", { messageId, rating }), []);
 
+  const retry = useCallback(async () => {
+    if (!lastFailedMessage) return;
+    setMessages((current) => current.filter((message) => !message.failed));
+    await send(lastFailedMessage);
+  }, [lastFailedMessage, send]);
+
   return {
     isOpen, setIsOpen, messages, composer, setComposer, error, config,
     enabled: Boolean(config?.enabled && supported),
@@ -185,7 +210,7 @@ export function useAiChat() {
     quickActions: config ? quickActionsFor(config.role, pathname) : [],
     pageContext,
     send,
-    retry: lastFailedMessage ? () => send(lastFailedMessage) : undefined,
+    retry: lastFailedMessage ? retry : undefined,
     cancelGeneration: () => abortRef.current?.abort(),
     clear,
     confirmAction,

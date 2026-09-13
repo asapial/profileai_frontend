@@ -80,6 +80,13 @@ export function PricingSection({
     highlighted: Boolean(item.highlighted),
     badge: item.badge ? String(item.badge) : undefined,
   })) ?? PLANS;
+  const displayPlans = plans.map(plan => {
+    const tier = plan.name.toLowerCase();
+    if (tier === "free") return { ...plan, description: "Start building a grounded application.", features: ["15 saved applications", "3 alignment analyses / month", "2 tailored summaries / month", "5 application drafts / month", "Private Evidence Bank"] };
+    if (tier === "pro") return { ...plan, description: "Room for an active job search.", features: ["Unlimited saved applications", "50 alignment analyses / month", "20 tailored summaries / month", "50 application drafts / month", "Resume version history"], cta: { label: "Explore Pro", href: "/register?plan=pro" } };
+    if (tier === "business" || tier === "career plus") return { ...plan, name: "Career Plus", description: "Higher allowances for a focused career move.", features: ["Unlimited saved applications", "150 alignment analyses / month", "60 tailored summaries / month", "150 application drafts / month", "Resume version history"], cta: { label: "Explore Career Plus", href: "/register?plan=business" } };
+    return plan;
+  });
   return (
     <section id="pricing" className="bg-muted/30 py-20 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -90,7 +97,7 @@ export function PricingSection({
         />
 
         <ul className="mt-12 grid gap-6 lg:grid-cols-3">
-          {plans.map((plan) => (
+          {displayPlans.map((plan) => (
             <li
               key={plan.name}
               className={cn(

@@ -1,24 +1,9 @@
 "use client";
-
-import { Book, Menu, Sunset, Trees, Zap } from "lucide-react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+import { Menu, ArrowUpRight } from "lucide-react";
+import { usePathname } from "next/navigation";
 import {
   Sheet,
   SheetContent,
@@ -26,9 +11,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 import { ModeToggleCompact } from "@/components/mode-toggle";
 import { cn } from "@/lib/utils";
-
 interface MenuItem {
   title: string;
   url: string;
@@ -36,7 +21,6 @@ interface MenuItem {
   icon?: React.ReactNode;
   items?: MenuItem[];
 }
-
 interface Navbar1Props {
   className?: string;
   logo?: {
@@ -48,297 +32,118 @@ interface Navbar1Props {
   };
   menu?: MenuItem[];
   auth?: {
-    login: {
-      title: string;
-      url: string;
-    };
-    signup: {
-      title: string;
-      url: string;
-    };
+    login: { title: string; url: string };
+    signup: { title: string; url: string };
   };
 }
-
-const Navbar1 = ({
-  logo = {
-    url: "/",
-    src: "/brand/profileai-mark.svg",
-    alt: "ProFile AI",
-    title: "ProFile AI",
-  },
-  menu = [
-    { title: "Home", url: "/" },
-    {
-      title: "Products",
-      url: "#",
-      items: [
-        {
-          title: "AI Resume Builder",
-          description:
-            "Generate a tailored, ATS-ready resume in under a minute.",
-          icon: <Zap className="size-5 shrink-0" />,
-          url: "/dashboard",
-        },
-        {
-          title: "Cover Letters",
-          description:
-            "Pair every application with a polished, role-specific letter.",
-          icon: <Book className="size-5 shrink-0" />,
-          url: "/dashboard/cover-letters",
-        },
-        {
-          title: "ATS Score",
-          description:
-            "See how your resume performs against real applicant systems.",
-          icon: <Trees className="size-5 shrink-0" />,
-          url: "/dashboard/ats",
-        },
-        {
-          title: "Application Tracker",
-          description:
-            "Manage every opportunity from one calm, focused workspace.",
-          icon: <Sunset className="size-5 shrink-0" />,
-          url: "/dashboard/applications",
-        },
-      ],
-    },
-    {
-      title: "Resources",
-      url: "#",
-      items: [
-        {
-          title: "Templates",
-          description:
-            "Hand-picked, recruiter-tested designs for every industry.",
-          icon: <Zap className="size-5 shrink-0" />,
-          url: "/templates",
-        },
-        {
-          title: "Help Center",
-          description: "Get all the answers you need right here.",
-          icon: <Book className="size-5 shrink-0" />,
-          url: "/help",
-        },
-        {
-          title: "Pricing",
-          description: "Simple plans for job seekers and teams.",
-          icon: <Trees className="size-5 shrink-0" />,
-          url: "/pricing",
-        },
-        {
-          title: "Contact",
-          description: "We are here to help you with any questions.",
-          icon: <Sunset className="size-5 shrink-0" />,
-          url: "/contact",
-        },
-      ],
-    },
-    {
-      title: "Pricing",
-      url: "/pricing",
-    },
-    {
-      title: "Blog",
-      url: "/blog",
-    },
-  ],
+export function Navbar1({
+  className,
+  logo,
+  menu,
   auth = {
     login: { title: "Log in", url: "/login" },
-    signup: { title: "Get Started Free", url: "/register" },
+    signup: { title: "Get started", url: "/register" },
   },
-  className,
-}: Navbar1Props) => {
-  return (
-    <section
-      className={cn(
-        "sticky top-0 z-50 w-full px-2 pt-2 sm:px-3",
-        className,
-      )}
+}: Navbar1Props) {
+  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const defaults = [
+    { title: "How it works", url: "/#workflow" },
+    { title: "Templates", url: "/templates" },
+    { title: "Pricing", url: "/pricing" },
+    { title: "Help", url: "/help" },
+  ];
+  const seen = new Set<string>();
+  const links = (
+    menu?.length
+      ? menu.flatMap((item) => (item.items?.length ? item.items : [item]))
+      : defaults
+  ).filter((item) => {
+    if (!item.url || item.url === "#" || item.url === "/" || seen.has(item.url))
+      return false;
+    seen.add(item.url);
+    return true;
+  });
+  const navLinks = links.map((item) => (
+    <Link
+      key={item.url}
+      href={item.url.startsWith("#") ? `/${item.url}` : item.url}
+      aria-current={pathname === item.url ? "page" : undefined}
+      onClick={() => setOpen(false)}
+      className="studio-nav-link"
     >
-      <div className="glass-panel mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-4 rounded-2xl px-3 shadow-[0_14px_50px_-30px_rgba(76,29,149,0.5)] sm:px-5 lg:px-6">
-        {/* Brand — left aligned, visible on every breakpoint */}
+      {item.title}
+    </Link>
+  ));
+  return (
+    <header className={cn("studio-nav studio-nav-premium", className)}>
+      <a className="studio-skip" href="#main">
+        Skip to content
+      </a>
+      <div className="studio-container studio-nav-shell flex items-center justify-between gap-5">
         <Link
-          href={logo.url}
-          aria-label={`${logo.alt} home`}
-          className="flex shrink-0 items-center gap-2 transition-opacity hover:opacity-90"
+          href={logo?.url || "/"}
+          className="studio-brand"
+          aria-label={`${logo?.alt || "ProfileAI"} home`}
         >
-          <Image src={logo.src || "/brand/profileai-mark.svg"} alt="" width={48} height={48} className="h-9 w-9 drop-shadow-lg" priority />
-          <span className="text-lg font-semibold tracking-tight text-foreground">
-            {logo.title}
-          </span>
+          <Image src="/brand/profileai-mark.svg" alt="" width={40} height={40} className="studio-logo-mark" />
+          <span>{logo?.title || "ProfileAI"}</span>
         </Link>
-
-        {/* Desktop Menu */}
-        <nav className="hidden flex-1 items-center justify-center lg:flex">
-          <NavigationMenu>
-            <NavigationMenuList className="gap-1">
-              {menu.map((item) => renderMenuItem(item))}
-            </NavigationMenuList>
-          </NavigationMenu>
+        <nav
+          aria-label="Main navigation"
+          className="studio-nav-links hidden items-center lg:flex"
+        >
+          {navLinks}
         </nav>
-
-        <div className="hidden items-center gap-2 lg:flex">
-          <ModeToggleCompact className="bg-background/40" />
-          <Button
-            asChild
-            variant="ghost"
-            size="sm"
-            className="rounded-lg px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-violet-500/10 hover:text-foreground"
+        <div className="flex items-center gap-3">
+          <ModeToggleCompact />
+          <Link
+            href={auth.login.url}
+            className="studio-text-link hidden sm:flex"
           >
-            <Link href={auth.login.url}>{auth.login.title}</Link>
-          </Button>
-          <Button
-            asChild
-            size="sm"
-            className="rounded-lg border-0 bg-gradient-to-r from-violet-600 to-fuchsia-500 px-4 text-sm font-semibold text-white shadow-md shadow-violet-500/25 transition-all hover:from-violet-500 hover:to-fuchsia-400 hover:shadow-lg hover:shadow-violet-500/30"
-          >
-            <Link href={auth.signup.url}>{auth.signup.title}</Link>
-          </Button>
-        </div>
-
-        {/* Mobile Menu */}
-        <div className="flex items-center gap-2 lg:hidden">
-          <ModeToggleCompact className="bg-background/40" />
-          <Button
-            asChild
-            size="sm"
-            className="hidden rounded-lg border-0 bg-gradient-to-r from-violet-600 to-fuchsia-500 px-3 text-sm font-semibold text-white shadow-md shadow-violet-500/25 sm:inline-flex"
-          >
-            <Link href={auth.signup.url}>
-              {auth.signup.title}
-            </Link>
-          </Button>
-          <Sheet>
+            {auth.login.title}
+          </Link>
+          <Link href={auth.signup.url} className="studio-button hidden sm:flex">
+            {auth.signup.title}
+            <ArrowUpRight size={15} />
+          </Link>
+          <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button
-                aria-label="Open menu"
                 variant="outline"
                 size="icon"
-                className="rounded-lg border-border/60"
+                className="lg:hidden"
+                aria-label="Open navigation"
               >
-                <Menu className="size-4" />
+                <Menu size={18} />
               </Button>
             </SheetTrigger>
-            <SheetContent className="overflow-y-auto">
+            <SheetContent className="studio-mobile-nav">
               <SheetHeader>
-                <SheetTitle>
-                  <Link href={logo.url} className="flex items-center gap-2">
-                    <Image src={logo.src || "/brand/profileai-mark.svg"} alt="" width={48} height={48} className="h-8 w-8" />
-                    <span className="text-lg font-semibold tracking-tight">
-                      {logo.title}
-                    </span>
-                  </Link>
-                </SheetTitle>
+                <SheetTitle>Your next chapter</SheetTitle>
               </SheetHeader>
-              <div className="flex flex-col gap-6 p-4">
-                <Accordion
-                  type="single"
-                  collapsible
-                  className="flex w-full flex-col gap-4"
+              <nav
+                aria-label="Mobile navigation"
+                className="flex flex-col gap-5 p-6"
+              >
+                {navLinks}
+                <hr />
+                <Link onClick={() => setOpen(false)} href={auth.login.url}>
+                  {auth.login.title}
+                </Link>
+                <Link
+                  onClick={() => setOpen(false)}
+                  className="studio-button"
+                  href={auth.signup.url}
                 >
-                  {menu.map((item) => renderMobileMenuItem(item))}
-                </Accordion>
-
-                <div className="flex flex-col gap-3">
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="rounded-lg border-border/60"
-                  >
-                    <Link href={auth.login.url}>{auth.login.title}</Link>
-                  </Button>
-                  <Button
-                    asChild
-                    className="rounded-lg border-0 bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white shadow-md shadow-violet-500/25"
-                  >
-                    <Link href={auth.signup.url}>{auth.signup.title}</Link>
-                  </Button>
-                </div>
-              </div>
+                  {auth.signup.title}
+                  <ArrowUpRight size={16} />
+                </Link>
+              </nav>
             </SheetContent>
           </Sheet>
         </div>
       </div>
-    </section>
+    </header>
   );
-};
-
-const renderMenuItem = (item: MenuItem) => {
-  if (item.items) {
-    return (
-      <NavigationMenuItem key={item.title}>
-        <NavigationMenuTrigger className="rounded-lg bg-transparent px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-violet-500/10 hover:text-foreground data-[state=open]:bg-violet-500/10 data-[state=open]:text-foreground">
-          {item.title}
-        </NavigationMenuTrigger>
-        <NavigationMenuContent className="border border-border/60 bg-popover/95 text-popover-foreground shadow-xl shadow-violet-500/5 backdrop-blur-xl">
-          {item.items.map((subItem) => (
-            <NavigationMenuLink asChild key={subItem.title} className="w-80">
-              <SubMenuLink item={subItem} />
-            </NavigationMenuLink>
-          ))}
-        </NavigationMenuContent>
-      </NavigationMenuItem>
-    );
-  }
-
-  return (
-    <NavigationMenuItem key={item.title}>
-      <NavigationMenuLink
-        href={item.url}
-        className="group inline-flex h-9 w-max items-center justify-center rounded-lg bg-transparent px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-violet-500/10 hover:text-foreground"
-      >
-        {item.title}
-      </NavigationMenuLink>
-    </NavigationMenuItem>
-  );
-};
-
-const renderMobileMenuItem = (item: MenuItem) => {
-  if (item.items) {
-    return (
-      <AccordionItem key={item.title} value={item.title} className="border-b-0">
-        <AccordionTrigger className="text-md py-0 font-semibold hover:no-underline">
-          {item.title}
-        </AccordionTrigger>
-        <AccordionContent className="mt-2">
-          {item.items.map((subItem) => (
-            <SubMenuLink key={subItem.title} item={subItem} />
-          ))}
-        </AccordionContent>
-      </AccordionItem>
-    );
-  }
-
-  return (
-    <Link
-      key={item.title}
-      href={item.url}
-      className="text-md block py-2 font-semibold"
-    >
-      {item.title}
-    </Link>
-  );
-};
-
-const SubMenuLink = ({ item }: { item: MenuItem }) => {
-  return (
-    <Link
-      className="group/sublink flex w-full min-w-0 flex-row gap-3 rounded-xl p-3 leading-none no-underline transition-colors outline-none select-none hover:bg-gradient-to-r hover:from-violet-500/10 hover:to-fuchsia-500/10 hover:text-accent-foreground sm:min-w-80 sm:gap-4"
-      href={item.url}
-    >
-      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-violet-600/15 to-fuchsia-500/15 text-violet-600 transition-colors group-hover/sublink:from-violet-600 group-hover/sublink:to-fuchsia-500 group-hover/sublink:text-white dark:text-violet-300">
-        {item.icon}
-      </div>
-      <div>
-        <div className="text-sm font-semibold text-foreground">{item.title}</div>
-        {item.description && (
-          <p className="mt-0.5 text-sm leading-snug text-muted-foreground">
-            {item.description}
-          </p>
-        )}
-      </div>
-    </Link>
-  );
-};
-
-export { Navbar1 };
+}

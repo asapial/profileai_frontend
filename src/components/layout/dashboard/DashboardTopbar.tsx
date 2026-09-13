@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Bell, LogOut, Search, ShieldCheck } from "lucide-react";
+import { Bell, LogOut, ShieldCheck } from "lucide-react";
 import { getCurrentUser, logout, CurrentUser } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 
@@ -32,20 +32,11 @@ export function DashboardTopbar() {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/70 bg-background/80 px-4 shadow-[0_1px_0_0_hsl(258_90%_66%/0.06)] backdrop-blur-xl sm:px-6">
-      <div className="hidden flex-1 md:block">
-        <div className="relative max-w-md">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search resumes, applications…"
-            className="h-10 w-full rounded-xl border border-input bg-background/60 pl-9 pr-3 text-sm placeholder:text-muted-foreground transition focus-visible:border-violet-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/30"
-          />
-        </div>
-      </div>
+      <Link href="/dashboard" className="text-sm font-medium">Your workspace</Link>
 
       <div className="ml-auto flex items-center gap-2.5">
         <Link
-          href="/notifications"
+          href="/dashboard/notifications"
           aria-label="Notifications"
           className="relative grid h-10 w-10 place-items-center rounded-xl border border-border bg-background/60 text-muted-foreground transition hover:border-violet-500/30 hover:text-violet-600"
         >

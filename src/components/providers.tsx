@@ -4,9 +4,19 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { NotificationRealtimeProvider } from "@/components/NotificationRealtimeProvider";
-import { AiChat } from "@/components/ai-chat/AiChat";
+import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
+const AiChat = dynamic(
+  () => import("@/components/ai-chat/AiChat").then((module) => module.AiChat),
+  { ssr: false },
+);
 
 export function Providers({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const showAssistant =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/help");
   const [client] = useState(
     () =>
       new QueryClient({
@@ -17,13 +27,13 @@ export function Providers({ children }: { children: ReactNode }) {
             retry: 1,
           },
         },
-      })
+      }),
   );
   return (
     <QueryClientProvider client={client}>
       <NotificationRealtimeProvider />
       {children}
-      <AiChat />
+      {showAssistant && <AiChat />}
       <Toaster
         position="top-right"
         toastOptions={{

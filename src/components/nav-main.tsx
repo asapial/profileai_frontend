@@ -1,10 +1,9 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { IconCirclePlusFilled, type Icon } from "@tabler/icons-react";
 
-import { Button } from "@/components/ui/button"
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -12,7 +11,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 export function NavMain({
   items,
@@ -20,22 +19,24 @@ export function NavMain({
   label = "Workspace",
 }: {
   items: {
-    title: string
-    url: string
-    icon?: Icon
-  }[]
+    title: string;
+    url: string;
+    icon?: Icon;
+  }[];
   /**
    * Optional primary CTA shown at the top of the nav. When `href` is
    * provided we render a real link so the user can preview the
    * destination on hover and middle-click to open in a new tab.
    */
-  quickCreate?: { label: string; href?: string }
-  label?: string
+  quickCreate?: { label: string; href?: string };
+  label?: string;
 }) {
-  const pathname = usePathname()
+  const pathname = usePathname();
   const isCurrent = (url: string) =>
     pathname === url ||
-    (url !== "/dashboard" && url !== "/admin" && pathname.startsWith(`${url}/`))
+    (url !== "/dashboard" &&
+      url !== "/admin" &&
+      pathname.startsWith(`${url}/`));
 
   return (
     <SidebarGroup>
@@ -48,7 +49,7 @@ export function NavMain({
             <SidebarMenuButton
               tooltip={quickCreate?.label ?? "Quick Create"}
               asChild={Boolean(quickCreate?.href)}
-              className="h-10 min-w-8 rounded-xl border border-white/15 bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white shadow-lg shadow-violet-500/20 duration-200 ease-linear hover:from-violet-500 hover:to-fuchsia-400 hover:text-white active:text-white"
+              className="h-10 min-w-8 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
             >
               {quickCreate?.href ? (
                 <Link href={quickCreate.href}>
@@ -62,17 +63,6 @@ export function NavMain({
                 </>
               )}
             </SidebarMenuButton>
-            <Button
-              size="icon"
-              asChild
-              className="size-10 rounded-xl group-data-[collapsible=icon]:opacity-0"
-              variant="outline"
-            >
-              <Link href={pathname.startsWith("/admin") ? "/admin/tickets" : "/dashboard/notifications"}>
-                <IconMail />
-                <span className="sr-only">Inbox</span>
-              </Link>
-            </Button>
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>
@@ -94,5 +84,5 @@ export function NavMain({
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
-  )
+  );
 }

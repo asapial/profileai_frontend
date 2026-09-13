@@ -13,18 +13,21 @@ import {
   ScrollText,
   BarChart3,
   LifeBuoy,
+  Compass,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
+  { href: "/dashboard/career", label: "Career studio", icon: Sparkles },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/resumes", label: "Resumes", icon: FileText },
-  { href: "/applications", label: "Applications", icon: Briefcase },
+  { href: "/dashboard/resumes", label: "Resumes", icon: FileText },
+  { href: "/dashboard/jobs", label: "Job workspace", icon: Compass },
+  { href: "/dashboard/applications", label: "Applications", icon: Briefcase },
   { href: "/templates", label: "Templates", icon: LayoutTemplate },
-  { href: "/cover-letter", label: "Cover Letters", icon: ScrollText },
-  { href: "/analyzer", label: "JD Analyzer", icon: BarChart3 },
-  { href: "/notifications", label: "Notifications", icon: Bell },
-  { href: "/profile", label: "Profile", icon: UserRound },
+  { href: "/dashboard/cover-letters", label: "Cover Letters", icon: ScrollText },
+  { href: "/dashboard/ats", label: "JD Analyzer", icon: BarChart3 },
+  { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
+  { href: "/dashboard/profile", label: "Profile", icon: UserRound },
 ];
 
 export function DashboardSidebar() {

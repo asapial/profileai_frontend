@@ -129,7 +129,7 @@ export function PublicInfoPage({ page, definition }: Props) {
   return (
     <>
       <Navbar1 />
-      <main id="main" className="relative isolate overflow-hidden pb-20 sm:pb-28">
+      <main id="main" className="studio-public-page relative isolate overflow-hidden pb-20 sm:pb-28">
         <div
           className="premium-grid-mask pointer-events-none absolute inset-x-0 top-0 -z-20 h-[46rem] opacity-70"
           aria-hidden="true"

@@ -1,10 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sparkles } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { NotificationsBell } from "@/components/notifications-bell";
@@ -16,7 +13,7 @@ const ROUTE_TITLES: Array<[string, string]> = [
   ["/dashboard/applications", "Applications"],
   ["/dashboard/cover-letters", "Cover letters"],
   ["/dashboard/templates", "Templates"],
-  ["/dashboard/ats", "ATS analyzer"],
+  ["/dashboard/ats", "Role insights"],
   ["/dashboard/analytics", "Career analytics"],
   ["/dashboard/notifications", "Notifications"],
   ["/dashboard/exports", "Exports"],
@@ -58,7 +55,6 @@ function titleForPath(pathname: string, role?: Role | null) {
 export function SiteHeader({
   title,
   role,
-  cta,
 }: {
   title?: string;
   role?: Role | null;
@@ -71,36 +67,24 @@ export function SiteHeader({
     <header className="sticky top-0 z-30 flex min-h-(--header-height) min-w-0 shrink-0 items-center gap-2 border-b border-white/40 bg-background/58 backdrop-blur-2xl transition-[width,height] ease-linear dark:border-white/8 dark:bg-background/55">
       <div className="flex min-w-0 w-full items-center gap-1 px-3 py-2 sm:px-4 lg:gap-2 lg:px-6">
         <SidebarTrigger className="-ml-1 size-9 rounded-xl border border-border/60 bg-background/45" />
-        <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-6" />
+        <Separator
+          orientation="vertical"
+          className="mx-2 data-[orientation=vertical]:h-6"
+        />
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h1 className="truncate text-sm font-semibold tracking-tight sm:text-base">
+            <p className="truncate text-sm font-semibold tracking-tight sm:text-base">
               {pageTitle}
-            </h1>
-            {role ? (
-              <span className="hidden rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-primary ring-1 ring-primary/15 sm:inline-flex">
-                {role === "ADMIN" ? "Admin" : "Member"}
-              </span>
-            ) : null}
+            </p>
           </div>
           <p className="hidden text-[10px] text-muted-foreground sm:block">
-            {role === "ADMIN" ? "Platform control center" : "Your career command center"}
+            {role === "ADMIN"
+              ? "Platform control center"
+              : "Your career workspace"}
           </p>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <span className="hidden items-center gap-1.5 rounded-full border border-emerald-500/15 bg-emerald-500/8 px-2.5 py-1 text-[10px] font-semibold text-emerald-600 lg:inline-flex dark:text-emerald-300">
-            <span className="size-1.5 rounded-full bg-emerald-500" />
-            Live workspace
-          </span>
           <NotificationsBell />
-          {cta ? (
-            <Button asChild size="sm" className="hidden sm:flex">
-              <Link href={cta.href}>
-                <Sparkles className="size-3.5" />
-                {cta.label}
-              </Link>
-            </Button>
-          ) : null}
         </div>
       </div>
     </header>

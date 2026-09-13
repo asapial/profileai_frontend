@@ -1,20 +1,36 @@
-// Compatibility redirect: the template gallery lives at
-// `/dashboard/templates` inside the `(user)` route group. Bare
-// `/templates` links are forwarded here.
-
 import { redirect } from "next/navigation";
-
-export default async function TemplatesRedirect({
+import { Navbar1 } from "@/components/navbar1";
+import { Footer } from "@/components/layout/Footer";
+import { TemplateGallerySection } from "@/components/home/TemplateGallerySection";
+import { fetchPublicTemplates } from "@/lib/api";
+export const metadata = {
+  title: "Template collection — ProfileAI",
+  description:
+    "Explore resume and CV designs. Choose a layout before creating your account.",
+};
+export default async function TemplatesPage({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const raw = await searchParams;
-  const sp = new URLSearchParams();
-  for (const [key, value] of Object.entries(raw)) {
-    if (typeof value === "string") sp.set(key, value);
-    else if (Array.isArray(value) && value[0]) sp.set(key, value[0]);
+  const query = await searchParams;
+  if (typeof query.customize === "string")
+    redirect(
+      `/dashboard/templates?customize=${encodeURIComponent(query.customize)}`,
+    );
+  let templates: Awaited<ReturnType<typeof fetchPublicTemplates>> = [];
+  try {
+    templates = await fetchPublicTemplates();
+  } catch {
+    /* Gallery has an explicit unavailable state. */
   }
-  const qs = sp.toString();
-  redirect(`/dashboard/templates${qs ? `?${qs}` : ""}`);
+  return (
+    <>
+      <Navbar1 />
+      <main id="main">
+        <TemplateGallerySection templates={templates} full />
+      </main>
+      <Footer />
+    </>
+  );
 }

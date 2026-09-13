@@ -67,7 +67,7 @@ export function TemplateGalleryCard({
             </span>
           ) : null}
           <span className="rounded-full bg-slate-950/85 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
-            {template.documentType}
+            {template.documentType === "CV" ? "CV design" : "Résumé design"}
           </span>
         </div>
         <div

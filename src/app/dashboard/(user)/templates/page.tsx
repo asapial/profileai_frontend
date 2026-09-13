@@ -85,7 +85,22 @@ export default function TemplatesPage() {
     router.replace("/dashboard/templates?view=mine", { scroll: false });
   }, [fork, myQuery.data, publicQuery.data, router, searchParams]);
 
-  const openBuilder = (template: Template) => router.push(`/resume/create?templateId=${encodeURIComponent(template.id)}`);
+  const openBuilder = (template: Template) => {
+    const params = new URLSearchParams({
+      templateId: template.id,
+      type: template.documentType,
+    });
+    setPreview(null);
+    setEditing(null);
+    router.push(`/dashboard/resume/create?${params.toString()}`);
+  };
+
+  const customizeFromPreview = () => {
+    const selected = preview;
+    if (!selected) return;
+    setPreview(null);
+    void saveEditableCopy(selected);
+  };
   const items = view === "gallery" ? publicTemplates : myTemplates;
   const loading = view === "gallery" ? publicQuery.isLoading : myQuery.isLoading;
   const failed = view === "gallery" ? publicQuery.isError : myQuery.isError;
@@ -141,7 +156,7 @@ export default function TemplatesPage() {
         </div>
       )}
 
-      <TemplatePreviewModal template={preview} onClose={() => setPreview(null)} onUse={() => preview && openBuilder(preview)} onCustomize={() => preview && saveEditableCopy(preview)} />
+      <TemplatePreviewModal template={preview} onClose={() => setPreview(null)} onUse={() => preview && openBuilder(preview)} onCustomize={customizeFromPreview} />
       {editing ? <MyTemplateEditorModal template={editing} onClose={() => setEditing(null)} onUse={() => openBuilder(editing)} /> : null}
     </div>
   );

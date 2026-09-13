@@ -5,9 +5,9 @@ import { setAiChatPageContext } from "@/lib/aiChatContextBridge";
 import Link from "next/link";
 import {
   ArrowLeft,
-  Bold,
   Briefcase,
   Check,
+  ChevronDown,
   Cloud,
   CloudOff,
   Copy,
@@ -17,7 +17,6 @@ import {
   GraduationCap,
   Hash,
   History,
-  Italic,
   Languages as LanguagesIcon,
   List,
   Loader2,
@@ -26,7 +25,6 @@ import {
   Share2,
   Sparkles,
   Trash2,
-  Underline,
   User,
   ZoomIn,
   ZoomOut,
@@ -89,6 +87,7 @@ type Props = {
   deletePending: boolean;
   atsData: AtsResult | null;
   atsLoading: boolean;
+  aiWriting: boolean;
   historyOpen: boolean;
   historyEntries: ResumeHistoryEntry[];
   historyLoading: boolean;
@@ -96,7 +95,6 @@ type Props = {
   shareUrl: string | null;
   analytics: ResumeAnalytics | null;
   analyticsLoading: boolean;
-  fullName: string;
   // patchers
   patchPersonalInfo: (patch: Partial<ResumePersonalInfo>) => void;
   patchSummary: (value: string) => void;
@@ -111,8 +109,12 @@ type Props = {
     experienceId: string,
     instruction: string
   ) => Promise<void> | void;
+  handleAiRewriteSection: (
+    section: "education" | "skills" | "languages" | "certifications",
+    instruction: string
+  ) => Promise<void> | void;
   handleRunAts: () => Promise<void> | void;
-  handleExport: () => Promise<void> | void;
+  handleExport: (fileType?: "PDF" | "DOCX") => Promise<void> | void;
   handleDuplicate: () => void;
   handleDelete: () => void;
   handleTemplateChange: (templateId: string) => Promise<void> | void;
@@ -124,142 +126,6 @@ type Props = {
 const ZOOM_MIN = 0.5;
 const ZOOM_MAX = 1.5;
 const ZOOM_STEP = 0.1;
-
-const ACCENT_PRESETS = [
-  "#7c3aed", // violet
-  "#4f46e5", // indigo
-  "#2563eb", // blue
-  "#0891b2", // cyan
-  "#059669", // emerald
-  "#d97706", // amber
-  "#dc2626", // rose
-  "#0f172a", // slate
-];
-
-const FONT_PRESETS = [
-  { value: "Inter, system-ui, sans-serif", label: "Inter" },
-  { value: "Georgia, serif", label: "Georgia (serif)" },
-  {
-    value: "\"Source Serif Pro\", Georgia, serif",
-    label: "Source Serif",
-  },
-  { value: "\"JetBrains Mono\", monospace", label: "JetBrains Mono" },
-];
-
-function loadStoredStyle(resumeId: string) {
-  const fallback = {
-    accent: "#7c3aed",
-    font: FONT_PRESETS[0].value,
-    fontSize: 11,
-    zoom: 0.7,
-  };
-
-  if (typeof window === "undefined") return fallback;
-
-  try {
-    const raw = window.localStorage.getItem(`word-style-editor:${resumeId}`);
-    if (!raw) return fallback;
-    const style = JSON.parse(raw) as Partial<typeof fallback>;
-    return {
-      accent: style.accent ?? fallback.accent,
-      font: style.font ?? fallback.font,
-      fontSize: style.fontSize ?? fallback.fontSize,
-      zoom: style.zoom ?? fallback.zoom,
-    };
-  } catch {
-    return fallback;
-  }
-}
-
-function DesignSettings({
-  accent,
-  setAccent,
-  font,
-  setFont,
-  fontSize,
-  setFontSize,
-}: {
-  accent: string;
-  setAccent: (v: string) => void;
-  font: string;
-  setFont: (v: string) => void;
-  fontSize: number;
-  setFontSize: (n: number) => void;
-}) {
-  return (
-    <div className="flex flex-wrap items-end gap-4">
-      <div className="space-y-1.5">
-        <span className="block text-xs font-medium text-muted-foreground">
-          Accent colour
-        </span>
-        <div className="flex items-center gap-1.5">
-          {ACCENT_PRESETS.map((c) => (
-            <button
-              key={c}
-              type="button"
-              onClick={() => setAccent(c)}
-              className={`h-6 w-6 rounded-md border shadow-sm transition ${
-                accent.toLowerCase() === c
-                  ? "ring-2 ring-offset-2 ring-foreground scale-110"
-                  : "hover:scale-105"
-              }`}
-              style={{ backgroundColor: c }}
-              aria-label={`Accent ${c}`}
-            />
-          ))}
-          <label className="relative inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-md border border-dashed bg-background hover:bg-muted">
-            <Palette className="h-3.5 w-3.5 text-muted-foreground" />
-            <input
-              type="color"
-              value={accent}
-              onChange={(e) => setAccent(e.target.value)}
-              className="absolute inset-0 cursor-pointer opacity-0"
-              aria-label="Custom accent colour"
-            />
-          </label>
-        </div>
-      </div>
-
-      <div className="space-y-1.5">
-        <span className="block text-xs font-medium text-muted-foreground">
-          Body font
-        </span>
-        <select
-          value={font}
-          onChange={(e) => setFont(e.target.value)}
-          className="rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40"
-          style={{ fontFamily: font, minWidth: "12rem" }}
-        >
-          {FONT_PRESETS.map((f) => (
-            <option
-              key={f.value}
-              value={f.value}
-              style={{ fontFamily: f.value }}
-            >
-              {f.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="space-y-1.5">
-        <span className="flex items-center justify-between gap-2 text-xs font-medium text-muted-foreground">
-          <span>Type size</span>
-          <span className="text-foreground">{fontSize}px</span>
-        </span>
-        <input
-          type="range"
-          min={9}
-          max={14}
-          step={1}
-          value={fontSize}
-          onChange={(e) => setFontSize(Number(e.target.value))}
-          className="w-32 accent-violet-600"
-        />
-      </div>
-    </div>
-  );
-}
 
 function PlusMark({ className }: { className?: string }) {
   return (
@@ -333,6 +199,7 @@ export function WordStyleEditor({
   deletePending,
   atsData,
   atsLoading,
+  aiWriting,
   historyOpen,
   historyEntries,
   historyLoading,
@@ -340,7 +207,6 @@ export function WordStyleEditor({
   shareUrl,
   analytics,
   analyticsLoading,
-  fullName,
   patchPersonalInfo,
   patchSummary,
   patchExperience,
@@ -350,6 +216,7 @@ export function WordStyleEditor({
   patchCertifications,
   handleAiRewriteSummary,
   handleAiRewriteExperience,
+  handleAiRewriteSection,
   handleRunAts,
   handleExport,
   handleDuplicate,
@@ -363,35 +230,35 @@ export function WordStyleEditor({
   const [ribbon, setRibbon] = useState<RibbonId>("home");
   const [templateMenuOpen, setTemplateMenuOpen] = useState(false);
   const [sharePanelOpen, setSharePanelOpen] = useState(false);
+  const [exportPanelOpen, setExportPanelOpen] = useState(false);
+  const [mobilePane, setMobilePane] = useState<"preview" | "edit">("edit");
+  const [focusPreview, setFocusPreview] = useState(false);
 
   useEffect(() => {
     setAiChatPageContext({ selectedSection: section });
     return () => setAiChatPageContext({});
   }, [section]);
 
-  // Local styling overrides applied to the preview, not the API.
-  const storageKey = `word-style-editor:${resume.id}`;
-  const [style] = useState(() => loadStoredStyle(resume.id));
-  const [accent, setAccent] = useState(style.accent);
-  const [font, setFont] = useState(style.font);
-  const [fontSize, setFontSize] = useState(style.fontSize);
-  const [zoom, setZoom] = useState(style.zoom);
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(
-        storageKey,
-        JSON.stringify({ accent, font, fontSize, zoom })
-      );
-    } catch {
-      /* ignore */
-    }
-  }, [storageKey, accent, font, fontSize, zoom]);
+  const [zoom, setZoom] = useState(0.7);
 
   const normalizedDraft = useMemo(
     () => normalizeContentData(draft),
     [draft]
   );
+
+  const completedSections = useMemo(() => {
+    const personal = normalizedDraft.personalInfo ?? {};
+    return new Set<SectionId>([
+      ...(personal.firstName && personal.lastName && personal.email ? ["personal" as const] : []),
+      ...(normalizedDraft.summary?.trim() ? ["summary" as const] : []),
+      ...(normalizedDraft.experience?.length ? ["experience" as const] : []),
+      ...(normalizedDraft.education?.length ? ["education" as const] : []),
+      ...(normalizedDraft.skills?.length ? ["skills" as const] : []),
+      ...(normalizedDraft.languages?.length ? ["languages" as const] : []),
+      ...(normalizedDraft.certifications?.length ? ["certifications" as const] : []),
+    ]);
+  }, [normalizedDraft]);
+  const completionPercentage = Math.round((completedSections.size / 7) * 100);
 
   const wordCount = useMemo(() => {
     const pieces: string[] = [];
@@ -526,16 +393,6 @@ export function WordStyleEditor({
     [normalizedDraft.experience, normalizedDraft.education, patchExperience, patchEducation]
   );
 
-  const previewStyleVars: React.CSSProperties = {
-    ["--wse-accent" as string]: accent,
-    ["--wse-font" as string]: font,
-    ["--wse-font-size" as string]: `${fontSize}px`,
-    ["--resume-accent" as string]: accent,
-    ["--accent" as string]: accent,
-    ["--base-font" as string]: font,
-    ["--base-font-size" as string]: `${fontSize}px`,
-  };
-
   function goToRibbon(id: RibbonId, sectionHint?: SectionId) {
     setRibbon(id);
     if (sectionHint) setSection(sectionHint);
@@ -543,11 +400,10 @@ export function WordStyleEditor({
 
   return (
     <div
-      className="flex min-h-[calc(100vh-3rem)] flex-col overflow-hidden rounded-2xl border border-border bg-muted/40"
-      style={previewStyleVars}
+      className="mx-2 flex min-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-slate-100/70 shadow-2xl shadow-slate-950/10 sm:mx-4 dark:border-white/10 dark:bg-slate-950/60"
     >
       {/* File bar */}
-      <div className="flex items-center justify-between gap-2 border-b border-border bg-gradient-to-r from-violet-600 to-fuchsia-500 px-4 py-2 text-white">
+      <div className="relative z-40 flex flex-wrap items-center justify-between gap-2 border-b border-white/10 bg-slate-950 px-3 py-3 text-white sm:px-4">
         <div className="flex min-w-0 items-center gap-2">
           <Button
             asChild
@@ -560,17 +416,25 @@ export function WordStyleEditor({
             </Link>
           </Button>
           <span className="mx-1 hidden h-5 w-px bg-white/30 sm:block" />
-          <FileText className="hidden h-4 w-4 shrink-0 sm:block" />
-          <span className="min-w-0 truncate text-sm font-semibold">
-            {resume.title}
+          <div className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 via-fuchsia-500 to-cyan-400 shadow-lg shadow-violet-500/20 sm:flex">
+            <FileText className="h-4 w-4" />
+          </div>
+          <span className="min-w-0 truncate text-sm font-semibold sm:text-base">
+            <span className="block truncate">{resume.title}</span>
             {currentTemplate ? (
-              <span className="ml-2 rounded bg-white/15 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide">
-                {currentTemplate.name}
+              <span className="block text-[10px] font-medium uppercase tracking-widest text-slate-400">
+                Career Canvas · {currentTemplate.name} · {resume.type === "CV" ? "Curriculum Vitae" : "Professional Résumé"}
               </span>
             ) : null}
           </span>
         </div>
-        <div className="relative flex items-center gap-1">
+        <div className="relative flex flex-wrap items-center justify-end gap-1 overflow-visible">
+          <div className="mr-1 hidden items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-2.5 py-1.5 md:flex" title={`${completionPercentage}% complete`}>
+            <div className="relative grid h-7 w-7 place-items-center rounded-full" style={{ background: `conic-gradient(#a78bfa ${completionPercentage}%, rgba(255,255,255,.12) 0)` }}>
+              <div className="grid h-5 w-5 place-items-center rounded-full bg-slate-950 text-[8px] font-bold">{completionPercentage}</div>
+            </div>
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-300">Profile strength</span>
+          </div>
           <Button
             variant="ghost"
             size="sm"
@@ -578,6 +442,7 @@ export function WordStyleEditor({
             onClick={() => {
               setTemplateMenuOpen((open) => !open);
               setSharePanelOpen(false);
+              setExportPanelOpen(false);
             }}
             disabled={templatesLoading || templateChanging}
           >
@@ -586,7 +451,7 @@ export function WordStyleEditor({
             ) : (
               <Palette className="h-3.5 w-3.5" />
             )}
-            Template
+            <span className="hidden lg:inline">Template</span>
           </Button>
           <Button
             variant="ghost"
@@ -595,6 +460,7 @@ export function WordStyleEditor({
             onClick={() => {
               setSharePanelOpen((open) => !open);
               setTemplateMenuOpen(false);
+              setExportPanelOpen(false);
               if (!resume.isPublic) void handleShare(true);
             }}
             disabled={sharePending}
@@ -604,7 +470,7 @@ export function WordStyleEditor({
             ) : (
               <Share2 className="h-3.5 w-3.5" />
             )}
-            {resume.isPublic ? "Share" : "Enable share"}
+            <span className="hidden lg:inline">{resume.isPublic ? "Share" : "Enable share"}</span>
           </Button>
           <Button
             variant="ghost"
@@ -618,22 +484,53 @@ export function WordStyleEditor({
             ) : (
               <Copy className="h-3.5 w-3.5" />
             )}
-            Duplicate
+            <span className="hidden xl:inline">Duplicate</span>
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            className="gap-1 text-white hover:bg-white/15 hover:text-white"
-            onClick={() => void handleExport()}
-            disabled={exporting}
+            className={`hidden gap-1 lg:inline-flex ${focusPreview ? "bg-violet-500/20 text-violet-100" : "text-white hover:bg-white/15 hover:text-white"}`}
+            onClick={() => setFocusPreview((value) => !value)}
           >
-            {exporting ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Download className="h-3.5 w-3.5" />
-            )}
-            Export PDF
+            <Eye className="h-3.5 w-3.5" />
+            {focusPreview ? "Show editor" : "Focus preview"}
           </Button>
+          <div className="flex items-stretch rounded-md bg-white text-slate-950 shadow-sm">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1 rounded-r-none text-slate-950 hover:bg-violet-50 hover:text-violet-700"
+              onClick={() => {
+                setExportPanelOpen(false);
+                setTemplateMenuOpen(false);
+                setSharePanelOpen(false);
+                void handleExport("PDF");
+              }}
+              disabled={exporting}
+              aria-label="Export resume as PDF"
+            >
+              {exporting ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Download className="h-3.5 w-3.5" />
+              )}
+              <span className="hidden sm:inline">Export PDF</span>
+            </Button>
+            <button
+              type="button"
+              className="grid w-8 place-items-center rounded-r-md border-l border-slate-200 hover:bg-violet-50 hover:text-violet-700 disabled:opacity-60"
+              onClick={() => {
+                setExportPanelOpen((open) => !open);
+                setTemplateMenuOpen(false);
+                setSharePanelOpen(false);
+              }}
+              disabled={exporting}
+              aria-label="Choose export format"
+              aria-expanded={exportPanelOpen}
+            >
+              <ChevronDown className="h-3.5 w-3.5" />
+            </button>
+          </div>
           <Button
             variant="ghost"
             size="sm"
@@ -646,7 +543,7 @@ export function WordStyleEditor({
             ) : (
               <Trash2 className="h-3.5 w-3.5" />
             )}
-            Delete
+            <span className="hidden xl:inline">Delete</span>
           </Button>
 
           {templateMenuOpen ? (
@@ -733,24 +630,39 @@ export function WordStyleEditor({
               )}
             </div>
           ) : null}
+
+          {exportPanelOpen ? (
+            <div className="absolute right-0 top-full z-30 mt-2 w-72 rounded-xl border border-border bg-popover p-2 text-foreground shadow-2xl">
+              <p className="px-2 py-1 text-xs font-semibold">Export selected design</p>
+              <p className="px-2 pb-2 text-[11px] leading-relaxed text-muted-foreground">Both formats use the active template and your latest auto-saved content.</p>
+              <button type="button" onClick={() => { setExportPanelOpen(false); void handleExport("PDF"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left hover:bg-muted">
+                <Download className="h-4 w-4 text-violet-500" />
+                <span><span className="block text-xs font-semibold">Pixel-perfect PDF</span><span className="block text-[10px] text-muted-foreground">Best visual match for sharing</span></span>
+              </button>
+              <button type="button" onClick={() => { setExportPanelOpen(false); void handleExport("DOCX"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left hover:bg-muted">
+                <FileText className="h-4 w-4 text-blue-500" />
+                <span><span className="block text-xs font-semibold">Design-matched Word DOCX</span><span className="block text-[10px] text-muted-foreground">Best template fidelity in Microsoft Word</span></span>
+              </button>
+            </div>
+          ) : null}
         </div>
       </div>
 
       {/* Ribbon: tabs */}
-      <div className="flex items-end gap-1 border-b border-border bg-card px-3 pt-2">
+      <div className="flex items-end gap-1 overflow-x-auto border-b border-border bg-card/95 px-3 pt-2 backdrop-blur-xl">
         {(
           [
-            { id: "home", label: "Home", Icon: Bold, IconClass: "h-3.5 w-3.5" },
-            { id: "insert", label: "Insert", Icon: null, IconClass: "" },
+            { id: "home", label: "Content", Icon: User, IconClass: "h-3.5 w-3.5" },
+            { id: "insert", label: "Add", Icon: null, IconClass: "" },
             {
               id: "design",
-              label: "Design",
+              label: "Look & feel",
               Icon: Palette,
               IconClass: "h-3.5 w-3.5",
             },
             {
               id: "review",
-              label: "Review",
+              label: "Improve",
               Icon: Sparkles,
               IconClass: "h-3.5 w-3.5",
             },
@@ -787,11 +699,11 @@ export function WordStyleEditor({
       </div>
 
       {/* Ribbon: contextual groups */}
-      <div className="flex flex-wrap items-center gap-3 border-b border-border bg-background px-3 py-2 text-xs">
+      <div className="flex min-h-12 flex-wrap items-center gap-3 border-b border-border bg-background/95 px-3 py-2 text-xs shadow-sm backdrop-blur-xl">
         {ribbon === "home" && (
           <>
-            <RibbonGroup label="Section">
-              <div className="flex flex-wrap gap-1">
+            <RibbonGroup label="Your story">
+              <div className="flex flex-wrap gap-1.5">
                 {(
                   [
                     ["personal", "Personal", User],
@@ -800,7 +712,7 @@ export function WordStyleEditor({
                     ["education", "Education", GraduationCap],
                     ["skills", "Skills", List],
                     ["languages", "Languages", LanguagesIcon],
-                    ["certifications", "Certs", GraduationCap],
+                    ["certifications", "Credentials", GraduationCap],
                   ] as [
                     SectionId,
                     string,
@@ -811,57 +723,24 @@ export function WordStyleEditor({
                     key={id}
                     type="button"
                     onClick={() => setSection(id)}
-                    className={`flex items-center gap-1 rounded-md px-2 py-1 font-medium transition ${
+                    className={`group flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 font-medium transition ${
                       section === id
-                        ? "bg-violet-100 text-violet-800"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        ? "border-violet-500 bg-violet-600 text-white shadow-md shadow-violet-500/15"
+                        : "border-transparent text-muted-foreground hover:border-violet-200 hover:bg-violet-50 hover:text-violet-800 dark:hover:bg-violet-950/30"
                     }`}
                   >
                     <Icon className="h-3 w-3" />
                     {label}
+                    {completedSections.has(id) ? <Check className={`h-3 w-3 ${section === id ? "text-white" : "text-emerald-500"}`} /> : <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />}
                   </button>
                 ))}
               </div>
             </RibbonGroup>
-
             <RibbonSeparator />
-            <RibbonGroup label="Style">
-              <button
-                type="button"
-                className="flex h-7 w-7 items-center justify-center rounded border border-border bg-background hover:bg-muted"
-                title="Bold (template)"
-                aria-label="Bold"
-              >
-                <Bold className="h-3.5 w-3.5" />
-              </button>
-              <button
-                type="button"
-                className="flex h-7 w-7 items-center justify-center rounded border border-border bg-background hover:bg-muted"
-                title="Italic (template)"
-                aria-label="Italic"
-              >
-                <Italic className="h-3.5 w-3.5" />
-              </button>
-              <button
-                type="button"
-                className="flex h-7 w-7 items-center justify-center rounded border border-border bg-background hover:bg-muted"
-                title="Underline (template)"
-                aria-label="Underline"
-              >
-                <Underline className="h-3.5 w-3.5" />
-              </button>
-            </RibbonGroup>
-            <RibbonGroup label="Color">
-              <button
-                type="button"
-                className="h-7 w-7 rounded border border-border"
-                style={{ backgroundColor: accent }}
-                onClick={() => goToRibbon("design")}
-                title="Open Design tab"
-                aria-label="Accent colour"
-              />
+            <RibbonGroup label="Quick style">
+              <button type="button" className="grid h-7 w-7 place-items-center rounded-lg border bg-background shadow-sm transition hover:bg-muted" onClick={() => goToRibbon("design")} title="View template design" aria-label="View template design"><Palette className="h-3.5 w-3.5 text-violet-500" /></button>
               <span className="ml-1 text-[10px] text-muted-foreground">
-                Use the Design tab to retune colours.
+                Tune your visual signature
               </span>
             </RibbonGroup>
           </>
@@ -944,20 +823,9 @@ export function WordStyleEditor({
         )}
 
         {ribbon === "design" && (
-          <div className="flex flex-1 items-center">
-            <DesignSettings
-              accent={accent}
-              setAccent={setAccent}
-              font={font}
-              setFont={setFont}
-              fontSize={fontSize}
-              setFontSize={setFontSize}
-            />
-            <p className="ml-4 rounded-md bg-muted/40 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
-              Visual tweaks only — they stay in your browser.
-              <br />
-              The exported PDF keeps the template&apos;s original look.
-            </p>
+          <div className="flex flex-1 flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2"><Palette className="h-4 w-4 text-violet-500" /><p className="text-xs"><span className="font-semibold">{currentTemplate?.name ?? "Selected template"}</span><span className="ml-2 text-muted-foreground">is the single design source for preview, PDF, and DOCX.</span></p></div>
+            <button type="button" onClick={() => setTemplateMenuOpen(true)} className="rounded-lg border border-violet-300 px-3 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-50">Switch template</button>
           </div>
         )}
 
@@ -1003,20 +871,34 @@ export function WordStyleEditor({
         )}
       </div>
 
+      <div className="grid grid-cols-2 gap-1 border-b border-border bg-background p-1.5 lg:hidden">
+        <button
+          type="button"
+          onClick={() => setMobilePane("edit")}
+          className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition ${mobilePane === "edit" ? "bg-violet-600 text-white shadow-sm" : "text-muted-foreground hover:bg-muted"}`}
+        >
+          <User className="h-4 w-4" /> Edit content
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobilePane("preview")}
+          className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition ${mobilePane === "preview" ? "bg-violet-600 text-white shadow-sm" : "text-muted-foreground hover:bg-muted"}`}
+        >
+          <Eye className="h-4 w-4" /> Preview
+        </button>
+      </div>
+
       {/* Workspace */}
-      <div className="flex min-h-0 flex-1">
+      <div className="flex min-h-0 flex-1 bg-slate-200/40 dark:bg-slate-950/30">
         {/* Page column */}
-        <div className="relative flex flex-1 items-start justify-center overflow-auto bg-muted/30 p-6">
+        <div className={`${mobilePane === "preview" ? "flex" : "hidden"} relative flex-1 items-start justify-center overflow-auto bg-[radial-gradient(circle_at_top,rgba(139,92,246,.12),transparent_32%),linear-gradient(135deg,rgba(255,255,255,.35),transparent)] p-3 sm:p-6 lg:flex`}>
           <div
-            className="relative w-[210mm] max-w-full origin-top bg-white shadow-2xl ring-1 ring-border"
+            className="relative w-[210mm] max-w-full origin-top bg-white shadow-[0_24px_80px_-24px_rgba(15,23,42,.35)] ring-1 ring-black/5"
             style={{
               transform: `scale(${zoom})`,
               transformOrigin: "top center",
               marginBottom: `${(zoom - 1) * 60}vh`,
-              padding: "18mm 16mm",
               minHeight: "297mm",
-              fontFamily: font,
-              fontSize: `${fontSize}px`,
             }}
           >
             <div className="pointer-events-none absolute inset-x-0 top-0 h-3 bg-gradient-to-b from-black/5 to-transparent" />
@@ -1036,30 +918,24 @@ export function WordStyleEditor({
               />
             </div>
 
-            <div className="mt-6 flex items-center justify-between border-t border-dashed border-border pt-3 text-[10px] uppercase tracking-wide text-muted-foreground">
-              <span>
-                {currentTemplate?.name ?? "Template"} · {resume.type}
-              </span>
-              <span>Page 1 of 1 · {fullName || "Untitled candidate"}</span>
-            </div>
           </div>
         </div>
 
         {/* Side panel: editable fields */}
-        <aside className="flex w-full max-w-[420px] shrink-0 flex-col gap-3 border-l border-border bg-card p-4 xl:max-w-[440px]">
-          <header className="flex items-center justify-between">
+        <aside className={`${mobilePane === "edit" ? "flex" : "hidden"} w-full shrink-0 flex-col gap-3 border-l border-border bg-card/95 p-4 backdrop-blur-xl ${focusPreview ? "lg:hidden" : "lg:flex lg:max-w-[420px] xl:max-w-[460px]"}`}>
+          <header className="flex items-center justify-between rounded-xl border border-violet-500/10 bg-gradient-to-r from-violet-500/10 to-fuchsia-500/5 px-3 py-2.5">
             <div className="flex items-center gap-2">
               <Hash className="h-4 w-4 text-violet-500" />
               <h3 className="text-sm font-semibold">
-                {sectionLabel(section)}
+                Edit {sectionLabel(section)}
               </h3>
             </div>
             <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-              Variables · auto-saved
+              Auto-saved
             </span>
           </header>
 
-          <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+          <div className="min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-gutter:stable]">
             <div className="space-y-5">
               {section === "personal" && (
                 <PersonalInfoSection
@@ -1074,6 +950,7 @@ export function WordStyleEditor({
                   targetJobTitle={resume.targetJobTitle}
                   onChange={patchSummary}
                   onAiRewrite={handleAiRewriteSummary}
+                  aiWriting={aiWriting}
                 />
               )}
               {section === "experience" && (
@@ -1087,6 +964,8 @@ export function WordStyleEditor({
                 <EducationSection
                   educations={normalizedDraft.education ?? []}
                   onChange={patchEducation}
+                  aiWriting={aiWriting}
+                  onAiRewrite={() => handleAiRewriteSection("education", "Improve descriptions and presentation for relevance and clarity without changing any facts.")}
                 />
               )}
               {section === "skills" && (
@@ -1096,6 +975,8 @@ export function WordStyleEditor({
                   items={draft.skills ?? []}
                   onChange={patchSkills}
                   placeholder="e.g. React, Python, Figma"
+                  aiWriting={aiWriting}
+                  onAiRewrite={() => handleAiRewriteSection("skills", `Prioritize and organize these skills for ${resume.targetJobTitle || "the target role"}. Do not add skills that are not present.`)}
                 />
               )}
               {section === "languages" && (
@@ -1105,6 +986,8 @@ export function WordStyleEditor({
                   items={draft.languages ?? []}
                   onChange={patchLanguages}
                   placeholder="e.g. English (Fluent)"
+                  aiWriting={aiWriting}
+                  onAiRewrite={() => handleAiRewriteSection("languages", "Standardize language names and proficiency wording without changing proficiency facts.")}
                 />
               )}
               {section === "certifications" && (
@@ -1116,6 +999,8 @@ export function WordStyleEditor({
                   )}
                   onChange={patchCertifications}
                   placeholder="e.g. AWS Solutions Architect"
+                  aiWriting={aiWriting}
+                  onAiRewrite={() => handleAiRewriteSection("certifications", "Standardize credential wording and ordering without inventing or removing credentials.")}
                 />
               )}
             </div>
@@ -1132,7 +1017,7 @@ export function WordStyleEditor({
       </div>
 
       {/* Status bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-gradient-to-r from-violet-600 to-fuchsia-500 px-3 py-1.5 text-[11px] text-white">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-slate-950 px-3 py-2 text-[11px] text-slate-200">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1">
             {saving ? (

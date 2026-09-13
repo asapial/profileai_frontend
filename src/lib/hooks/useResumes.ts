@@ -25,10 +25,8 @@ export type ResumeListItem = {
   isPublic: boolean;
   slug: string | null;
   updatedAt: string;
-  template?: {
-    name: string;
-    category: string;
-  } | null;
+  contentData: ResumeContentData;
+  template: ResumeTemplateRef | null;
 };
 
 export type ResumeTemplateRef = {
@@ -163,7 +161,11 @@ export type UpdateResumePayload = {
 };
 
 export type AtsCheckPayload = { jobDescription: string };
-export type AiModifyPayload = { section: string; instruction: string };
+export type AiModifyPayload = {
+  section: "summary" | "experience" | "education" | "skills" | "languages" | "certifications";
+  instruction: string;
+  itemIndex?: number;
+};
 
 /* ──────────────────────────────────────────────────────────
  * Query helpers

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Template, TemplateCategory } from "@/lib/hooks/useTemplates";
@@ -37,20 +38,21 @@ export function TemplatePreviewModal({
     };
   }, [template, onClose]);
 
-  if (!template) return null;
+  if (!template || typeof document === "undefined") return null;
 
   const ats = atsScore[template.category];
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="template-preview-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-2 backdrop-blur-sm sm:p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4"
       onClick={onClose}
     >
+      <div className="absolute inset-0 bg-slate-950/65 backdrop-blur-sm" aria-hidden="true" />
       <div
-        className="flex max-h-[calc(100dvh-1rem)] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-card shadow-2xl sm:max-h-[90dvh] sm:rounded-2xl"
+        className="relative z-10 flex max-h-[calc(100dvh-1rem)] w-full max-w-5xl flex-col overflow-hidden rounded-xl border border-border bg-background text-foreground shadow-2xl sm:max-h-[94dvh] sm:rounded-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3 border-b border-border p-4 sm:p-5">
@@ -77,10 +79,10 @@ export function TemplatePreviewModal({
           </button>
         </div>
 
-        <div className="grid flex-1 gap-4 overflow-y-auto p-3 sm:p-5 md:grid-cols-[minmax(0,1fr)_220px] md:gap-5">
-          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-border bg-muted">
+        <div className="grid min-h-0 flex-1 gap-4 overflow-y-auto p-3 sm:p-5 md:grid-cols-[minmax(0,1fr)_220px] md:gap-5">
+          <div className="relative aspect-[210/297] w-full overflow-hidden rounded-xl border border-border bg-white shadow-inner">
             {template.htmlLayout && template.cssStyles ? (
-              <TemplateDesignPreview template={template} />
+              <TemplateDesignPreview template={template} priority />
             ) : (
               <div className="flex h-full items-center justify-center">
                 <Sparkles className="h-12 w-12 text-violet-400" />
@@ -91,7 +93,7 @@ export function TemplatePreviewModal({
           <div className="space-y-4">
             <Tile label="ATS score" value={`${ats} / 100`} />
             <Tile label="Style" value={template.category} />
-            <Tile label="Document" value={template.documentType === "CV" ? "Curriculum vitae" : "Résumé"} />
+            <Tile label="Document design" value={template.documentType === "CV" ? "Curriculum Vitae (CV)" : "Professional Résumé"} />
             <Tile
               label="Used by"
               value={`${template._count.resumes} resumes`}
@@ -106,21 +108,22 @@ export function TemplatePreviewModal({
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2 border-t border-border bg-muted/40 p-4">
-          <Button variant="outline" onClick={onClose}>
+        <div className="flex flex-col-reverse gap-2 border-t border-border bg-muted/40 p-4 sm:flex-row sm:items-center sm:justify-end">
+          <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">
             Close
           </Button>
           {onCustomize ? (
-            <Button variant="secondary" onClick={onCustomize}>
+            <Button variant="secondary" onClick={onCustomize} className="w-full sm:w-auto">
               Save an editable copy
             </Button>
           ) : null}
-          <Button onClick={onUse} className="gap-2">
+          <Button onClick={onUse} className="w-full gap-2 sm:w-auto">
             Use this template
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

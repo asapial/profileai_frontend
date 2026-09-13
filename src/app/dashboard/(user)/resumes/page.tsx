@@ -24,6 +24,17 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   useDeleteResume,
   useDuplicateResume,
   useExportResume,
@@ -33,6 +44,7 @@ import {
   type ResumeType,
 } from "@/lib/hooks/useResumes";
 import { useDashboardSummary } from "@/lib/hooks/useDashboardSummary";
+import { ResumeDocumentThumbnail } from "@/components/resume/ResumeDocumentThumbnail";
 
 const STATUS_LABEL: Record<ResumeStatus, string> = {
   DRAFT: "Draft",
@@ -291,6 +303,7 @@ function ResumeCard({
   const duplicate = useDuplicateResume();
   const remove = useDeleteResume();
   const exportMut = useExportResume();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   async function handleDuplicate() {
     onMenuClose();
@@ -324,19 +337,32 @@ function ResumeCard({
   }
 
   function handleDelete() {
-    onMenuClose();
-    const ok = window.confirm(`Delete "${resume.title}"? This cannot be undone.`);
-    if (!ok) return;
     remove.mutate(resume.id, {
-      onSuccess: () => toast.success("Resume deleted."),
+      onSuccess: () => {
+        setDeleteDialogOpen(false);
+        toast.success("Resume deleted.");
+      },
       onError: (err) =>
         toast.error(err instanceof Error ? err.message : "Delete failed."),
     });
   }
 
   return (
-    <Card className="group relative flex flex-col">
-      <CardHeader className="space-y-2">
+    <>
+      <Card className="group relative flex flex-col">
+        <Link
+          href={`/dashboard/resume/${resume.id}/edit`}
+          aria-label={`Open ${resume.title} in the resume editor`}
+          className="relative block overflow-hidden rounded-t-xl border-b border-border bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-inset dark:bg-slate-900"
+        >
+          <div className="transition duration-300 group-hover:scale-[1.01]">
+            <ResumeDocumentThumbnail resume={resume} />
+          </div>
+          <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/50 to-transparent px-3 pb-2 pt-8 text-right text-[11px] font-medium text-white opacity-0 transition group-hover:opacity-100">
+            Open editor →
+          </span>
+        </Link>
+        <CardHeader className="space-y-2">
         <div className="flex items-start justify-between gap-2">
           <Link
             href={`/dashboard/resume/${resume.id}/edit`}
@@ -385,7 +411,10 @@ function ResumeCard({
                   </button>
                   <button
                     type="button"
-                    onClick={handleDelete}
+                    onClick={() => {
+                      onMenuClose();
+                      setDeleteDialogOpen(true);
+                    }}
                     disabled={remove.isPending}
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-rose-600 hover:bg-rose-50 disabled:opacity-50"
                   >
@@ -396,8 +425,8 @@ function ResumeCard({
             ) : null}
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="mt-auto space-y-3">
+        </CardHeader>
+        <CardContent className="mt-auto space-y-3">
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <span
             className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
@@ -429,8 +458,49 @@ function ResumeCard({
             Open →
           </Link>
         </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      <AlertDialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          if (!remove.isPending) setDeleteDialogOpen(open);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogMedia className="bg-rose-500/10 text-rose-600">
+              <Trash2 className="h-8 w-8" />
+            </AlertDialogMedia>
+            <AlertDialogTitle>Delete this resume?</AlertDialogTitle>
+            <AlertDialogDescription>
+              <span className="font-medium text-foreground">{resume.title}</span>{" "}
+              will be permanently deleted. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={remove.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={remove.isPending}
+              onClick={(event) => {
+                event.preventDefault();
+                handleDelete();
+              }}
+            >
+              {remove.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Deleting…
+                </>
+              ) : (
+                "Delete resume"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 

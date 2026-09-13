@@ -46,7 +46,9 @@ export default function CreateResumePage() {
   const queryTemplateId = searchParams.get("templateId") ?? "";
   const queryType = searchParams.get("type") === "CV" ? "CV" : "RESUME";
 
-  const [stepIndex, setStepIndex] = useState(0);
+  const [stepIndex, setStepIndex] = useState(() =>
+    queryTemplateId ? STEP_CONTENT_IDS.job : STEP_CONTENT_IDS.template
+  );
   const [state, setState] = useState<WizardState>({
     templateId: queryTemplateId,
     type: queryType,

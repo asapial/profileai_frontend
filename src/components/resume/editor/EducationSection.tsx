@@ -1,11 +1,13 @@
 "use client";
 
-import { GraduationCap, Plus, Trash2 } from "lucide-react";
+import { GraduationCap, Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
 import type { ResumeEducation } from "@/lib/hooks/useResumes";
 
 type Props = {
   educations: ResumeEducation[];
   onChange: (next: ResumeEducation[]) => void;
+  onAiRewrite?: () => Promise<void> | void;
+  aiWriting?: boolean;
 };
 
 function newEntry(): ResumeEducation {
@@ -20,25 +22,30 @@ function newEntry(): ResumeEducation {
   };
 }
 
-export function EducationSection({ educations, onChange }: Props) {
+export function EducationSection({ educations, onChange, onAiRewrite, aiWriting = false }: Props) {
   function patch(id: string | number, patch: Partial<ResumeEducation>) {
     onChange(educations.map((e) => (e.id === id ? { ...e, ...patch } : e)));
   }
 
   return (
     <section className="space-y-4">
-      <header className="flex items-center justify-between">
+      <header className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <GraduationCap className="h-4 w-4 text-violet-500" />
           <h3 className="text-base font-semibold">Education</h3>
         </div>
-        <button
-          type="button"
-          onClick={() => onChange([...educations, newEntry()])}
-          className="flex items-center gap-1 rounded-md border border-dashed border-violet-300 px-2.5 py-1 text-xs font-medium text-violet-600 hover:bg-violet-50"
-        >
-          <Plus className="h-3.5 w-3.5" /> Add school
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {onAiRewrite && educations.length ? <button type="button" onClick={() => void onAiRewrite()} disabled={aiWriting} className="flex items-center gap-1 rounded-md bg-violet-600 px-2.5 py-1 text-xs font-medium text-white disabled:opacity-60">
+            {aiWriting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />} Improve
+          </button> : null}
+          <button
+            type="button"
+            onClick={() => onChange([...educations, newEntry()])}
+            className="flex items-center gap-1 rounded-md border border-dashed border-violet-300 px-2.5 py-1 text-xs font-medium text-violet-600 hover:bg-violet-50"
+          >
+            <Plus className="h-3.5 w-3.5" /> Add school
+          </button>
+        </div>
       </header>
 
       <div className="space-y-3">
@@ -70,7 +77,7 @@ export function EducationSection({ educations, onChange }: Props) {
               placeholder="Field of study"
               onChange={(ev) => patch(e.id ?? idx, { field: ev.target.value })}
             />
-            <div className="flex items-center gap-2">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
               <input
                 type="month"
                 className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40"

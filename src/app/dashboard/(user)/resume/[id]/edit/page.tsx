@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -208,14 +208,22 @@ export default function EditResumePage() {
   }
 
   async function handleAiRewriteExperience(
-    _experienceId: string,
+    experienceId: string,
     instruction: string
   ) {
+    const itemIndex = (draftRef.current.experience ?? []).findIndex(
+      (item, index) => String(item.id ?? `__idx_${index}`) === experienceId
+    );
+    if (itemIndex < 0) {
+      toast.error("That experience entry could not be found.");
+      return;
+    }
     if (!id || !(await ensureDraftSaved())) return;
     try {
       const data = await aiMutation.mutateAsync({
         section: "experience",
         instruction,
+        itemIndex,
       });
       const normalized = normalizeContentData(data.contentData);
       draftRef.current = normalized;
@@ -226,6 +234,23 @@ export default function EditResumePage() {
       toast.error(
         cause instanceof Error ? cause.message : "AI rewrite failed."
       );
+    }
+  }
+
+  async function handleAiRewriteSection(
+    section: "education" | "skills" | "languages" | "certifications",
+    instruction: string
+  ) {
+    if (!id || !(await ensureDraftSaved())) return;
+    try {
+      const data = await aiMutation.mutateAsync({ section, instruction });
+      const normalized = normalizeContentData(data.contentData);
+      draftRef.current = normalized;
+      lastSavedRef.current = contentSignature(normalized);
+      setDraft(normalized);
+      toast.success(`${section[0].toUpperCase()}${section.slice(1)} improved with AI.`);
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : "AI writing failed.");
     }
   }
 
@@ -360,19 +385,11 @@ export default function EditResumePage() {
     setHasConflict(false);
   }
 
-  const personalInfo = draft.personalInfo ?? {};
   const currentAtsData = atsData ?? resume?.aiSuggestions ?? null;
   const shareUrl =
     resume?.isPublic && resume.slug && typeof window !== "undefined"
       ? `${window.location.origin}/r/${resume.slug}`
       : null;
-  const fullName = useMemo(
-    () =>
-      [personalInfo.firstName, personalInfo.lastName]
-        .filter(Boolean)
-        .join(" "),
-    [personalInfo.firstName, personalInfo.lastName]
-  );
 
   if (isLoading) {
     return (
@@ -445,6 +462,7 @@ export default function EditResumePage() {
         deletePending={deleteMutation.isPending}
         atsData={currentAtsData}
         atsLoading={atsMutation.isPending}
+        aiWriting={aiMutation.isPending}
         historyOpen={historyOpen}
         historyEntries={historyEntries}
         historyLoading={historyLoading}
@@ -452,7 +470,6 @@ export default function EditResumePage() {
         shareUrl={shareUrl}
         analytics={analytics ?? null}
         analyticsLoading={analyticsLoading}
-        fullName={fullName}
         patchPersonalInfo={patchPersonalInfo}
         patchSummary={patchSummary}
         patchExperience={patchExperience}
@@ -462,6 +479,7 @@ export default function EditResumePage() {
         patchCertifications={patchCertifications}
         handleAiRewriteSummary={handleAiRewriteSummary}
         handleAiRewriteExperience={handleAiRewriteExperience}
+        handleAiRewriteSection={handleAiRewriteSection}
         handleRunAts={handleRunAts}
         handleExport={handleExport}
         handleDuplicate={handleDuplicate}

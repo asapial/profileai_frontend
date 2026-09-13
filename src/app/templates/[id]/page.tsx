@@ -35,7 +35,7 @@ export default async function TemplateDetailPage({
   return (
     <>
       <Navbar1 />
-      <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
+      <main id="main" className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
         <Button asChild variant="ghost" size="sm">
           <Link href="/templates"><ArrowLeft className="mr-2 size-4" />All templates</Link>
         </Button>
@@ -54,14 +54,16 @@ export default async function TemplateDetailPage({
             <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">{template.name}</h1>
             <p className="mt-4 text-muted-foreground">{template.description || "A professional, ATS-friendly resume template."}</p>
             <ul className="mt-8 space-y-3 text-sm">
-              {["Actual template rendered with realistic content", "Editable colors, typography, spacing and content", "Private gallery saves plus admin-approved publishing", "ATS-friendly structure and export-ready layout"].map((item) => <li key={item} className="flex gap-2"><CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-600" />{item}</li>)}
+              {["Preview the layout before you start", "Editable colors, typography, spacing and content", "Save your own version to your workspace", "ATS-friendly structure and export-ready layout"].map((item) => <li key={item} className="flex gap-2"><CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-600" />{item}</li>)}
             </ul>
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
               <Button asChild size="lg">
-                <Link href={`/resume/create?templateId=${template.id}`}>Use this template</Link>
+                <Link href={`/dashboard/resumes/new?templateId=${template.id}`}>
+                  Use this template
+                </Link>
               </Button>
               <Button asChild size="lg" variant="secondary">
-                <Link href={`/templates?customize=${template.id}`}><CopyPlus className="mr-2 size-4" />Save editable copy</Link>
+                <Link href={`/dashboard/templates?customize=${template.id}`}><CopyPlus className="mr-2 size-4" />Save editable copy</Link>
               </Button>
             </div>
             <div className="mt-6 flex items-start gap-3 rounded-2xl border border-border/70 bg-muted/35 p-4 text-sm text-muted-foreground">

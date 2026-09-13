@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, X } from "lucide-react";
+import { Loader2, Plus, Sparkles, X } from "lucide-react";
 
 type Props = {
   title: string;
@@ -9,9 +9,11 @@ type Props = {
   emoji?: string;
   onChange: (next: string[]) => void;
   placeholder?: string;
+  onAiRewrite?: () => Promise<void> | void;
+  aiWriting?: boolean;
 };
 
-export function ChipListSection({ title, items, emoji, onChange, placeholder }: Props) {
+export function ChipListSection({ title, items, emoji, onChange, placeholder, onAiRewrite, aiWriting = false }: Props) {
   const [draft, setDraft] = useState("");
 
   function add() {
@@ -30,9 +32,11 @@ export function ChipListSection({ title, items, emoji, onChange, placeholder }: 
 
   return (
     <section className="space-y-3">
-      <header className="flex items-center gap-2">
-        {emoji ? <span>{emoji}</span> : null}
-        <h3 className="text-base font-semibold">{title}</h3>
+      <header className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">{emoji ? <span>{emoji}</span> : null}<h3 className="text-base font-semibold">{title}</h3></div>
+        {onAiRewrite && items.length ? <button type="button" onClick={() => void onAiRewrite()} disabled={aiWriting} className="flex items-center gap-1 rounded-md bg-violet-600 px-2.5 py-1 text-xs font-medium text-white disabled:opacity-60">
+          {aiWriting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />} Improve
+        </button> : null}
       </header>
       <div className="flex flex-wrap gap-2">
         {items.map((item) => (
@@ -55,7 +59,7 @@ export function ChipListSection({ title, items, emoji, onChange, placeholder }: 
           <span className="text-xs text-muted-foreground">No items yet.</span>
         ) : null}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
@@ -71,7 +75,7 @@ export function ChipListSection({ title, items, emoji, onChange, placeholder }: 
         <button
           type="button"
           onClick={add}
-          className="flex items-center gap-1 rounded-md border border-violet-300 px-3 py-1.5 text-sm font-medium text-violet-700 hover:bg-violet-50"
+          className="flex items-center justify-center gap-1 rounded-md border border-violet-300 px-3 py-1.5 text-sm font-medium text-violet-700 hover:bg-violet-50"
         >
           <Plus className="h-3.5 w-3.5" /> Add
         </button>

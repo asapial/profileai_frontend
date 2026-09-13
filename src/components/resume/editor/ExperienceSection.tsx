@@ -82,7 +82,7 @@ export function ExperienceSection({ experiences, onChange, onAiRewrite }: Props)
 
   return (
     <section className="space-y-4">
-      <header className="flex items-center justify-between">
+      <header className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Briefcase className="h-4 w-4 text-violet-500" />
           <h3 className="text-base font-semibold">Experience</h3>
@@ -107,7 +107,7 @@ export function ExperienceSection({ experiences, onChange, onAiRewrite }: Props)
             key={e.id ?? idx}
             className="space-y-3 rounded-lg border border-border bg-card p-4"
           >
-            <div className="flex items-start justify-between gap-2">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="grid flex-1 gap-3 sm:grid-cols-2">
                 <input
                   className="rounded-md border border-input bg-background px-3 py-1.5 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40"
@@ -127,7 +127,7 @@ export function ExperienceSection({ experiences, onChange, onAiRewrite }: Props)
                   placeholder="Location"
                   onChange={(ev) => patch(e.id ?? idx, { location: ev.target.value })}
                 />
-                <div className="flex items-center gap-2">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
                   <input
                     type="month"
                     className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40"
@@ -156,7 +156,7 @@ export function ExperienceSection({ experiences, onChange, onAiRewrite }: Props)
               </button>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Highlights
               </span>

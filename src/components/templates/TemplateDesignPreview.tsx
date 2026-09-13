@@ -13,6 +13,30 @@ type RenderableTemplate = {
   cssStyles: string;
 };
 
+function escapeStyleEndTag(value: string): string {
+  return value.replace(/<\/style/gi, "<\\/style");
+}
+
+function copyApplicationStyles(frame: HTMLIFrameElement): void {
+  const frameDocument = frame.contentDocument;
+  const templateStyle = frameDocument?.querySelector(
+    "style[data-template-preview-style]",
+  );
+  if (!frameDocument || !templateStyle) return;
+
+  frameDocument
+    .querySelectorAll("[data-template-app-style]")
+    .forEach((source) => source.remove());
+
+  document.head
+    .querySelectorAll('link[rel="stylesheet"], style')
+    .forEach((source) => {
+      const clone = source.cloneNode(true) as HTMLElement;
+      clone.setAttribute("data-template-app-style", "");
+      templateStyle.before(clone);
+    });
+}
+
 export const TEMPLATE_SAMPLE_DATA: Record<string, unknown> = {
   firstName: "Alex",
   lastName: "Morgan",
@@ -71,62 +95,76 @@ export function TemplateDesignPreview({
   priority?: boolean;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<HTMLIFrameElement>(null);
   const rendered = useMemo(
     () => safeInterpolate(template.htmlLayout, TEMPLATE_SAMPLE_DATA),
     [template.htmlLayout],
+  );
+
+  const srcDoc = useMemo(
+    () => `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="color-scheme" content="light">
+    <style data-template-preview-style>
+      html, body {
+        margin: 0;
+        width: ${A4_PREVIEW_WIDTH}px;
+        min-height: ${A4_PREVIEW_HEIGHT}px;
+        overflow: hidden;
+        background: #ffffff;
+        color-scheme: light;
+      }
+      *, *::before, *::after { box-sizing: border-box; }
+      .profileai-template-stage {
+        width: ${A4_PREVIEW_WIDTH}px;
+        min-height: ${A4_PREVIEW_HEIGHT}px;
+        overflow: hidden;
+        background: #ffffff;
+      }
+      ${escapeStyleEndTag(template.cssStyles)}
+    </style>
+  </head>
+  <body>
+    <article class="profileai-template-stage">${rendered}</article>
+  </body>
+</html>`,
+    [rendered, template.cssStyles],
   );
 
   useLayoutEffect(() => {
     const host = hostRef.current;
     if (!host) return;
 
-    const shadowRoot = host.shadowRoot ?? host.attachShadow({ mode: "open" });
-    const style = document.createElement("style");
-    const stage = document.createElement("div");
-
-    style.textContent = `
-      :host {
-        display: block;
-        position: relative;
-        overflow: hidden;
-        background: #ffffff;
-        color-scheme: light;
-        isolation: isolate;
-      }
-      *, *::before, *::after { box-sizing: border-box; }
-      .profileai-template-stage {
-        position: absolute;
-        inset: 0 auto auto 0;
-        width: ${A4_PREVIEW_WIDTH}px;
-        min-height: ${A4_PREVIEW_HEIGHT}px;
-        overflow: hidden;
-        background: #ffffff;
-        transform-origin: top left;
-        will-change: transform;
-      }
-      ${template.cssStyles}
-    `;
-
-    stage.className = "profileai-template-stage";
-    stage.setAttribute("aria-hidden", "true");
-    stage.innerHTML = rendered;
-    shadowRoot.replaceChildren(style, stage);
-
     const resize = () => {
       const width = host.getBoundingClientRect().width;
       if (width <= 0) return;
-      stage.style.transform = `scale(${width / A4_PREVIEW_WIDTH})`;
-      stage.style.opacity = "1";
+      host.style.setProperty(
+        "--template-preview-scale",
+        String(width / A4_PREVIEW_WIDTH),
+      );
     };
 
-    stage.style.opacity = "0";
     resize();
-
     const observer = new ResizeObserver(resize);
     observer.observe(host);
 
     return () => observer.disconnect();
-  }, [rendered, template.cssStyles]);
+  }, []);
+
+  useLayoutEffect(() => {
+    const frame = frameRef.current;
+    if (!frame) return;
+
+    const syncStyles = () => copyApplicationStyles(frame);
+    frame.addEventListener("load", syncStyles);
+    // The srcDoc may finish loading before React hydrates and attaches an
+    // onLoad handler, so always synchronize the already-loaded document too.
+    syncStyles();
+
+    return () => frame.removeEventListener("load", syncStyles);
+  }, [srcDoc]);
 
   return (
     <div
@@ -135,6 +173,26 @@ export function TemplateDesignPreview({
       role="img"
       aria-label={`${template.name} template preview`}
       data-priority-preview={priority || undefined}
-    />
+      style={
+        { "--template-preview-scale": "0.4" } as React.CSSProperties
+      }
+    >
+      <iframe
+        ref={frameRef}
+        title={`${template.name} template document`}
+        srcDoc={srcDoc}
+        sandbox="allow-same-origin"
+        loading={priority ? "eager" : "lazy"}
+        tabIndex={-1}
+        aria-hidden="true"
+        className="pointer-events-none absolute left-0 top-0 border-0 bg-white"
+        style={{
+          width: A4_PREVIEW_WIDTH,
+          height: A4_PREVIEW_HEIGHT,
+          transform: "scale(var(--template-preview-scale))",
+          transformOrigin: "top left",
+        }}
+      />
+    </div>
   );
 }

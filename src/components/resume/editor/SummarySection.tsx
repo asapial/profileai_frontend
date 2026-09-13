@@ -1,15 +1,16 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 
 type Props = {
   value: string;
   targetJobTitle?: string | null;
   onChange: (v: string) => void;
   onAiRewrite: (instruction: string) => Promise<void> | void;
+  aiWriting?: boolean;
 };
 
-export function SummarySection({ value, targetJobTitle, onChange, onAiRewrite }: Props) {
+export function SummarySection({ value, targetJobTitle, onChange, onAiRewrite, aiWriting = false }: Props) {
   return (
     <section className="space-y-3">
       <header className="flex items-center gap-2">
@@ -33,10 +34,11 @@ export function SummarySection({ value, targetJobTitle, onChange, onAiRewrite }:
                 : "Make the summary more concise and outcome-driven."
             )
           }
-          className="flex items-center gap-1 rounded-md bg-gradient-to-br from-violet-600 to-fuchsia-500 px-3 py-1.5 text-xs font-medium text-white shadow hover:from-violet-700 hover:to-fuchsia-600"
+          disabled={aiWriting || !value.trim()}
+          className="flex items-center gap-1 rounded-md bg-gradient-to-br from-violet-600 to-fuchsia-500 px-3 py-1.5 text-xs font-medium text-white shadow hover:from-violet-700 hover:to-fuchsia-600 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <Sparkles className="h-3.5 w-3.5" />
-          Rewrite with AI
+          {aiWriting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+          {aiWriting ? "Writing…" : "Rewrite with AI"}
         </button>
       </div>
     </section>

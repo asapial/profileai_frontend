@@ -54,7 +54,7 @@ const PLANS: StaticPlan[] = [
     name: "Pro",
     tagline: "For active job seekers",
     description:
-      "Maximum callbacks with unlimited AI, full ATS scoring, and exports.",
+      "More room to draft, tailor and prepare for your next application.",
     monthlyPrice: 12,
     yearlyPrice: 9,
     features: [
@@ -144,10 +144,10 @@ export function PricingClient() {
       {/* Hero / toggle */}
       <section className="bg-muted/30 py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
+          <SectionHeader headingTag="h1"
             eyebrow="Pricing"
             title={<>Simple plans. No surprises.</>}
-            description="Start free. Upgrade only when you need more AI, more resumes, and more interviews."
+            description="Start with the essentials. Choose more room when your job search needs it."
           />
 
           {/* Monthly / Yearly toggle */}

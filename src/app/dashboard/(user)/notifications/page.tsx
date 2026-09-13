@@ -1,4 +1,5 @@
 "use client";
+import { PageFeedback } from "@/components/dashboard/PageFeedback";
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
@@ -14,12 +15,7 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   useDeleteNotification,
@@ -54,6 +50,8 @@ export default function NotificationsPage() {
   const {
     data,
     isLoading,
+    isError,
+    refetch,
     isFetching,
     isFetchingNextPage,
     fetchNextPage,
@@ -66,7 +64,7 @@ export default function NotificationsPage() {
 
   const items = useMemo(
     () => data?.pages.flatMap((p) => p.items) ?? [],
-    [data]
+    [data],
   );
   // The server keeps a stable unreadCount on every page; the last page is
   // the most up-to-date snapshot.
@@ -78,10 +76,16 @@ export default function NotificationsPage() {
     return items.filter(
       (n) =>
         n.title.toLowerCase().includes(q) ||
-        (n.body ?? "").toLowerCase().includes(q)
+        (n.body ?? "").toLowerCase().includes(q),
     );
   }, [items, search]);
 
+  if (isError)
+    return (
+      <div className="p-6">
+        <PageFeedback error onRetry={() => void refetch()} />
+      </div>
+    );
   function handleClick(id: string, link: string | null, read: boolean) {
     if (!read) markRead.mutate(id);
     if (link) router.push(link);
@@ -91,9 +95,7 @@ export default function NotificationsPage() {
     markAllRead.mutate(undefined, {
       onSuccess: (res) =>
         toast.success(
-          res.updated > 0
-            ? `Marked ${res.updated} as read.`
-            : "All caught up."
+          res.updated > 0 ? `Marked ${res.updated} as read.` : "All caught up.",
         ),
       onError: (err) =>
         toast.error(err instanceof Error ? err.message : "Could not update."),
@@ -118,8 +120,8 @@ export default function NotificationsPage() {
             Notifications
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Account activity, resume updates, billing alerts, and security
-            pings in one place.
+            Account activity, resume updates, billing alerts, and security pings
+            in one place.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

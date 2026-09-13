@@ -26,6 +26,7 @@ export default function AtsAnalyzerPage() {
   const analyze = async (event: FormEvent) => {
     event.preventDefault();
     setLoading(true);
+    setAnalysis(null);
     try {
       setAnalysis(await api.post<Analysis>("/tools/analyze-jd", { jobDescription }));
     } catch (error) {
@@ -45,6 +46,7 @@ export default function AtsAnalyzerPage() {
         <CardContent className="p-5">
           <form onSubmit={analyze} className="space-y-4">
             <textarea
+              aria-label="Job description"
               value={jobDescription}
               onChange={(event) => setJobDescription(event.target.value)}
               minLength={50}

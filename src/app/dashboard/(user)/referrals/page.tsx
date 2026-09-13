@@ -1,4 +1,5 @@
 "use client";
+import { PageFeedback } from "@/components/dashboard/PageFeedback";
 
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -60,6 +61,19 @@ export default function ReferralsPage() {
 
   const [shareMethod, setShareMethod] = useState<"copy" | "email" | null>(null);
 
+  if (overview.isError || rewards.isError || leaderboard.isError)
+    return (
+      <div className="p-6">
+        <PageFeedback
+          error
+          onRetry={() => {
+            void overview.refetch();
+            void rewards.refetch();
+            void leaderboard.refetch();
+          }}
+        />
+      </div>
+    );
   const data = overview.data;
 
   async function copyLink() {
@@ -80,7 +94,7 @@ export default function ReferralsPage() {
     setShareMethod("email");
     const subject = encodeURIComponent("Try ProfileAI with my referral");
     const body = encodeURIComponent(
-      `I thought you'd like ProfileAI — sign up with my link to get a bonus: ${data.shareUrl}`
+      `I thought you'd like ProfileAI — sign up with my link to get a bonus: ${data.shareUrl}`,
     );
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
     setTimeout(() => setShareMethod(null), 500);
@@ -94,7 +108,9 @@ export default function ReferralsPage() {
             Referrals
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Invite friends to ProfileAI — they get {data?.summary.refereeReward ?? "—"} AI credits, you get {data?.summary.referrerReward ?? "—"} for every verified signup.
+            Invite friends to ProfileAI — they get{" "}
+            {data?.summary.refereeReward ?? "—"} AI credits, you get{" "}
+            {data?.summary.referrerReward ?? "—"} for every verified signup.
           </p>
         </div>
       </header>
@@ -107,7 +123,8 @@ export default function ReferralsPage() {
               Your referral link
             </CardTitle>
             <CardDescription>
-              Share this link — rewards unlock when your friend verifies their email.
+              Share this link — rewards unlock when your friend verifies their
+              email.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -165,7 +182,9 @@ export default function ReferralsPage() {
                 </div>
               </>
             ) : (
-              <p className="text-sm text-muted-foreground">Could not load your referral code.</p>
+              <p className="text-sm text-muted-foreground">
+                Could not load your referral code.
+              </p>
             )}
           </CardContent>
         </Card>
@@ -356,7 +375,8 @@ function EmptyRecent() {
       <Gift className="h-7 w-7 text-violet-500" />
       <h3 className="mt-2 text-sm font-semibold">No invites yet</h3>
       <p className="mt-1 max-w-xs text-xs text-muted-foreground">
-        Share your link to start earning credits. Your first invite could land you 50 AI credits.
+        Share your link to start earning credits. Your first invite could land
+        you 50 AI credits.
       </p>
     </div>
   );
@@ -374,7 +394,7 @@ function RewardsLedger({
       items
         .filter((i) => i.status === "GRANTED")
         .reduce((acc, i) => acc + i.amount, 0),
-    [items]
+    [items],
   );
 
   return (
@@ -452,9 +472,7 @@ function Leaderboard({
           <Crown className="h-4 w-4 text-amber-500" />
           Top referrers · last 90 days
         </CardTitle>
-        <CardDescription>
-          Compete for the monthly bonus pool.
-        </CardDescription>
+        <CardDescription>Compete for the monthly bonus pool.</CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -504,9 +522,7 @@ function Leaderboard({
                     ) : null}
                   </span>
                 </span>
-                <span className="text-sm font-semibold">
-                  {e.referralCount}
-                </span>
+                <span className="text-sm font-semibold">{e.referralCount}</span>
               </li>
             ))}
           </ol>

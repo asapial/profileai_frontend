@@ -1,4 +1,5 @@
 "use client";
+import { PageFeedback } from "@/components/dashboard/PageFeedback";
 
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -11,12 +12,7 @@ import {
   Sparkles,
   XCircle,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   useExportJobList,
@@ -49,15 +45,23 @@ const STATUS_TONE: Record<ExportJobStatus, string> = {
 export default function ExportsPage() {
   const [status, setStatus] = useState<ExportJobStatus | "ALL">("ALL");
 
-  const { data, isLoading, isFetching } = useExportJobList({ limit: 50 });
+  const { data, isLoading, isFetching, isError, refetch } = useExportJobList({
+    limit: 50,
+  });
   const requestExport = useRequestUserExport();
 
+  if (isError)
+    return (
+      <div className="p-6">
+        <PageFeedback error onRetry={() => void refetch()} />
+      </div>
+    );
   const allJobs = data ?? [];
   const jobs =
     status === "ALL" ? allJobs : allJobs.filter((j) => j.status === status);
 
   const inflightCount = allJobs.filter(
-    (j) => j.status === "PENDING" || j.status === "RUNNING"
+    (j) => j.status === "PENDING" || j.status === "RUNNING",
   ).length;
 
   function handleRequest() {
@@ -65,10 +69,9 @@ export default function ExportsPage() {
       onSuccess: (job) => {
         toast.success("Export queued. This may take a moment.");
         // Keep the user oriented.
-        toast(
-          `Job ${job.id.slice(0, 8)} started in ${KIND_LABEL[job.kind]}.`,
-          { icon: "📦" }
-        );
+        toast(`Job ${job.id.slice(0, 8)} started in ${KIND_LABEL[job.kind]}.`, {
+          icon: "📦",
+        });
       },
       onError: (err) =>
         toast.error(err instanceof Error ? err.message : "Export failed."),
@@ -83,8 +86,8 @@ export default function ExportsPage() {
             Exports
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Download a copy of your account data, or pick up PDF exports of
-            your resumes and cover letters here.
+            Download a copy of your account data, or pick up PDF exports of your
+            resumes and cover letters here.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -108,8 +111,8 @@ export default function ExportsPage() {
           <CardContent className="flex items-center gap-3 p-4 text-sm text-violet-900">
             <Loader2 className="h-4 w-4 animate-spin text-violet-600" />
             <span>
-              {inflightCount} export{inflightCount === 1 ? "" : "s"} in
-              progress — this page auto-refreshes every few seconds.
+              {inflightCount} export{inflightCount === 1 ? "" : "s"} in progress
+              — this page auto-refreshes every few seconds.
             </span>
           </CardContent>
         </Card>
@@ -120,7 +123,9 @@ export default function ExportsPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <CardTitle className="text-base">Export history</CardTitle>
             <div className="text-xs text-muted-foreground">
-              {data ? `${allJobs.length} ${allJobs.length === 1 ? "job" : "jobs"}` : " "}
+              {data
+                ? `${allJobs.length} ${allJobs.length === 1 ? "job" : "jobs"}`
+                : " "}
               {isFetching ? (
                 <Loader2 className="ml-2 inline h-3 w-3 animate-spin" />
               ) : null}
@@ -163,10 +168,18 @@ export default function ExportsPage() {
                   <thead className="bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
                     <tr>
                       <th className="px-4 py-2 text-left font-medium">Kind</th>
-                      <th className="px-4 py-2 text-left font-medium">Status</th>
-                      <th className="px-4 py-2 text-left font-medium">Requested</th>
-                      <th className="px-4 py-2 text-left font-medium">Completed</th>
-                      <th className="px-4 py-2 text-right font-medium">Action</th>
+                      <th className="px-4 py-2 text-left font-medium">
+                        Status
+                      </th>
+                      <th className="px-4 py-2 text-left font-medium">
+                        Requested
+                      </th>
+                      <th className="px-4 py-2 text-left font-medium">
+                        Completed
+                      </th>
+                      <th className="px-4 py-2 text-right font-medium">
+                        Action
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -300,7 +313,12 @@ function MobileExportRow({ job }: { job: ExportJob }) {
       <div className="mt-3 flex items-center justify-end">
         {job.status === "DONE" && job.resultUrl ? (
           <Button asChild size="sm" variant="outline" className="gap-1">
-            <a href={job.resultUrl} target="_blank" rel="noopener noreferrer" download>
+            <a
+              href={job.resultUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              download
+            >
               <Download className="h-3.5 w-3.5" /> Download
             </a>
           </Button>

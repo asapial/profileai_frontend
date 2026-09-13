@@ -1,16 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, Sparkles, User } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+
+import { motion, AnimatePresence } from "framer-motion";
+import { BriefcaseBusiness, Eye, Sparkles, User } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PersonalTab } from "./PersonalTab";
 import { ProfessionalTab } from "./ProfessionalTab";
 import { SkillsTab } from "./SkillsTab";
 import { PrivacyTab } from "./PrivacyTab";
 
+
 const tabs = [
   { value: "personal", label: "Personal", icon: User },
-  { value: "professional", label: "Professional", icon: Sparkles },
+  { value: "professional", label: "Professional", icon: BriefcaseBusiness },
   { value: "skills", label: "Skills", icon: Sparkles },
   { value: "privacy", label: "Privacy", icon: Eye },
 ] as const;
@@ -18,19 +22,30 @@ const tabs = [
 export default function ProfilePage() {
   const [value, setValue] = useState<string>("personal");
 
+
+
   return (
     <div className="min-w-0 space-y-6 p-4 sm:p-6 md:p-8">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Profile
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Keep the information used to build your resumes and cover letters
-          up to date. Security and account preferences live in Settings.
-        </p>
-      </div>
+      <motion.section
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="border-b border-border pb-8"
+      >
 
-      <Tabs value={value} onValueChange={setValue}>
+
+        <div className="relative z-10 max-w-2xl">
+          <div className="studio-eyebrow mb-4 text-primary">
+            <Sparkles className="h-3.5 w-3.5" /> Your professional identity
+          </div>
+          <h1 className="font-serif text-4xl font-normal tracking-tight sm:text-5xl">The story so far.</h1>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
+            Keep your career story current and turn it into stronger resumes, cover letters, and recommendations.
+          </p>
+        </div>
+      </motion.section>
+
+      <Tabs value={value} onValueChange={setValue} data-aos="fade-up">
         <div className="overflow-x-auto pb-1">
           <TabsList className="flex h-auto w-max min-w-full gap-1 sm:min-w-0">
             {tabs.map((t) => {
@@ -49,18 +64,14 @@ export default function ProfilePage() {
           </TabsList>
         </div>
 
-        <TabsContent value="personal">
-          <PersonalTab />
-        </TabsContent>
-        <TabsContent value="professional">
-          <ProfessionalTab />
-        </TabsContent>
-        <TabsContent value="skills">
-          <SkillsTab />
-        </TabsContent>
-        <TabsContent value="privacy">
-          <PrivacyTab />
-        </TabsContent>
+        <AnimatePresence mode="wait">
+          <motion.div key={value} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.22 }}>
+            {value === "personal" && <PersonalTab />}
+            {value === "professional" && <ProfessionalTab />}
+            {value === "skills" && <SkillsTab />}
+            {value === "privacy" && <PrivacyTab />}
+          </motion.div>
+        </AnimatePresence>
       </Tabs>
     </div>
   );

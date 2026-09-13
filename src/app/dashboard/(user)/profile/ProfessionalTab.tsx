@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
-import { useProjects } from "@/lib/hooks/useProjects";
-import { useReferences } from "@/lib/hooks/useReferences";
+import { useCreateProject, useProjects } from "@/lib/hooks/useProjects";
+import { useCreateReference, useReferences } from "@/lib/hooks/useReferences";
 
 type Experience = {
   id: string;
@@ -370,15 +370,43 @@ function EducationSection() {
 
 function ProjectsSection() {
   const { data } = useProjects();
+  const create = useCreateProject();
+  const [showForm, setShowForm] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+
+  const add = async () => {
+    if (!title.trim()) return toast.error("Project title is required");
+    try {
+      await create.mutateAsync({ title: title.trim(), description: description.trim(), techStack: [] });
+      setTitle("");
+      setDescription("");
+      setShowForm(false);
+      toast.success("Project added");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to add project");
+    }
+  };
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Featured projects</CardTitle>
-        <CardDescription>
-          Highlight personal or open-source work on your resume.
-        </CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div className="space-y-1">
+          <CardTitle>Featured projects</CardTitle>
+          <CardDescription>Highlight personal or open-source work on your resume.</CardDescription>
+        </div>
+        <Button size="sm" variant="outline" onClick={() => setShowForm((value) => !value)} className="gap-1">
+          <Plus className="h-3.5 w-3.5" /> Add
+        </Button>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
+        {showForm && (
+          <div className="space-y-3 rounded-xl border border-border p-4">
+            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Project title" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-violet-500" />
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Short description" rows={2} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-violet-500" />
+            <Button size="sm" onClick={add} disabled={create.isPending}>{create.isPending ? "Adding…" : "Add project"}</Button>
+          </div>
+        )}
         {!data || data.length === 0 ? (
           <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
             No projects added yet.
@@ -418,13 +446,46 @@ function ProjectsSection() {
 
 function ReferencesSection() {
   const { data } = useReferences();
+  const create = useCreateReference();
+  const [showForm, setShowForm] = useState(false);
+  const [name, setName] = useState("");
+  const [relationship, setRelationship] = useState("");
+  const [company, setCompany] = useState("");
+
+  const add = async () => {
+    if (!name.trim() || !relationship.trim()) return toast.error("Name and relationship are required");
+    try {
+      await create.mutateAsync({ name: name.trim(), relationship: relationship.trim(), company: company.trim() });
+      setName("");
+      setRelationship("");
+      setCompany("");
+      setShowForm(false);
+      toast.success("Reference added");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to add reference");
+    }
+  };
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>References</CardTitle>
-        <CardDescription>People who can vouch for your work.</CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div className="space-y-1">
+          <CardTitle>References</CardTitle>
+          <CardDescription>People who can vouch for your work.</CardDescription>
+        </div>
+        <Button size="sm" variant="outline" onClick={() => setShowForm((value) => !value)} className="gap-1">
+          <Plus className="h-3.5 w-3.5" /> Add
+        </Button>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
+        {showForm && (
+          <div className="grid grid-cols-1 gap-3 rounded-xl border border-border p-4 sm:grid-cols-2">
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" className="rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-violet-500" />
+            <input value={relationship} onChange={(e) => setRelationship(e.target.value)} placeholder="Relationship" className="rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-violet-500" />
+            <input value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Company (optional)" className="rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-violet-500 sm:col-span-2" />
+            <Button size="sm" onClick={add} disabled={create.isPending} className="w-fit">{create.isPending ? "Adding…" : "Add reference"}</Button>
+          </div>
+        )}
         {!data || data.length === 0 ? (
           <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
             No references added yet.

@@ -8,8 +8,13 @@ export type Application = {
   company: string;
   role: string;
   status:
+    | "SAVED"
+    | "PREPARING"
     | "APPLIED"
+    | "FOLLOW_UP_DUE"
+    | "RECRUITER_SCREEN"
     | "INTERVIEW"
+    | "ASSESSMENT"
     | "OFFER"
     | "REJECTED"
     | "WITHDRAWN";
@@ -18,6 +23,11 @@ export type Application = {
   appliedAt: string;
   notes: string | null;
   reminderAt?: string | null;
+  nextAction?: string | null;
+  contactName?: string | null;
+  contactEmail?: string | null;
+  deadlineAt?: string | null;
+  jobId?: string | null;
   resume?: { id: string; title: string } | null;
   events?: Array<{
     id: string;

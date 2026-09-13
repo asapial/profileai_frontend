@@ -20,7 +20,7 @@ export default function PricingPage() {
   return (
     <>
       <Navbar />
-      <main id="main" className="pt-24">
+      <main id="main" className="studio-public-page">
         <Suspense fallback={null}>
           <PricingClient />
         </Suspense>

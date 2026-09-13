@@ -10,11 +10,7 @@ import { ArrowUpRight, Sparkles, TrendingUp } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { useDashboardSummary } from "@/lib/hooks/useDashboardSummary";
-import {
-  WidgetCard,
-  WidgetError,
-  WidgetSkeleton,
-} from "./WidgetCard";
+import { WidgetCard, WidgetError, WidgetSkeleton } from "./WidgetCard";
 
 function formatReset(resetAt?: string) {
   if (!resetAt) return "";
@@ -90,7 +86,8 @@ export function LimitUsageWidget() {
             <span className="tabular-nums text-muted-foreground">
               <span aria-hidden>{limits?.resumeUsed ?? 0}</span>
               <span className="sr-only">
-                {limits?.resumeUsed ?? 0} of {limits?.resumeLimit ?? 0} resumes used
+                {limits?.resumeUsed ?? 0} of {limits?.resumeLimit ?? 0} resumes
+                used
               </span>{" "}
               / {limits?.resumeLimit ?? 0}
             </span>
@@ -104,7 +101,8 @@ export function LimitUsageWidget() {
             <span className="tabular-nums text-muted-foreground">
               <span aria-hidden>{limits?.apiUsed ?? 0}</span>
               <span className="sr-only">
-                {limits?.apiUsed ?? 0} of {limits?.apiLimit ?? 0} AI credits used
+                {limits?.apiUsed ?? 0} of {limits?.apiLimit ?? 0} AI credits
+                used
               </span>{" "}
               / {limits?.apiLimit ?? 0}
             </span>
@@ -129,22 +127,14 @@ export function LimitUsageWidget() {
                 variant="default"
                 className="mt-1 gap-1"
               >
-                <Link href="/pricing">
+                <Link href="/dashboard/billing">
                   Upgrade plan
                   <ArrowUpRight className="h-3.5 w-3.5" />
                 </Link>
               </Button>
             </div>
           </div>
-        ) : (
-          <Link
-            href="/pricing"
-            className="inline-flex items-center gap-1 text-sm font-medium text-violet-600 hover:text-violet-700"
-          >
-            Upgrade plan
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </Link>
-        )}
+        ) : null}
       </div>
     </WidgetCard>
   );

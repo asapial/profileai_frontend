@@ -94,7 +94,7 @@ export function ProfileCompletionCard() {
             description="Add a headline, skills, and at least one experience to unlock tailored AI drafts."
             cta={
               <Button asChild size="sm" className="mt-2 gap-1">
-                <Link href="/profile">
+                <Link href="/dashboard/profile">
                   Open profile
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
@@ -115,7 +115,7 @@ export function ProfileCompletionCard() {
               ))}
             </ul>
             <Button asChild variant="outline" size="sm" className="gap-2">
-              <Link href="/profile">
+              <Link href="/dashboard/profile">
                 Edit profile
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>

@@ -4,12 +4,12 @@
 //
 // Three primary actions per the U-P1 spec:
 //   - Create Resume  → /resume/create
-//   - Analyze JD     → /tools/jd-analyzer
+//   - Understand the role     → /tools/jd-analyzer
 //   - Track Application → /applications
 //
 // Limits are surfaced as a disabled state with a tooltip rather than a
 // silent failure: the spec explicitly says "exactly at limit" tiles
-// should not be clickable. The "Analyze JD" tile shares the AI usage
+// should not be clickable. The "Understand the role" tile shares the AI usage
 // counter; the other two are freeform and only block when the resume
 // limit is full.
 
@@ -19,7 +19,7 @@ import {
   Briefcase,
   FileText,
   ScanSearch,
-  Sparkles,
+  ArrowUpRight,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -44,15 +44,15 @@ const TILES: Tile[] = [
   {
     id: "create",
     label: "Create resume",
-    description: "Start a tailored resume with AI.",
+    description: "Put your experience on the page.",
     href: "/dashboard/resumes/new",
     icon: FileText,
     accent: "from-violet-500/15 to-fuchsia-500/10 text-violet-700",
   },
   {
     id: "analyze",
-    label: "Analyze JD",
-    description: "Break down a job description.",
+    label: "Understand the role",
+    description: "Find the skills that matter.",
     href: "/dashboard/ats",
     icon: ScanSearch,
     accent: "from-fuchsia-500/15 to-rose-500/10 text-fuchsia-700",
@@ -76,10 +76,11 @@ function limitReason(
         apiLimit: number;
       }
     | undefined,
-  tileId: Tile["id"]
+  tileId: Tile["id"],
 ): string | null {
   if (!limits) return null;
-  const resumeFull = limits.resumeLimit !== -1 && limits.resumeUsed >= limits.resumeLimit;
+  const resumeFull =
+    limits.resumeLimit !== -1 && limits.resumeUsed >= limits.resumeLimit;
   const apiFull = limits.apiLimit !== -1 && limits.apiUsed >= limits.apiLimit;
 
   // Resume creation consumes both a resume slot and an AI credit.
@@ -129,7 +130,7 @@ export function QuickActionTiles() {
             <Link
               href={tile.href}
               aria-disabled={disabled}
-              tabIndex={disabled ? -1 : 0}
+              tabIndex={0}
               onClick={(e) => {
                 if (disabled) {
                   e.preventDefault();
@@ -141,14 +142,14 @@ export function QuickActionTiles() {
                 });
               }}
               className={
-                "glass-panel group relative flex h-full items-start gap-3 rounded-2xl p-4 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 " +
+                "glass-panel group relative flex h-full items-start gap-3 rounded-lg p-4 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 " +
                 (disabled
                   ? "cursor-not-allowed opacity-60"
                   : "hover:border-violet-300 hover:shadow-sm")
               }
             >
               <span
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br ${tile.accent}`}
+                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-accent text-primary`}
               >
                 <Icon className="h-5 w-5" />
               </span>
@@ -157,10 +158,10 @@ export function QuickActionTiles() {
                   <span className="truncate text-sm font-semibold">
                     {tile.label}
                   </span>
-                  <Sparkles className="h-3.5 w-3.5 text-violet-400 opacity-0 transition group-hover:opacity-100" />
+                  <ArrowUpRight className="h-3.5 w-3.5 text-violet-400 opacity-0 transition group-hover:opacity-100" />
                 </span>
                 <span className="mt-0.5 block text-xs text-muted-foreground">
-                  {tile.description}
+                  {reason || tile.description}
                 </span>
               </span>
             </Link>

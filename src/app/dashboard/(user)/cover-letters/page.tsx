@@ -1,4 +1,5 @@
 "use client";
+import { PageFeedback } from "@/components/dashboard/PageFeedback";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -60,7 +61,7 @@ export default function CoverLettersPage() {
     return () => clearTimeout(t);
   }, [search]);
 
-  const { data, isLoading, isFetching } = useCoverLetterList({
+  const { data, isLoading, isFetching, isError, refetch } = useCoverLetterList({
     limit: 50,
     search: debouncedSearch || undefined,
   });
@@ -70,6 +71,7 @@ export default function CoverLettersPage() {
   const apiLimit = dashboard?.limits?.apiLimit ?? 0;
   const limitReached = apiLimit > 0 && apiUsed >= apiLimit;
 
+  if (isError) return <div className="p-6"><PageFeedback error onRetry={() => void refetch()} /></div>;
   const allItems = data?.items ?? [];
   const items =
     status === "ALL" ? allItems : allItems.filter((it) => it.status === status);

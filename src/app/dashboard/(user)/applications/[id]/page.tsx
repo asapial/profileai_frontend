@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import toast from "react-hot-toast";
 import { useParams } from "next/navigation";
 import { ArrowLeft, BriefcaseBusiness, ExternalLink } from "lucide-react";
 
-import { useApplication } from "@/lib/hooks/useApplications";
+import { useApplication, useUpdateApplication, type Application } from "@/lib/hooks/useApplications";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,6 +70,7 @@ export default function ApplicationDetailPage() {
           ) : null}
         </CardContent>
       </Card>
+      <ApplicationActions key={application.id} application={application} />
       <Card>
         <CardHeader>
           <CardTitle>Timeline</CardTitle>
@@ -92,4 +94,18 @@ export default function ApplicationDetailPage() {
       </Card>
     </div>
   );
+}
+
+function ApplicationActions({ application }: { application: Application }) {
+  const update = useUpdateApplication();
+  const localTime = (value?: string | null) => value ? new Date(new Date(value).getTime() - new Date(value).getTimezoneOffset() * 60000).toISOString().slice(0, 16) : "";
+  const cls = "mt-2 block w-full rounded-lg border bg-background p-3 text-sm";
+  return <Card><CardHeader><CardTitle>Your next action</CardTitle></CardHeader><CardContent>
+    <form className="grid gap-4 sm:grid-cols-2" onSubmit={async e => { e.preventDefault(); const f = new FormData(e.currentTarget); try { await update.mutateAsync({ id: application.id, body: { status: String(f.get("status")) as Application["status"], nextAction: String(f.get("nextAction")) || null, contactName: String(f.get("contactName")) || null, contactEmail: String(f.get("contactEmail")) || null, reminderAt: f.get("reminderAt") ? new Date(String(f.get("reminderAt"))).toISOString() : null, deadlineAt: f.get("deadlineAt") ? new Date(String(f.get("deadlineAt"))).toISOString() : null, notes: String(f.get("notes")) } }); toast.success("Application updated"); } catch (error) { toast.error(error instanceof Error ? error.message : "Could not save"); } }}>
+      <label>Status<select name="status" defaultValue={application.status} className={cls}>{["SAVED", "PREPARING", "APPLIED", "FOLLOW_UP_DUE", "RECRUITER_SCREEN", "INTERVIEW", "ASSESSMENT", "OFFER", "REJECTED", "WITHDRAWN"].map(s => <option key={s} value={s}>{s.replaceAll("_", " ")}</option>)}</select></label>
+      <label>Next action<input name="nextAction" maxLength={500} defaultValue={application.nextAction ?? ""} className={cls}/></label>
+      <label>Contact name<input name="contactName" defaultValue={application.contactName ?? ""} className={cls}/></label><label>Contact email<input type="email" name="contactEmail" defaultValue={application.contactEmail ?? ""} className={cls}/></label>
+      <label>Follow-up reminder (local time)<input type="datetime-local" name="reminderAt" defaultValue={localTime(application.reminderAt)} className={cls}/></label><label>Deadline (local time)<input type="datetime-local" name="deadlineAt" defaultValue={localTime(application.deadlineAt)} className={cls}/></label>
+      <label className="sm:col-span-2">Notes and interview rounds<textarea name="notes" maxLength={2000} defaultValue={application.notes ?? ""} rows={4} className={cls}/></label><Button type="submit" disabled={update.isPending}>Save next action</Button>{application.jobId && <Button asChild variant="outline"><Link href={`/dashboard/jobs/${application.jobId}`}>Linked Job Workspace</Link></Button>}
+    </form></CardContent></Card>;
 }

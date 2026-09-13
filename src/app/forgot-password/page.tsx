@@ -17,7 +17,7 @@ export default function ForgotPasswordPage() {
       <Navbar />
       <main
         id="main"
-        className="relative isolate flex min-h-svh items-center justify-center overflow-hidden pb-10 pt-20 sm:pb-16 sm:pt-24"
+        className="relative isolate flex min-h-[calc(100svh-5rem)] items-center justify-center overflow-hidden py-12 sm:py-16"
       >
         <div className="bg-hero absolute inset-0 -z-10" aria-hidden />
         <div className="bg-mesh absolute inset-0 -z-10 opacity-60" aria-hidden />

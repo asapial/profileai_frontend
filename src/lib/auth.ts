@@ -4,7 +4,7 @@
 // accessToken in the JSON body purely as a convenience so server-rendered
 // contexts (tests, future SSR) can stash it elsewhere.
 
-import { api } from "./api";
+import { api, ApiError } from "./api";
 import type {
   ForgotPasswordRequest,
   LoginRequest,
@@ -19,6 +19,7 @@ import type {
 export type LoginResult =
   | { kind: "ok"; user: User; accessToken: string }
   | { kind: "2fa"; email: string }
+  | { kind: "device-limit"; recoveryToken: string }
   | { kind: "error"; message: string; code?: string };
 
 export const login = async (
@@ -26,6 +27,9 @@ export const login = async (
 ): Promise<LoginResult> => {
   try {
     const data = await api.post<LoginResponse>("/auth/login", payload);
+    if ("deviceLimitReached" in data) {
+      return { kind: "device-limit", recoveryToken: data.recoveryToken };
+    }
     if (data.twoFactorRequired) {
       return { kind: "2fa", email: data.email };
     }
@@ -33,7 +37,11 @@ export const login = async (
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "Login failed. Please try again.";
-    return { kind: "error", message };
+    return {
+      kind: "error",
+      message,
+      ...(err instanceof ApiError && err.code ? { code: err.code } : {}),
+    };
   }
 };
 
@@ -99,6 +107,7 @@ export const resendVerificationOtp = async (
 
 export type Verify2FAResult =
   | { kind: "ok"; user: User; accessToken: string }
+  | { kind: "device-limit"; recoveryToken: string }
   | { kind: "error"; message: string };
 
 export const verifyTwoFactor = async (
@@ -109,6 +118,9 @@ export const verifyTwoFactor = async (
       "/auth/2fa/verify",
       payload
     );
+    if ("deviceLimitReached" in data) {
+      return { kind: "device-limit", recoveryToken: data.recoveryToken };
+    }
     if (data.twoFactorRequired) {
       // Should never happen on the verify endpoint; treat defensively.
       return { kind: "error", message: "Unexpected response from server." };
@@ -120,6 +132,36 @@ export const verifyTwoFactor = async (
         ? err.message
         : "Verification failed. Please try again.";
     return { kind: "error", message };
+  }
+};
+
+export type CompleteDeviceRecoveryResult =
+  | {
+      kind: "ok";
+      user: User;
+      accessToken: string;
+      revoked: { sessions: number; devices: number };
+    }
+  | { kind: "error"; message: string };
+
+export const completeDeviceRecovery = async (
+  recoveryToken: string
+): Promise<CompleteDeviceRecoveryResult> => {
+  try {
+    const data = await api.post<{
+      user: User;
+      accessToken: string;
+      revoked: { sessions: number; devices: number };
+    }>("/auth/device-recovery/complete", { recoveryToken });
+    return { kind: "ok", ...data };
+  } catch (err) {
+    return {
+      kind: "error",
+      message:
+        err instanceof Error
+          ? err.message
+          : "Could not replace existing devices. Please log in again.",
+    };
   }
 };
 

@@ -14,7 +14,12 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { login, postLoginRoute } from "@/lib/auth";
+import {
+  completeDeviceRecovery,
+  login,
+  logout as clearFailedLogin,
+  postLoginRoute,
+} from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -31,6 +36,18 @@ function getSafeRedirect(raw: string | null | undefined): string | null {
   return raw;
 }
 
+async function syncFrontendSession(): Promise<boolean> {
+  try {
+    const response = await fetch("/api/auth/post-login", {
+      method: "POST",
+      credentials: "include",
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -43,6 +60,8 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [recoveringDevices, setRecoveringDevices] = useState(false);
+  const [deviceRecoveryToken, setDeviceRecoveryToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>(
     {}
@@ -62,6 +81,7 @@ export function LoginForm() {
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
+    setDeviceRecoveryToken(null);
     if (!validate()) return;
 
     setSubmitting(true);
@@ -75,25 +95,55 @@ export function LoginForm() {
       router.push(`/login/2fa?${params.toString()}`);
       return;
     }
+    if (result.kind === "device-limit") {
+      setSubmitting(false);
+      setDeviceRecoveryToken(result.recoveryToken);
+      return;
+    }
     if (result.kind === "error") {
       setSubmitting(false);
       setError(result.message);
       return;
     }
 
-    // Tell our edge middleware who this user is so it can gate routes
-    // immediately on the first navigation. We don't await the role — the
-    // middleware also decodes it from the accessToken as a fallback.
-    void fetch("/api/auth/post-login", {
-      method: "POST",
-      credentials: "include",
-    }).catch(() => {
-      /* non-fatal: middleware will decode role from the JWT */
-    });
+    // The proxy requires this marker as well as the access token. Await it so
+    // the first protected navigation cannot race ahead of session setup.
+    if (!(await syncFrontendSession())) {
+      await clearFailedLogin();
+      setSubmitting(false);
+      setError("Login succeeded, but the browser session could not be secured. Please try again.");
+      return;
+    }
 
     const intended = getSafeRedirect(searchParams.get("redirect"));
     const destination = intended ?? postLoginRoute(result.user);
     router.push(destination);
+    router.refresh();
+  };
+
+  const replaceExistingDevices = async () => {
+    if (!deviceRecoveryToken || recoveringDevices) return;
+    setError(null);
+    setRecoveringDevices(true);
+
+    const result = await completeDeviceRecovery(deviceRecoveryToken);
+    if (result.kind === "error") {
+      setRecoveringDevices(false);
+      setDeviceRecoveryToken(null);
+      setError(result.message);
+      return;
+    }
+
+    if (!(await syncFrontendSession())) {
+      await clearFailedLogin();
+      setRecoveringDevices(false);
+      setDeviceRecoveryToken(null);
+      setError("Login succeeded, but the browser session could not be secured. Please try again.");
+      return;
+    }
+
+    const intended = getSafeRedirect(searchParams.get("redirect"));
+    router.push(intended ?? postLoginRoute(result.user));
     router.refresh();
   };
 
@@ -134,7 +184,7 @@ export function LoginForm() {
           Welcome back
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Log in to continue building your AI-powered resume.
+          Pick up your drafts and plan your next move.
         </p>
       </header>
 
@@ -272,6 +322,33 @@ export function LoginForm() {
         </label>
 
         {/* Form-level error */}
+        {deviceRecoveryToken && (
+          <div
+            role="alert"
+            className="space-y-3 rounded-md border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm"
+          >
+            <div className="flex items-start gap-2 text-amber-200">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <div>
+                <p className="font-semibold">Device limit reached</p>
+                <p className="mt-1 text-amber-200/80">
+                  You proved ownership of this account. To continue, sign out all
+                  existing devices and keep only this device signed in.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              disabled={recoveringDevices}
+              onClick={replaceExistingDevices}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-amber-200 px-3 py-2 font-semibold text-amber-950 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {recoveringDevices && <Loader2 className="h-4 w-4 animate-spin" />}
+              Sign out existing devices and continue
+            </button>
+          </div>
+        )}
+
         {error && (
           <div
             role="alert"

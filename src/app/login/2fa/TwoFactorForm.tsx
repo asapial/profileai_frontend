@@ -20,7 +20,12 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { postLoginRoute, verifyTwoFactor } from "@/lib/auth";
+import {
+  completeDeviceRecovery,
+  logout as clearFailedLogin,
+  postLoginRoute,
+  verifyTwoFactor,
+} from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 const OTP_LENGTH = 6;
@@ -33,6 +38,18 @@ function getSafeRedirect(raw: string | null | undefined): string | null {
   return raw;
 }
 
+async function syncFrontendSession(): Promise<boolean> {
+  try {
+    const response = await fetch("/api/auth/post-login", {
+      method: "POST",
+      credentials: "include",
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
 export function TwoFactorForm() {
   const router = useRouter();
   const params = useSearchParams();
@@ -43,6 +60,8 @@ export function TwoFactorForm() {
   );
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [recoveringDevices, setRecoveringDevices] = useState(false);
+  const [deviceRecoveryToken, setDeviceRecoveryToken] = useState<string | null>(null);
   const [email, setEmail] = useState(emailParam);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -112,6 +131,11 @@ export function TwoFactorForm() {
     setSubmitting(true);
 
     const result = await verifyTwoFactor({ email: email.trim(), otp: code });
+    if (result.kind === "device-limit") {
+      setSubmitting(false);
+      setDeviceRecoveryToken(result.recoveryToken);
+      return;
+    }
     if (result.kind === "error") {
       setSubmitting(false);
       setError(result.message);
@@ -121,19 +145,43 @@ export function TwoFactorForm() {
       return;
     }
 
-    // Sync role to middleware before navigation so /admin gates pass
-    // immediately on the first push (admin tabs are a frequent source
-    // of "redirected to login right after I logged in" bugs).
-    void fetch("/api/auth/post-login", {
-      method: "POST",
-      credentials: "include",
-    }).catch(() => {
-      /* non-fatal */
-    });
+    // Await the frontend marker required by the proxy before navigating.
+    if (!(await syncFrontendSession())) {
+      await clearFailedLogin();
+      setSubmitting(false);
+      setError("Verification succeeded, but the browser session could not be secured. Please log in again.");
+      return;
+    }
 
     const intended = getSafeRedirect(params.get("redirect"));
     const destination = intended ?? postLoginRoute(result.user);
     router.push(destination);
+    router.refresh();
+  };
+
+  const replaceExistingDevices = async () => {
+    if (!deviceRecoveryToken || recoveringDevices) return;
+    setError(null);
+    setRecoveringDevices(true);
+
+    const result = await completeDeviceRecovery(deviceRecoveryToken);
+    if (result.kind === "error") {
+      setRecoveringDevices(false);
+      setDeviceRecoveryToken(null);
+      setError(result.message);
+      return;
+    }
+
+    if (!(await syncFrontendSession())) {
+      await clearFailedLogin();
+      setRecoveringDevices(false);
+      setDeviceRecoveryToken(null);
+      setError("Verification succeeded, but the browser session could not be secured. Please log in again.");
+      return;
+    }
+
+    const intended = getSafeRedirect(params.get("redirect"));
+    router.push(intended ?? postLoginRoute(result.user));
     router.refresh();
   };
 
@@ -235,6 +283,33 @@ export function TwoFactorForm() {
             ))}
           </div>
         </fieldset>
+
+        {deviceRecoveryToken && (
+          <div
+            role="alert"
+            className="space-y-3 rounded-md border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm"
+          >
+            <div className="flex items-start gap-2 text-amber-200">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <div>
+                <p className="font-semibold">Device limit reached</p>
+                <p className="mt-1 text-amber-200/80">
+                  Verification succeeded. Sign out all existing devices to keep
+                  only this device signed in.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              disabled={recoveringDevices}
+              onClick={replaceExistingDevices}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-amber-200 px-3 py-2 font-semibold text-amber-950 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {recoveringDevices && <Loader2 className="h-4 w-4 animate-spin" />}
+              Sign out existing devices and continue
+            </button>
+          </div>
+        )}
 
         {error && (
           <div

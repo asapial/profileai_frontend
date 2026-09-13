@@ -56,11 +56,9 @@ export async function POST(request: NextRequest) {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    // Match the access-token lifetime (1 day) but cap at 1h to limit
-    // staleness if the user logs in as one role and the cookie isn't
-    // refreshed on the next login. Refreshed automatically on every
-    // successful login.
-    maxAge: 60 * 60,
+    // Match the authenticated session lifetime. This marker is only a UX
+    // hint; the signed JWT remains the authorization source of truth.
+    maxAge: 12 * 60 * 60,
   });
   return res;
 }

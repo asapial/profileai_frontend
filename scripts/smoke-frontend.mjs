@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 const base = process.env.FRONTEND_TEST_URL || "http://localhost:3000";
-const publicPaths = ["/", "/templates", "/pricing", "/help", "/login", "/register", "/forgot-password", "/reset-password", "/verify-email"];
+const publicPaths = ["/", "/templates", "/pricing", "/howitworks", "/contact", "/help", "/privacy", "/terms", "/login", "/register", "/forgot-password", "/forget-password", "/reset-password", "/verify-email"];
 let passed = 0;
 for (const path of publicPaths) {
   const response = await fetch(new URL(path, base), { redirect: "manual", signal: AbortSignal.timeout(60000) });

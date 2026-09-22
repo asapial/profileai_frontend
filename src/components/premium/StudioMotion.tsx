@@ -15,7 +15,9 @@ export function StudioMotion({ children }: { children: React.ReactNode }) {
     // Delay AOS slightly to allow React 19 streaming hydration to complete cleanly
     const timer = setTimeout(() => {
       AOS.init({
-        duration: 600,
+        duration: 650,
+        easing: "ease-out-cubic",
+        disableMutationObserver: pathname === "/",
         once: true,
         offset: 45,
         disable: () => media.matches,
@@ -24,7 +26,7 @@ export function StudioMotion({ children }: { children: React.ReactNode }) {
     }, 100);
 
     const context = gsap.context(() => {
-      if (!media.matches && root.current) {
+      if (pathname !== "/" && !media.matches && root.current) {
         const targets = root.current.querySelectorAll(".studio-hero-copy > *");
         if (targets.length > 0) {
           gsap.fromTo(

@@ -1,89 +1,36 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { ArrowUpRight, ArrowDown, Check, Fingerprint } from "lucide-react";
-import { motion, useScroll, useTransform, useMotionValueEvent, useMotionValue, useSpring } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowUpRight, ArrowRight, Check, FileText, BriefcaseBusiness, ScanLine } from "lucide-react";
 import type { ManagedHomepageSection } from "@/lib/homepage";
-import { MorphingCareerScene } from "./MorphingCareerScene";
-const desktopQuery = "(min-width: 1024px) and (min-height: 650px) and (prefers-reduced-motion: no-preference)";
-const subscribeViewport = (notify: () => void) => {
-  const media = window.matchMedia(desktopQuery);
-  media.addEventListener("change", notify);
-  return () => media.removeEventListener("change", notify);
-};
-const desktopSnapshot = () => window.matchMedia(desktopQuery).matches;
-const serverSnapshot = () => false;
-// Spatial easing: reversible and deterministic, with no time-based catch-up.
-function choreograph(value: number) {
-  for (const [start, end] of [[.16, .4], [.56, .82]]) {
-    if (value > start && value < end) {
-      const t = (value - start) / (end - start);
-      return start + t * t * (3 - 2 * t) * (end - start);
-    }
-  }
-  return value;
-}
+
+const previews = [
+  { label: "Resume", icon: FileText },
+  { label: "Role insights", icon: ScanLine },
+  { label: "Applications", icon: BriefcaseBusiness },
+];
 export function HeroSection({ content }: { content?: ManagedHomepageSection }) {
-  const animated = useSyncExternalStore(subscribeViewport, desktopSnapshot, serverSnapshot);
-  const [chapter, setChapter] = useState(0);
-  const chapterRef = useRef(0);
-  const journey = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: journey, offset: ["start start", "end end"] });
-  // Smooth discrete wheel input once, before every geometry/opacity consumer.
-  // A heavily damped shared spring avoids independent layers catching up apart.
-  const targetProgress = useMotionValue(0);
-  const progress = useSpring(targetProgress, { stiffness: 300, damping: 35, mass: .55, restDelta: .0001, restSpeed: .001 });
-  useEffect(() => {
-    // One explicit driver keeps SVG attributes and CSS opacity/3D transforms on
-    // the same timeline. Mixing native scroll timelines with SVG caused drift.
-    const initial = animated ? choreograph(scrollYProgress.get()) : 0;
-    targetProgress.set(initial);
-    progress.jump(initial);
-    if (!animated) return;
-    return scrollYProgress.on("change", value => targetProgress.set(choreograph(value)));
-  }, [animated, progress, targetProgress, scrollYProgress]);
-  const x = useTransform(progress, [0, .16, .4, .56, .82, 1], ["0%", "0%", "-100%", "-100%", "0%", "0%"]);
-  const travelScale = useTransform(progress, [0, .16, .28, .4, .56, .69, .82, 1], [1, 1, .9, 1, 1, .9, 1, 1]);
-  const introOpacity = useTransform(progress, [0, .16, .23], [1, 1, 0]);
-  const alignOpacity = useTransform(progress, [.35, .4, .56, .63], [0, 1, 1, 0]);
-  const applyOpacity = useTransform(progress, [.77, .82, 1], [0, 1, 1]);
-  useMotionValueEvent(progress, "change", value => {
-    const next = value < .28 ? 0 : value < .69 ? 1 : 2;
-    if (next !== chapterRef.current) { chapterRef.current = next; setChapter(next); }
-  });
-  const current = animated ? chapter : 0;
-  return <section ref={journey} className="studio-hero orbit-hero orbit-journey journey-responsive" data-enhanced={animated || undefined} aria-label="From your experience to your next application">
-    <div className="journey-sticky">
-    <div className="orbit-grid" aria-hidden="true" />
-    <div className="studio-container studio-hero-grid">
-      <motion.div className="studio-hero-copy journey-intro" style={animated ? { opacity: introOpacity } : { opacity: 1 }} inert={animated && chapter !== 0}>
-        <p className="orbit-kicker"><span className="orbit-status" /> THE JOB SEARCH, REIMAGINED</p>
-        <h1>{content?.title || <>Your next move.<br /><em>Beautifully</em><br />prepared.</>}</h1>
-        <p className="studio-lede">{content?.description || "Find the role. Tell your story. Make your move. A connected career workspace that turns your real experience into applications worth sending."}</p>
-        <div className="studio-hero-actions"><Link className="orbit-primary" href={content?.primaryCta?.href || "/register"}>{content?.primaryCta?.label || "Build my career workspace"}<ArrowUpRight size={18} /></Link><a className="orbit-secondary" href="#match">See it in action <ArrowDown size={15} /></a></div>
-        <div className="orbit-assurances"><span><Check size={14} /> Free to start</span><span><Fingerprint size={14} /> Your evidence. Your control.</span></div>
-      </motion.div>
-      <motion.div className="journey-copy journey-align" style={animated ? { opacity: alignOpacity } : { opacity: 1 }} inert={animated && chapter !== 1}>
-        <p className="orbit-kicker">02 / FIND YOUR CONNECTION</p>
-        <h2>Your experience.<br /><em>In the right light.</em></h2>
-        <p className="studio-lede">Your resume unfolds into evidence you can review. Connect the role’s requirements to work you have actually done.</p>
-        <div className="journey-detail"><Check size={17} /><span>Real evidence. Clear gaps. A more thoughtful next step.</span></div>
-        <Link className="orbit-secondary" href="/dashboard/career">Explore job alignment <ArrowUpRight size={16} /></Link>
-      </motion.div>
-      <motion.div className="journey-copy journey-apply" style={animated ? { opacity: applyOpacity } : { opacity: 1 }} inert={animated && chapter !== 2}>
-        <p className="orbit-kicker">03 / MAKE YOUR MOVE</p>
-        <h2>From a match.<br /><em>To your next move.</em></h2>
-        <p className="studio-lede">Your evidence becomes a plan. Track applications, prepare for the conversation, and keep every next action in one clear workspace.</p>
-        <Link className="orbit-primary" href="/dashboard/applications">Open my workspace <ArrowUpRight size={18} /></Link>
-        <p className="career-demo-note">You review every draft. Nothing is sent automatically.</p>
-      </motion.div>
-      <motion.div style={animated ? { x, scale: travelScale } : { x: 0, scale: 1 }} className="orbit-stage morph-stage">
-        <MorphingCareerScene progress={progress} />
-        <div className="morph-caption"><span>LIVE PRODUCT ILLUSTRATION</span><span>{["Resume", "Job alignment", "Application tracker"][current]}</span></div>
-      </motion.div>
+  const [tab, setTab] = useState(0);
+  const reduced = useReducedMotion();
+  return <section className="editorial-hero" aria-label="Your next career chapter">
+    <div className="editorial-hero-grid">
+      <div className="editorial-intro" data-aos="fade-up">
+        <p className="editorial-eyebrow"><span/> A LITTLE CLARITY. A LOT OF POSSIBILITY.</p>
+        <h1>{content?.title || <>Your next chapter.<br/><em>Beautifully prepared.</em></>}</h1>
+        <p className="editorial-lede">{content?.description || "Bring your experience into focus. Create a thoughtful resume, find the right opportunities, and make your next move with confidence."}</p>
+        <div className="editorial-actions"><motion.div whileTap={reduced?undefined:{scale:.98}}><Link className="editorial-primary" href={content?.primaryCta?.href || "/register"}>{content?.primaryCta?.label || "Create my resume"}<ArrowUpRight size={17}/></Link></motion.div><a className="editorial-secondary" href="#match">Take a look around <ArrowRight size={16}/></a></div>
+        <div className="editorial-assurances"><span><Check size={13}/>Free to start</span><span><Check size={13}/>Your words, your control</span></div>
+      </div>
+      <div className="editorial-preview" data-aos="fade-up" data-aos-delay="100">
+        <div className="editorial-preview-top"><span className="editorial-mark">P</span><strong>Your career studio</strong><span className="editorial-sample">PRODUCT PREVIEW</span></div>
+        <div className="editorial-tabs" role="group" aria-label="Choose a product preview">{previews.map(({label,icon:Icon},i)=><button key={label} type="button" aria-pressed={tab===i} onClick={()=>setTab(i)}><Icon size={14}/>{label}{tab===i&&<motion.span className="editorial-tab-line" layoutId="preview-tab" transition={{duration:reduced?0:.22}}/>}</button>)}</div>
+        <div className="editorial-preview-body" aria-live="polite"><AnimatePresence mode="wait" initial={false}><motion.div key={tab} initial={{opacity:0,y:reduced?0:6}} animate={{opacity:1,y:0}} exit={{opacity:0,y:reduced?0:-4}} transition={{duration:reduced?0:.18}}>
+          {tab===0?<div className="editorial-resume"><div className="editorial-resume-header"><div><small>YOUR RESUME / 01</small><h2>Alex Morgan</h2><p>Frontend Engineer</p></div><span className="editorial-avatar">AM</span></div><div className="editorial-resume-section"><h3>PROFILE</h3><p>Thoughtful interfaces. Reusable systems.<br/>A considered approach to the details.</p></div><div className="editorial-resume-section"><h3>SELECTED EXPERIENCE</h3><b>Customer dashboard</b><p>Built shared React components and documented how the product team could use them.</p></div><div className="editorial-resume-skills"><span>React</span><span>Component systems</span><span>Documentation</span></div></div>:tab===1?<div className="editorial-insights"><small>A ROLE WORTH EXPLORING</small><h2>Frontend Engineer</h2><p>Example Studio · Product team</p><div><Check size={17}/><span><b>React & component systems</b>Connected to your dashboard project.</span></div><div><ScanLine size={17}/><span><b>Mentoring experience</b>Add an example to support this requirement.</span></div><footer>Evidence coverage, never a hiring probability.</footer></div>:<div className="editorial-applications"><small>YOUR NEXT OPPORTUNITIES</small><h2>A place for every possibility.</h2>{[["Frontend Engineer","Preparing"],["Product Engineer","Applied"],["UI Engineer","Interview"]].map(([role,status],i)=><div key={role}><span className="editorial-job-mark">0{i+1}</span><span><b>{role}</b><small>Example company</small></span><em>{status}</em></div>)}<footer>Keep the role, your notes and the next step together.</footer></div>}
+        </motion.div></AnimatePresence></div>
+        <div className="editorial-preview-footer"><span><Check size={13}/>Grounded in your experience</span><span>Illustrative profile</span></div>
+      </div>
     </div>
-    <div className="journey-progress" aria-hidden="true">{["Resume", "Job alignment", "Application tracker"].map((label, i) => <span className={current === i ? "active" : ""} key={label}><b>0{i+1}</b>{label}</span>)}</div>
-    </div>
-    <div className="studio-container orbit-capabilities"><span>ONE WORKSPACE.<br /><b>EVERY NEXT STEP.</b></span>{["Discover", "Align", "Tailor", "Apply", "Track"].map((word, i) => <div key={word}><span>0{i + 1}</span>{word}</div>)}</div>
+    <div className="editorial-path"><span>FROM FIRST DRAFT<br/><b>TO WHAT COMES NEXT</b></span>{["Discover","Align","Tailor","Apply","Track"].map((name,i)=><div key={name}><small>0{i+1}</small>{name}</div>)}</div>
   </section>;
 }

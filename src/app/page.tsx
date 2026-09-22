@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+
 import { Footer } from "@/components/layout/Footer";
 import { Navbar1 } from "@/components/navbar1";
 import { HeroSection } from "@/components/home/HeroSection";
@@ -14,6 +15,8 @@ import { studioSection } from "@/lib/studio-homepage";
 import { CareerJourneyDemo } from "@/components/home/CareerJourneyDemo";
 import { CareerExperience } from "@/components/home/CareerExperience";
 import "@/components/home/career-home.css";
+import "@/components/home/atelier-home.css";
+import "@/components/home/editorial-home.css";
 export const revalidate = 60;
 const DEFAULT_ORDER = [
   "hero",
@@ -100,10 +103,15 @@ export default async function HomePage() {
           title: homepage?.site.brandName || "ProfileAI",
         }}
       />
-      <main id="main" className="premium-home career-home relative">
-        {order.map((id) => (
-          <div key={id}>{renderSection(id)}</div>
-        ))}
+      <main id="main" className="premium-home career-home editorial-home relative">
+        <div className="editorial-sections">
+        {order.map((id) => {
+          if (sections.get(id)?.enabled === false) return null;
+          return <div key={id} data-story-section={id} className="editorial-section">
+            {renderSection(id)}
+          </div>;
+        })}
+        </div>
       </main>
       <Footer content={homepage?.site} />
     </>

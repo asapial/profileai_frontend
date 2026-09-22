@@ -39,6 +39,7 @@ export function Footer({ content }: { content?: HomepageConfig["site"] }) {
             <div className="flex flex-col items-start gap-3 text-sm">
               {[
                 ["Help center", "/help"],
+                ["Contact", "/contact"],
                 ["Privacy", "/privacy"],
                 ["Terms", "/terms"],
               ].map(([label, href]) => (

@@ -7,7 +7,7 @@ export function FinalCtaBand({
   content?: ManagedHomepageSection;
 }) {
   return (
-    <section className="border-t bg-muted py-16 sm:py-24">
+    <section className="atelier-final border-t bg-muted py-16 sm:py-24">
       <div className="studio-container flex flex-col items-start justify-between gap-8 sm:flex-row sm:items-center">
         <div>
           <p className="studio-eyebrow mb-5 text-primary">READY WHEN YOU ARE</p>
@@ -36,3 +36,4 @@ export function FinalCtaBand({
     </section>
   );
 }
+

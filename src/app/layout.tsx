@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./auth-experience.css";
+import "./premium-background.css";
+import "./glass-system.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Providers } from "@/components/providers";
 import { StudioMotion } from "@/components/premium/StudioMotion";
+import { PremiumBackground } from "@/components/premium/PremiumBackground";
 
 export const metadata: Metadata = {
   title: "ProfileAI — A studio for your next chapter",
@@ -37,8 +41,9 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TooltipProvider delayDuration={150}>
+              <PremiumBackground />
               <StudioMotion>
-                <div className="relative min-h-svh">{children}</div>
+                <div className="relative z-10 min-h-svh">{children}</div>
               </StudioMotion>
             </TooltipProvider>
           </ThemeProvider>

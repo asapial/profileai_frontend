@@ -28,6 +28,13 @@ export type Ticket = {
   updatedAt: string;
   assignedTo: string | null;
   preview: string;
+  source?: string;
+  context?: { company?: string | null; sourcePage?: string };
+  notificationDelivery?: {
+    status: "SENT" | "FAILED" | "NOT_CONFIGURED";
+    recipientCount: number;
+    attemptedAt: string;
+  };
 };
 
 export type TicketWithMessages = Ticket & {

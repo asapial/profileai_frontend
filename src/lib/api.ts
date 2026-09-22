@@ -43,7 +43,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     credentials: init?.credentials ?? "include",
     // `next` is a Next.js extension; cast keeps the standard RequestInit
     // type clean while still letting us opt into the data cache for GETs.
-    ...(method === "GET" ? (path.startsWith("/career") ? { cache: "no-store" } : { next: { revalidate: 300 } }) : {}),
+    ...(method === "GET" ? ((path.startsWith("/career") || path.startsWith("/auth")) ? { cache: "no-store" } : { next: { revalidate: 300 } }) : {}),
   } as RequestInit;
   const res = await fetch(`${env.apiBaseUrl}${path}`, fetchInit);
 
@@ -75,7 +75,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  get: <T>(path: string) => request<T>(path, { method: "GET" }),
+  get: <T>(path: string, init?: Omit<RequestInit, "method">) =>
+    request<T>(path, { ...init, method: "GET" }),
   post: <T>(path: string, body: unknown, init?: Omit<RequestInit, "method" | "body">) =>
     request<T>(path, {
       ...init,

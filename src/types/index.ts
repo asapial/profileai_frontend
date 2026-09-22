@@ -26,6 +26,8 @@ export type RegisterRequest = {
   acceptTerms: true;
   /** Optional referral code, validated server-side when present. */
   referredByCode?: string;
+  /** Optional profile photo URL (e.g. from ImgBB) */
+  avatarUrl?: string;
 };
 
 /** Payload returned from `POST /auth/register`. */

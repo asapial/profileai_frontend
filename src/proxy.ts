@@ -286,6 +286,7 @@ export const config = {
     "/login/:path*",
     "/register",
     "/forgot-password",
+    "/forget-password",
     "/reset-password",
     "/verify-email",
   ],

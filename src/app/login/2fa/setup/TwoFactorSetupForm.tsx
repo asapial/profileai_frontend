@@ -4,13 +4,14 @@ import { FormEvent, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, ShieldCheck } from "lucide-react";
 
+import { AuthCard, AuthBrandMark } from "@/components/auth/AuthCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
 import { getCurrentUser } from "@/lib/auth";
 
 function safeRedirect(raw: string | null) {
-  return raw?.startsWith("/") && !raw.startsWith("//") ? raw : "/admin";
+  return raw?.startsWith("/") && !raw.startsWith("//") ? raw : "/dashboard";
 }
 
 export function TwoFactorSetupForm() {
@@ -57,10 +58,11 @@ export function TwoFactorSetupForm() {
   };
 
   return (
-    <div className="w-full max-w-md rounded-2xl border bg-card p-6 shadow-xl sm:p-8">
+    <AuthCard>
+      <AuthBrandMark />
       <div className="mb-5 inline-flex rounded-xl bg-violet-500/10 p-3 text-violet-600"><ShieldCheck className="size-6" /></div>
-      <h1 className="text-2xl font-bold tracking-tight">Secure your admin account</h1>
-      <p className="mt-2 text-sm text-muted-foreground">Admin access requires a second verification step. We’ll send a six-digit code to your account email.</p>
+      <h1 className="text-2xl font-bold tracking-tight">Secure your account</h1>
+      <p className="mt-2 text-sm text-muted-foreground">Add an extra verification step to protect your account. We’ll send a six-digit code to your account email.</p>
       {error ? <p role="alert" className="mt-4 rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</p> : null}
       {step === "checking" ? (
         <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="size-4 animate-spin" />Checking your account…</div>
@@ -72,6 +74,6 @@ export function TwoFactorSetupForm() {
           <Button className="w-full" type="submit" disabled={busy || otp.length !== 6}>{busy ? <Loader2 className="size-4 animate-spin" /> : null}Enable 2FA and continue</Button>
         </form>
       )}
-    </div>
+    </AuthCard>
   );
 }

@@ -1,8 +1,10 @@
+import { AuthScene } from "@/components/auth/AuthScene";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { LoginForm } from "./LoginForm";
+import { AuthFormFallback } from "@/components/auth/AuthFormFallback";
 
 export const metadata: Metadata = {
   title: "Log in — ProFile AI",
@@ -17,7 +19,7 @@ export default function LoginPage() {
       <Navbar />
       <main
         id="main"
-        className="relative isolate flex min-h-[calc(100svh-5rem)] items-center justify-center overflow-hidden py-12 sm:py-16"
+        className="auth-page relative isolate flex min-h-[calc(100svh-5rem)] items-center justify-center overflow-hidden py-12 sm:py-16"
       >
         {/* Decorative gradient background + soft mesh grid */}
         <div className="bg-hero absolute inset-0 -z-10" aria-hidden />
@@ -31,11 +33,11 @@ export default function LoginPage() {
           className="absolute -bottom-24 right-1/4 -z-10 h-72 w-72 rounded-full bg-fuchsia-400/20 blur-3xl"
         />
 
-        <div className="mx-auto w-full max-w-md px-4 sm:px-6">
-          <Suspense fallback={null}>
+        <AuthScene>
+          <Suspense fallback={<AuthFormFallback title="Welcome back" description="Loading your secure sign-in form…" />}>
             <LoginForm />
           </Suspense>
-        </div>
+        </AuthScene>
       </main>
       <Footer />
     </>

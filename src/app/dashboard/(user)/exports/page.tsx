@@ -235,7 +235,7 @@ function FilterSelect({
 function StatusBadge({ status }: { status: ExportJobStatus }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${STATUS_TONE[status]}`}
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${STATUS_TONE[status]}`}
     >
       {status === "RUNNING" || status === "PENDING" ? (
         <Loader2 className="h-3 w-3 animate-spin" />
@@ -258,7 +258,7 @@ function ExportRow({ job }: { job: ExportJob }) {
           <span className="font-medium">{KIND_LABEL[job.kind]}</span>
         </div>
         {job.errorMsg ? (
-          <p className="mt-1 text-[11px] text-rose-600">{job.errorMsg}</p>
+          <p className="mt-1 text-xs text-rose-600">{job.errorMsg}</p>
         ) : null}
       </td>
       <td className="px-4 py-3">
@@ -301,14 +301,14 @@ function MobileExportRow({ job }: { job: ExportJob }) {
             <PackageOpen className="h-4 w-4 text-muted-foreground" />
             {KIND_LABEL[job.kind]}
           </div>
-          <div className="mt-1 text-[11px] text-muted-foreground">
+          <div className="mt-1 text-xs text-muted-foreground">
             {formatDateTime(job.createdAt)}
           </div>
         </div>
         <StatusBadge status={job.status} />
       </div>
       {job.errorMsg ? (
-        <p className="mt-2 text-[11px] text-rose-600">{job.errorMsg}</p>
+        <p className="mt-2 text-xs text-rose-600">{job.errorMsg}</p>
       ) : null}
       <div className="mt-3 flex items-center justify-end">
         {job.status === "DONE" && job.resultUrl ? (

@@ -10,7 +10,7 @@ const QUESTIONS = [
   { q: "What can I do on the Free plan?", a: "Start with private job imports, an Evidence Bank, and 15 saved applications. Career Studio includes 3 alignment analyses, 2 tailored summaries and 5 application drafts per month." },
   { q: "Does an alignment score predict an interview?", a: "No. Alignment is a review of evidence and keyword coverage, not a hiring probability or a guarantee that an ATS will accept a document. Review the missing and uncertain requirements alongside the score." },
   { q: "Will the studio invent achievements or metrics?", a: "Career Studio drafts use your selected confirmed evidence. Inferred or missing evidence cannot become a generated achievement. You can use clear wording without a metric when a number is unavailable." },
-  { q: "Does ProFile AI send applications automatically?", a: "No. Review your draft and recipient, then explicitly choose to send. Google email and calendar connections require consent and availability depends on the deployment configuration." },
+  { q: "Does ProfileAI send applications automatically?", a: "No. Review your draft and recipient, then explicitly choose to send. Google email and calendar connections require consent and availability depends on the deployment configuration." },
   { q: "Where do discovered jobs come from?", a: "From administrator-approved Lever and Greenhouse public boards. Private URL and description imports are also supported. Restricted job boards remain manual or link-only." },
   { q: "Can I take my data with me?", a: "Yes. Career Studio provides a workspace export. You can delete drafts or evidence, disconnect Google and use account deletion from Settings. See the privacy policy for storage and provider processing details." },
 ] as const;

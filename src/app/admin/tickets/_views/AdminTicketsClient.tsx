@@ -132,7 +132,7 @@ export function AdminTicketsClient() {
                   <div className="text-muted-foreground mt-1 line-clamp-2 text-xs">
                     {t.preview}
                   </div>
-                  <div className="text-muted-foreground mt-2 flex items-center justify-between text-[10px]">
+                  <div className="text-muted-foreground mt-2 flex items-center justify-between text-xs">
                     <span>{t.user.name ?? t.user.email}</span>
                     <span>
                       <IconClock className="mr-1 inline size-3" />
@@ -204,10 +204,19 @@ function TicketDetail({ id }: { id: string | null }) {
           <div className="flex items-center gap-2">
             <h2 className="text-base font-semibold">{data.subject}</h2>
             <PriorityBadge priority={data.priority} />
+            {data.source === "PUBLIC_CONTACT" ? <Badge variant="outline">Public contact</Badge> : null}
           </div>
           <p className="text-muted-foreground text-xs">
-            {data.user.name ?? data.user.email} · {data.category}
+            {data.user.name ?? data.user.email} · {data.user.email} · {data.category}
           </p>
+          {data.context?.company ? (
+            <p className="text-muted-foreground text-xs">Organization: {data.context.company}</p>
+          ) : null}
+          {data.notificationDelivery ? (
+            <p className="text-muted-foreground text-xs">
+              Email notification: {data.notificationDelivery.status.toLowerCase().replace("_", " ")} · {data.notificationDelivery.recipientCount} recipient{data.notificationDelivery.recipientCount === 1 ? "" : "s"}
+            </p>
+          ) : null}
         </div>
         <div className="flex items-center gap-2">
           {data.status !== "PENDING" ? (
@@ -264,7 +273,7 @@ function TicketDetail({ id }: { id: string | null }) {
                   {m.authorName}
                   <Badge
                     variant="outline"
-                    className="ml-2 text-[10px]"
+                    className="ml-2 text-xs"
                   >
                     {m.authorRole.toLowerCase()}
                   </Badge>
@@ -290,7 +299,7 @@ function TicketDetail({ id }: { id: string | null }) {
           className="border-input bg-background w-full rounded-md border px-3 py-2 text-sm"
         />
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground text-[10px]">
+          <span className="text-muted-foreground text-xs">
             Replies are sent from{" "}
             <code>support@profileai.app</code> by default.
           </span>

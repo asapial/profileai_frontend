@@ -41,7 +41,7 @@ export function TemplateGallerySection({
         >
           <div>
             <p className="studio-eyebrow mb-5 text-primary">
-              03 / THE COLLECTION
+              THE COLLECTION
             </p>
             <Heading className="font-serif text-4xl tracking-tight sm:text-5xl">
               {full

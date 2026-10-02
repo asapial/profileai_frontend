@@ -62,7 +62,7 @@ export function DashboardTopbar() {
             <p className="text-sm font-medium text-foreground">
               {user?.profile?.firstName ?? user?.name ?? "Loading…"}
             </p>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {user?.email ?? ""}
             </p>
           </div>

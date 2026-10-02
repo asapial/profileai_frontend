@@ -81,7 +81,7 @@ export function AiChatMessage({ message, onSend, onNavigate, onConfirm, onCancel
 
         {response?.sources.length ? (
           <div className="mt-3 border-t border-border/60 pt-2.5">
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Sources</p>
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">Sources</p>
             <div className="flex flex-wrap gap-1.5">
               {response.sources.map((source, index) => source.targetUrl ? (
                 <Button key={`${source.type}-${source.id ?? index}`} asChild size="xs" variant="outline">
@@ -130,7 +130,7 @@ export function AiChatMessage({ message, onSend, onNavigate, onConfirm, onCancel
 
         {message.sender === "ASSISTANT" && message.id !== "welcome" ? (
           <div className="mt-3 flex items-center gap-1 border-t border-border/50 pt-2.5">
-            <span className="mr-1 text-[11px] text-muted-foreground">Helpful?</span>
+            <span className="mr-1 text-xs text-muted-foreground">Helpful?</span>
             <Button size="icon-xs" variant={feedback === 1 ? "secondary" : "ghost"} aria-label="Mark response helpful" onClick={() => { setFeedback(1); void onFeedback(message.id, 1); }}><ThumbsUp /></Button>
             <Button size="icon-xs" variant={feedback === -1 ? "secondary" : "ghost"} aria-label="Mark response not helpful" onClick={() => { setFeedback(-1); void onFeedback(message.id, -1); }}><ThumbsDown /></Button>
           </div>

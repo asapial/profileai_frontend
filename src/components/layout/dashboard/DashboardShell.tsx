@@ -19,7 +19,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
   return (
     <Providers>
-      <div className="flex min-h-svh min-w-0 bg-background">
+      <div className="flex min-h-svh min-w-0 bg-background/85 backdrop-blur-[2px]">
         <DashboardSidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <DashboardTopbar />

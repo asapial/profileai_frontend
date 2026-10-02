@@ -18,7 +18,7 @@ export function AiBuilderSection({ content }: { content?: ManagedHomepageSection
             align="left"
             eyebrow={content?.eyebrow || "AI builder"}
             title={<>{content?.title || "Write a resume that fits the job—not just any job"}</>}
-            description={content?.description || "ProFile AI reads the job description, your experience, and the role's hidden requirements, then drafts a focused, quantified resume."}
+            description={content?.description || "ProfileAI reads the job description, your experience, and the role's hidden requirements, then drafts a focused, quantified resume."}
           />
 
           <ul className="mt-8 space-y-3 text-sm text-muted-foreground">
@@ -101,7 +101,7 @@ function AiBuilderMockup() {
             <FileText className="h-3.5 w-3.5" />
             Resume_v3.pdf
           </span>
-          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
             ATS 92
           </span>
         </div>

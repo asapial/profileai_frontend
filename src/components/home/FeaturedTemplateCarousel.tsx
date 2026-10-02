@@ -84,11 +84,11 @@ export function FeaturedTemplateCarousel({ templates }: Props) {
                 <TemplatePlaceholder name={t.name} />
               )}
               {t.isDefault && (
-                <span className="absolute left-3 top-3 rounded-full bg-foreground/90 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-background">
+                <span className="absolute left-3 top-3 rounded-full bg-foreground/90 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-background">
                   Default
                 </span>
               )}
-              <span className="absolute right-7 top-7 rounded-full bg-slate-950/85 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-lg">
+              <span className="absolute right-7 top-7 rounded-full bg-slate-950/85 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-lg">
                 {t.documentType}
               </span>
             </div>
@@ -97,7 +97,7 @@ export function FeaturedTemplateCarousel({ templates }: Props) {
                 <h3 className="text-base font-semibold text-foreground">
                   {t.name}
                 </h3>
-                <span className="rounded-full border border-border bg-muted/60 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                <span className="rounded-full border border-border bg-muted/60 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {t.category}
                 </span>
               </div>

@@ -39,6 +39,10 @@
 
   --radius: 0.75rem;
 
+  /* Keep every wide page utility on the same focused 5xl content rail. */
+  --container-6xl: 64rem;
+  --container-7xl: 64rem;
+
   --color-sidebar-ring: var(--sidebar-ring);
 
   --color-sidebar-border: var(--sidebar-border);
@@ -161,137 +165,6 @@
   color: hsl(263 72% 50%);
 }
 
-/* Career Studio: soft lavender paper, plum ink, and a restrained purple accent. */
-:root {
-  --background: #f8f7fb;
-  --foreground: #262132;
-  --card: #fffefe;
-  --card-foreground: #262132;
-  --popover: #fffefe;
-  --popover-foreground: #262132;
-  --muted: #eeebf3;
-  --muted-foreground: #706a7e;
-  --border: #ded9e8;
-  --input: #c8bfd7;
-  --ring: #7046b5;
-  --primary: #7046b5;
-  --primary-foreground: #ffffff;
-  --secondary: #eeebf5;
-  --secondary-foreground: #393045;
-  --accent: #eee6fa;
-  --accent-foreground: #5c3595;
-  --destructive: #c43b35;
-  --destructive-foreground: #fff;
-  --chart-1: #7852b7;
-  --chart-2: #a184ca;
-  --chart-3: #8576af;
-  --chart-4: #677eac;
-  --chart-5: #ac92b6;
-  --sidebar: #efecf5;
-  --sidebar-foreground: #443951;
-  --sidebar-primary: #7046b5;
-  --sidebar-primary-foreground: #fff;
-  --sidebar-accent: #e4daef;
-  --sidebar-accent-foreground: #4b3071;
-  --sidebar-border: #ddd4e8;
-  --sidebar-ring: #7046b5;
-}
-.dark {
-  --background: #19151f;
-  --foreground: #f1edf6;
-  --card: #231e2c;
-  --card-foreground: #f1edf6;
-  --popover: #292231;
-  --popover-foreground: #f1edf6;
-  --muted: #322a3c;
-  --muted-foreground: #b8afc5;
-  --border: #44384f;
-  --input: #655473;
-  --ring: #bc9be9;
-  --primary: #bc9be9;
-  --primary-foreground: #24182f;
-  --secondary: #382e42;
-  --secondary-foreground: #f1edf6;
-  --accent: #382846;
-  --accent-foreground: #d1b7f2;
-  --destructive: #eb7770;
-  --destructive-foreground: #19151f;
-  --chart-1: #bc9be9;
-  --chart-2: #c7aedf;
-  --chart-3: #d6b4ca;
-  --chart-4: #9daedb;
-  --chart-5: #c6b5d3;
-  --sidebar: #211b29;
-  --sidebar-foreground: #dfd6e9;
-  --sidebar-primary: #bc9be9;
-  --sidebar-primary-foreground: #24182f;
-  --sidebar-accent: #392d46;
-  --sidebar-accent-foreground: #ecddfc;
-  --sidebar-border: #42344f;
-  --sidebar-ring: #bc9be9;
-}
-@layer base {
-  * {
-    border-color: var(--border);
-  }
-  html {
-    background: var(--background);
-    scroll-behavior: smooth;
-    color-scheme: light;
-    scroll-padding-top: 6rem;
-  }
-  html.dark {
-    color-scheme: dark;
-  }
-  body {
-    color: var(--foreground);
-    min-width: 0;
-    overflow-x: clip;
-    font-family: Arial, Helvetica, sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-  main,
-  section,
-  article,
-  fieldset,
-  .grid > * {
-    min-width: 0;
-  }
-  button,
-  a,
-  input,
-  textarea,
-  select {
-    -webkit-tap-highlight-color: transparent;
-  }
-  button:not(:disabled),
-  [role="button"]:not([aria-disabled="true"]) {
-    cursor: pointer;
-  }
-  :focus-visible {
-    outline: 2px solid var(--ring);
-    outline-offset: 4px;
-  }
-  ::selection {
-    background: var(--accent);
-    color: var(--accent-foreground);
-  }
-  h1,
-  h2,
-  h3 {
-    text-wrap: balance;
-  }
-  p {
-    text-wrap: pretty;
-  }
-  @media (max-width: 767px) {
-    input:not([type="checkbox"]):not([type="radio"]),
-    select,
-    textarea {
-      font-size: 16px;
-    }
-  }
-}
 @layer utilities {
   .glass-panel,
   .glass-subtle {
@@ -414,7 +287,7 @@
   display: none;
 }
 .studio-container {
-  width: min(1200px, calc(100% - 64px));
+  width: min(64rem, calc(100% - 64px));
   margin-inline: auto;
 }
 .studio-nav {
@@ -497,7 +370,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 10px;
+  font-size:12px;
   letter-spacing: 0.15em;
   font-weight: 600;
   line-height: 1.7;
@@ -549,7 +422,7 @@
   flex-wrap: wrap;
   gap: 8px;
   color: var(--muted-foreground);
-  font-size: 10px;
+  font-size:12px;
   margin-top: 19px;
 }
 .studio-hero-art {
@@ -572,7 +445,7 @@
   right: 24px;
   display: flex;
   justify-content: space-between;
-  font-size: 8px;
+  font-size:12px;
   letter-spacing: 0.13em;
   color: #786887;
 }
@@ -621,7 +494,7 @@
   color: #77539a;
 }
 .studio-resume-contact {
-  font-size: 7px;
+  font-size:12px;
   color: #786887;
   margin-top: 9px;
 }
@@ -632,7 +505,7 @@
   border-top: 1px solid #e7e0ec;
   padding-top: 16px;
   margin-top: 18px;
-  font-size: 8px;
+  font-size:12px;
   line-height: 1.8;
 }
 .studio-resume-section b {
@@ -640,12 +513,12 @@
   letter-spacing: 0.8px;
 }
 .studio-resume-section strong {
-  font-size: 8px;
+  font-size:12px;
 }
 .studio-resume-section small {
   display: block;
   color: #807189;
-  font-size: 7px;
+  font-size:12px;
   margin-bottom: 6px;
 }
 .studio-resume-footer {
@@ -653,7 +526,7 @@
   padding-top: 12px;
   margin-top: 22px;
   color: #85768e;
-  font-size: 7px;
+  font-size:12px;
 }
 .studio-art-caption {
   position: absolute;
@@ -661,7 +534,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size:12px;
 }
 .studio-hero-bottom {
   display: flex;
@@ -671,7 +544,7 @@
   gap: 16px;
   padding-block: 24px;
   border-top: 1px solid var(--border);
-  font-size: 9px;
+  font-size:12px;
   letter-spacing: 0.13em;
 }
 .studio-workflow,
@@ -797,19 +670,6 @@
   gap: 24px;
   min-width: 0;
 }
-/* AOS keeps content visible before JavaScript initializes. */
-[data-aos] {
-  transition-property: transform, opacity;
-}
-[data-aos].aos-init {
-  transition-duration: 0.6s;
-}
-[data-aos="fade-up"].aos-init:not(.aos-animate) {
-  transform: translateY(18px);
-}
-[data-aos].aos-animate {
-  transform: none;
-}
 @keyframes shimmer {
   from {
     background-position: -200% 0;
@@ -860,14 +720,14 @@
     margin: 40px 28px;
   }
   .studio-art-label {
-    font-size: 7px;
+    font-size:12px;
     left: 18px;
     right: 18px;
   }
   .studio-art-caption {
     left: 18px;
     right: 18px;
-    font-size: 10px;
+    font-size:12px;
   }
   .studio-art-caption > span:last-child {
     display: none;
@@ -922,11 +782,6 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-  [data-aos],
-  [data-aos].aos-init {
-    transform: none !important;
-    opacity: 1 !important;
   }
   .studio-button:hover {
     transform: none;
@@ -1082,3 +937,118 @@
 
 .studio-logo-mark{width:40px;height:40px;flex-shrink:0;filter:drop-shadow(0 3px 5px #21132f18)}
 @media(max-width:767px){.studio-logo-mark{width:36px;height:36px}}
+
+/* ─── 3D perspective context for public info pages ───────────────────────── */
+.studio-public-page {
+  perspective: 1200px;
+}
+
+/* Keep glows visible on public pages (override the dashboard blanket hide) */
+.studio-public-page [aria-hidden][class*="blur-3xl"],
+.studio-public-page [aria-hidden][class*="blur-"],
+.studio-public-page .premium-grid-mask {
+  display: block !important;
+}
+
+/* ─── Auth Pages – keep decorative blur orbs visible ─────────────────────── */
+.auth-page [aria-hidden][class*="blur-3xl"],
+.auth-page [aria-hidden][class*="blur-"] {
+  display: block !important;
+}
+
+/* ─── Auth Page Keyframes ─────────────────────────────────────────────────── */
+@keyframes auth-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes auth-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes auth-pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139,92,246,0); }
+  50%       { box-shadow: 0 0 24px 4px rgba(139,92,246,0.28); }
+}
+@keyframes auth-shake {
+  0%, 100% { transform: translateX(0); }
+  15%       { transform: translateX(-6px); }
+  30%       { transform: translateX(6px); }
+  45%       { transform: translateX(-5px); }
+  60%       { transform: translateX(5px); }
+  75%       { transform: translateX(-3px); }
+  90%       { transform: translateX(3px); }
+}
+@keyframes auth-otp-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.18); }
+  70%  { transform: scale(0.93); }
+  100% { transform: scale(1); }
+}
+@keyframes auth-spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes auth-orb-pulse {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50%       { opacity: 0.45; transform: scale(1.08); }
+}
+@keyframes auth-shield-pulse {
+  0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 0px rgba(139,92,246,0)); }
+  50%       { transform: scale(1.08); filter: drop-shadow(0 0 12px rgba(139,92,246,0.6)); }
+}
+
+/* ─── Auth Utility Classes ────────────────────────────────────────────────── */
+.animate-auth-card-enter {
+  animation: auth-card-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.animate-auth-float {
+  animation: auth-float 3.5s ease-in-out infinite;
+}
+.animate-auth-pulse-glow {
+  animation: auth-pulse-glow 2.4s ease-in-out infinite;
+}
+.animate-auth-shake {
+  animation: auth-shake 0.5s ease-in-out;
+}
+.animate-auth-otp-pop {
+  animation: auth-otp-pop 0.28s ease-out;
+}
+.animate-auth-spin-slow {
+  animation: auth-spin-slow 8s linear infinite;
+}
+.animate-auth-orb-pulse {
+  animation: auth-orb-pulse 4s ease-in-out infinite;
+}
+.animate-auth-shield-pulse {
+  animation: auth-shield-pulse 2s ease-in-out infinite;
+}
+
+/* Auth input focus ring — violet glow */
+.auth-input {
+  width: 100%;
+  border-radius: 0.6rem;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--background) 80%, var(--card) 20%);
+  padding: 0.7rem 0.75rem 0.7rem 2.4rem;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.auth-input::placeholder { color: var(--muted-foreground); }
+.auth-input:focus {
+  border-color: rgba(139,92,246,0.6);
+  box-shadow: 0 0 0 3px rgba(139,92,246,0.15);
+}
+.auth-input.error {
+  border-color: var(--destructive);
+}
+.auth-input.error:focus {
+  box-shadow: 0 0 0 3px rgba(235, 119, 112, 0.18);
+}

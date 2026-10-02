@@ -10,7 +10,7 @@ import type { Role } from "@/types";
 const ROUTE_TITLES: Array<[string, string]> = [
   ["/dashboard/resumes/new", "Create resume"],
   ["/dashboard/resumes", "Resumes"],
-  ["/dashboard/applications", "Applications"],
+  ["/dashboard/jobs", "Job workspace"],
   ["/dashboard/cover-letters", "Cover letters"],
   ["/dashboard/templates", "Templates"],
   ["/dashboard/ats", "Role insights"],
@@ -77,7 +77,7 @@ export function SiteHeader({
               {pageTitle}
             </p>
           </div>
-          <p className="hidden text-[10px] text-muted-foreground sm:block">
+          <p className="hidden text-xs text-muted-foreground sm:block">
             {role === "ADMIN"
               ? "Platform control center"
               : "Your career workspace"}

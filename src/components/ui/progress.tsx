@@ -14,10 +14,10 @@ export function Progress({
 }) {
   const pct = Math.max(0, Math.min(100, value));
   const tones: Record<typeof tone, string> = {
-    violet: "bg-gradient-to-r from-violet-600 to-fuchsia-500",
-    amber: "bg-gradient-to-r from-amber-500 to-orange-500",
-    emerald: "bg-gradient-to-r from-emerald-500 to-teal-500",
-    rose: "bg-gradient-to-r from-rose-500 to-pink-500",
+    violet: "bg-violet-600",
+    amber: "bg-amber-500",
+    emerald: "bg-emerald-500",
+    rose: "bg-rose-500",
   };
   return (
     <div
@@ -31,7 +31,7 @@ export function Progress({
       aria-valuemax={100}
     >
       <div
-        className={cn("h-full transition-all duration-500", tones[tone])}
+        className={cn("h-full origin-left transition-[width] duration-500 motion-reduce:transition-none", tones[tone])}
         style={{ width: `${pct}%` }}
       />
     </div>

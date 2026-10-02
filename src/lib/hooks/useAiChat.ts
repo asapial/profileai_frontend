@@ -57,7 +57,7 @@ export const quickActionsFor = (role: ChatRole, route: string): string[] => {
 const welcomeFor = (role: ChatRole, route: string): string => {
   if (role === "ADMIN") return `I'm your permission-aware Admin Copilot. I can explain ${route.startsWith("/admin") ? "this workspace" : "platform operations"}, summarize authorized context, and prepare drafts. Sensitive changes stay outside chat.`;
   if (role === "USER") return "I'm your ProFile career assistant. I can explain this page and use only account or document context that the backend confirms belongs to you.";
-  return "Hi! I'm ProFile Assistant. I can explain the product, plans, templates, ATS scoring, account access, and published help resources.";
+  return "Hi! I'm ProfileAI Assistant. I can explain the product, plans, templates, ATS scoring, account access, and published help resources.";
 };
 
 const friendlyChatError = (caught: unknown): { message: string; code?: string; retryable: boolean } => {

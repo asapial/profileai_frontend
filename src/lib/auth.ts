@@ -187,6 +187,7 @@ export const logout = async (): Promise<{ ok: boolean }> => {
 };
 
 export type CurrentUser = User & {
+  image?: string | null;
   emailVerified: boolean;
   twoFactorEnabled: boolean;
   isActive: boolean;
@@ -214,7 +215,9 @@ export type CurrentUser = User & {
  */
 export const getCurrentUser = async (): Promise<CurrentUser | null> => {
   try {
-    const data = await api.get<{ user: CurrentUser }>("/auth/me");
+    const data = await api.get<{ user: CurrentUser }>("/auth/me", {
+      signal: AbortSignal.timeout(4_000),
+    });
     return data.user;
   } catch {
     return null;

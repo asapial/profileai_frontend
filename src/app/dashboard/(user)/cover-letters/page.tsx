@@ -89,6 +89,11 @@ export default function CoverLettersPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <Button asChild variant="outline" className="gap-2">
+            <Link href="/dashboard/career?tab=Email%20studio">
+              <Sparkles className="h-4 w-4" /> Open Email Studio
+            </Link>
+          </Button>
           <Button
             onClick={() => setCreating(true)}
             disabled={limitReached}
@@ -355,12 +360,12 @@ function CoverLetterCard({
       <CardContent className="mt-auto space-y-3">
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <span
-            className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${STATUS_TONE[letter.status]}`}
+            className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${STATUS_TONE[letter.status]}`}
           >
             {STATUS_LABEL[letter.status]}
           </span>
           {letter.resume ? (
-            <span className="rounded-md bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-700">
+            <span className="rounded-md bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-700">
               {letter.resume.title}
             </span>
           ) : null}
@@ -518,7 +523,7 @@ function NewCoverLetterDialog({
               )}
             </select>
             {resumes.length === 0 && !resumesLoading ? (
-              <p className="text-[11px] text-amber-700">
+              <p className="text-xs text-amber-700">
                 Generate a resume first to enable cover letters.
               </p>
             ) : null}

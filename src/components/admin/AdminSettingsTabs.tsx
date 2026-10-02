@@ -13,6 +13,7 @@
 // panel surfaces a graceful empty state.
 
 import { toast } from "react-hot-toast";
+import { useState } from "react";
 import {
   IconMail,
   IconPalette,
@@ -49,6 +50,7 @@ type EmailIdentity = {
   fromName: string;
   fromAddress: string;
   replyToAddress: string;
+  contactRecipients: string[];
 };
 
 type BrandingProfile = {
@@ -109,7 +111,8 @@ function useGetOrFallback<T>(path: string, fallback: T) {
     },
     staleTime: 30 * 1000,
   });
-  return q.data ?? fallback;
+  if (!q.data) return fallback;
+  return { ...fallback, ...q.data } as T;
 }
 
 function SecurityPanel() {
@@ -213,6 +216,7 @@ function EmailPanel() {
     fromName: "ProfileAI",
     fromAddress: "no-reply@profileai.app",
     replyToAddress: "support@profileai.app",
+    contactRecipients: ["support@profileai.app"],
   };
   const data = useGetOrFallback<EmailIdentity>(
     "/admin/settings/email",
@@ -275,6 +279,12 @@ function EmailPanel() {
           </div>
         </div>
       </Card>
+      <ContactRecipientsEditor
+        key={data.contactRecipients.join("\n")}
+        data={data}
+        busy={update.isPending}
+        onSave={(contactRecipients) => update.mutate({ ...data, contactRecipients })}
+      />
       <Card className="p-5">
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-1">
@@ -308,6 +318,70 @@ function EmailPanel() {
         </div>
       </Card>
     </div>
+  );
+}
+
+function ContactRecipientsEditor({
+  data,
+  busy,
+  onSave,
+}: {
+  data: EmailIdentity;
+  busy: boolean;
+  onSave: (recipients: string[]) => void;
+}) {
+  const [draft, setDraft] = useState(data.contactRecipients.join("\n"));
+
+  const save = () => {
+    const recipients = [...new Set(
+      draft
+        .split(/[\s,;]+/)
+        .map((value) => value.trim().toLowerCase())
+        .filter(Boolean),
+    )];
+    const invalid = recipients.find((value) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value));
+    if (invalid) {
+      toast.error(`Invalid contact recipient: ${invalid}`);
+      return;
+    }
+    if (recipients.length === 0) {
+      toast.error("Add at least one contact recipient.");
+      return;
+    }
+    if (recipients.length > 20) {
+      toast.error("You can configure up to 20 contact recipients.");
+      return;
+    }
+    onSave(recipients);
+  };
+
+  return (
+    <Card className="p-5">
+      <div className="flex flex-col gap-1">
+        <h2 className="text-base font-semibold">Contact form recipients</h2>
+        <p className="text-muted-foreground text-sm">
+          Every public contact request is saved in Support tickets and emailed to each address below.
+        </p>
+      </div>
+      <Separator className="my-4" />
+      <Label htmlFor="contact-recipients">Admin email addresses</Label>
+      <textarea
+        id="contact-recipients"
+        rows={4}
+        value={draft}
+        onChange={(event) => setDraft(event.target.value)}
+        placeholder={"support@profileai.app\nowner@profileai.app"}
+        className="border-input bg-background mt-2 w-full rounded-md border px-3 py-2 text-sm leading-6 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      />
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-muted-foreground text-xs">
+          Separate addresses with a comma, semicolon, space, or new line. Maximum 20.
+        </p>
+        <Button type="button" onClick={save} disabled={busy}>
+          {busy ? "Saving…" : "Save recipients"}
+        </Button>
+      </div>
+    </Card>
   );
 }
 

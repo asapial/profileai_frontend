@@ -1,7 +1,8 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { SearchCheck } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, SearchCheck } from "lucide-react";
 import toast from "react-hot-toast";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -38,9 +39,14 @@ export default function AtsAnalyzerPage() {
 
   return (
     <div className="space-y-6 px-4 lg:px-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Job description analyzer</h1>
-        <p className="text-sm text-muted-foreground">Extract the skills, keywords and resume focus from a real role.</p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Job description analyzer</h1>
+          <p className="text-sm text-muted-foreground">Extract the skills, keywords and resume focus from a real role.</p>
+        </div>
+        <Link href="/dashboard/career?tab=Alignment" className="inline-flex items-center gap-2 text-sm font-medium text-violet-600 hover:underline">
+          Continue to Alignment <ArrowRight className="size-4" />
+        </Link>
       </div>
       <Card>
         <CardContent className="p-5">

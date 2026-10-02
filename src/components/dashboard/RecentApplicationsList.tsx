@@ -8,6 +8,7 @@
 import Link from "next/link";
 import { Briefcase, ArrowRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { useDashboardSummary } from "@/lib/hooks/useDashboardSummary";
 import {
   WidgetCard,
@@ -15,14 +16,6 @@ import {
   WidgetError,
   WidgetSkeleton,
 } from "./WidgetCard";
-
-const statusStyles: Record<string, string> = {
-  APPLIED: "bg-violet-100 text-violet-700",
-  INTERVIEW: "bg-amber-100 text-amber-700",
-  OFFER: "bg-emerald-100 text-emerald-700",
-  REJECTED: "bg-rose-100 text-rose-700",
-  WITHDRAWN: "bg-muted text-muted-foreground",
-};
 
 function formatDate(iso?: string) {
   if (!iso) return "";
@@ -51,7 +44,7 @@ export function RecentApplicationsList() {
         description="Track your job pipeline."
         action={
           <Button asChild variant="ghost" size="sm" className="gap-1">
-            <Link href="/dashboard/applications">
+            <Link href="/dashboard/jobs">
               All <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </Button>
@@ -91,7 +84,7 @@ export function RecentApplicationsList() {
       description="Track your job pipeline."
       action={
         <Button asChild variant="ghost" size="sm" className="gap-1">
-          <Link href="/dashboard/applications">
+          <Link href="/dashboard/jobs">
             All <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </Button>
@@ -103,7 +96,7 @@ export function RecentApplicationsList() {
           description="Log where you&apos;ve applied so nothing slips through."
           cta={
             <Button asChild size="sm" className="mt-2 gap-1">
-              <Link href="/dashboard/applications">
+              <Link href="/dashboard/jobs">
                 <Plus className="h-3.5 w-3.5" />
                 Add application
               </Link>
@@ -129,11 +122,7 @@ export function RecentApplicationsList() {
                 </p>
               </Link>
               <div className="flex shrink-0 items-center gap-3">
-                <span
-                  className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${statusStyles[a.status] ?? "bg-muted text-muted-foreground"}`}
-                >
-                  {a.status.toLowerCase()}
-                </span>
+                <StatusBadge status={a.status} />
                 <span className="text-xs text-muted-foreground tabular-nums">
                   {formatDate(a.appliedAt)}
                 </span>

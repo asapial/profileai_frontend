@@ -275,7 +275,7 @@ function Stat({
 }) {
   return (
     <div className="rounded-lg border border-violet-200 bg-violet-50 p-3">
-      <p className="text-[10px] font-semibold uppercase tracking-wide text-violet-700">
+      <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">
         {label}
       </p>
       <p className="mt-1 text-2xl font-bold text-violet-900">{value}</p>
@@ -300,7 +300,7 @@ function MiniStat({
         : "text-foreground";
   return (
     <div className="rounded-md bg-muted/40 px-2 py-2">
-      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
+      <p className="text-xs uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
       <p className={`text-lg font-semibold ${toneClass}`}>{value}</p>
@@ -354,7 +354,7 @@ function RecentReferrals({
                   </span>
                 </span>
                 <span
-                  className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
+                  className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
                     STATUS_TONE[r.status]
                   }`}
                 >
@@ -501,7 +501,7 @@ function Leaderboard({
               >
                 <span className="flex items-center gap-3">
                   <span
-                    className={`grid h-6 w-6 place-items-center rounded-full text-[10px] font-bold ${
+                    className={`grid h-6 w-6 place-items-center rounded-full text-xs font-bold ${
                       e.rank === 1
                         ? "bg-amber-400 text-amber-900"
                         : e.rank === 2
@@ -516,7 +516,7 @@ function Leaderboard({
                   <span className="font-medium">
                     {e.name}
                     {e.isYou ? (
-                      <span className="ml-2 text-[10px] uppercase tracking-wide text-violet-700">
+                      <span className="ml-2 text-xs uppercase tracking-wide text-violet-700">
                         you
                       </span>
                     ) : null}

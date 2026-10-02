@@ -12,6 +12,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 
 export function NavSecondary({
@@ -27,9 +28,13 @@ export function NavSecondary({
   label?: string
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   const pathname = usePathname()
+  const { isMobile, setOpenMobile } = useSidebar()
+  const closeMobileNavigation = () => {
+    if (isMobile) setOpenMobile(false)
+  }
   return (
     <SidebarGroup {...props}>
-      <SidebarGroupLabel className="px-2 text-[10px] font-bold uppercase tracking-[0.16em]">
+      <SidebarGroupLabel className="sidebar-section-label px-2 text-xs font-bold uppercase tracking-[0.18em]">
         {label}
       </SidebarGroupLabel>
       <SidebarGroupContent>
@@ -40,9 +45,13 @@ export function NavSecondary({
                 asChild
                 isActive={pathname === item.url || pathname.startsWith(`${item.url}/`)}
                 tooltip={item.title}
-                className="h-9 rounded-lg px-2.5 data-[active=true]:bg-gradient-to-r data-[active=true]:from-violet-500/15 data-[active=true]:to-fuchsia-500/10 data-[active=true]:text-primary"
+                className="sidebar-nav-button h-10 rounded-xl px-2.5"
               >
-                <Link href={item.url}>
+                <Link
+                  href={item.url}
+                  aria-current={pathname === item.url || pathname.startsWith(`${item.url}/`) ? "page" : undefined}
+                  onClick={closeMobileNavigation}
+                >
                   <item.icon />
                   <span>{item.title}</span>
                 </Link>

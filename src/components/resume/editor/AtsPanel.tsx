@@ -42,7 +42,7 @@ export function AtsPanel({ atsData, loading, onRun }: Props) {
         </div>
         {atsData ? (
           <span
-            className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
+            className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
               tone === "emerald"
                 ? "bg-emerald-100 text-emerald-700"
                 : tone === "amber"
@@ -70,7 +70,7 @@ export function AtsPanel({ atsData, loading, onRun }: Props) {
                 {atsData.matchedKeywords.map((k) => (
                   <span
                     key={k}
-                    className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-700"
+                    className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700"
                   >
                     {k}
                   </span>
@@ -87,7 +87,7 @@ export function AtsPanel({ atsData, loading, onRun }: Props) {
                 {atsData.missingKeywords.map((k) => (
                   <span
                     key={k}
-                    className="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-medium text-rose-700"
+                    className="rounded-full bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-700"
                   >
                     {k}
                   </span>

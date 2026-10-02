@@ -427,7 +427,7 @@ function ProjectsSection() {
                       {p.techStack.map((t) => (
                         <span
                           key={t}
-                          className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-medium text-violet-700"
+                          className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700"
                         >
                           {t}
                         </span>

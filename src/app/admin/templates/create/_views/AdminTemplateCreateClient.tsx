@@ -344,7 +344,7 @@ function PreviewPane({ layoutConfig }: { layoutConfig: TemplateLayoutConfig }) {
           {SAMPLE_DATA.name}
         </div>
         <div className="text-xs text-zinc-600">{SAMPLE_DATA.title}</div>
-        <div className="text-[10px] text-zinc-500">{SAMPLE_DATA.email}</div>
+        <div className="text-xs text-zinc-500">{SAMPLE_DATA.email}</div>
       </div>
       <div className={py}>
         <SectionHeading label="Summary" color={accent} />
@@ -356,10 +356,10 @@ function PreviewPane({ layoutConfig }: { layoutConfig: TemplateLayoutConfig }) {
           <div key={i} className="mt-2">
             <div className="flex items-baseline justify-between gap-2">
               <span className="font-semibold">{e.role}</span>
-              <span className="text-[10px] text-zinc-500">{e.period}</span>
+              <span className="text-xs text-zinc-500">{e.period}</span>
             </div>
-            <div className="text-[11px] text-zinc-600">{e.company}</div>
-            <ul className="mt-1 list-disc space-y-0.5 pl-4 text-[11px] text-zinc-700">
+            <div className="text-xs text-zinc-600">{e.company}</div>
+            <ul className="mt-1 list-disc space-y-0.5 pl-4 text-xs text-zinc-700">
               {e.bullets.map((b, j) => (
                 <li key={j}>{b}</li>
               ))}
@@ -373,7 +373,7 @@ function PreviewPane({ layoutConfig }: { layoutConfig: TemplateLayoutConfig }) {
           {SAMPLE_DATA.skills.map((s) => (
             <span
               key={s}
-              className="rounded px-1.5 py-0.5 text-[10px]"
+              className="rounded px-1.5 py-0.5 text-xs"
               style={{ backgroundColor: `${accent}1A`, color: accent }}
             >
               {s}
@@ -394,7 +394,7 @@ function SectionHeading({
 }) {
   return (
     <div
-      className="mb-1 text-[10px] font-semibold uppercase tracking-wider"
+      className="mb-1 text-xs font-semibold uppercase tracking-wider"
       style={{ color }}
     >
       {label}

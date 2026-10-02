@@ -79,7 +79,7 @@ export const PUBLIC_PAGE_CONTENT: Record<PublicPageSlug, PublicPageDefinition> =
     slug: "about",
     accent: "violet",
     eyebrow: "Company · About",
-    heroLabel: "Why ProFile AI exists",
+    heroLabel: "Why ProfileAI exists",
     heroTitle: "Career software should create clarity—not more pressure.",
     heroDescription:
       "We are building a thoughtful workspace that helps people explain their experience, make stronger decisions, and move through a job search with confidence.",
@@ -103,7 +103,7 @@ export const PUBLIC_PAGE_CONTENT: Record<PublicPageSlug, PublicPageDefinition> =
         title: "Make excellent career tools feel calm and accessible.",
         paragraphs: [
           "A job search asks people to translate years of work into a few pages, adapt that story for every opportunity, and navigate systems they rarely get to see. The process is repetitive, emotional, and unnecessarily fragmented.",
-          "ProFile AI brings résumé creation, role-specific tailoring, ATS analysis, cover letters, application tracking, and export into one coherent workspace. The product removes busywork while preserving the judgment and voice that make every career story personal.",
+          "ProfileAI brings résumé creation, role-specific tailoring, ATS analysis, cover letters, application tracking, and export into one coherent workspace. The product removes busywork while preserving the judgment and voice that make every career story personal.",
         ],
         bullets: [
           "Turn rough experience into specific, evidence-led achievements.",
@@ -334,7 +334,7 @@ export const PUBLIC_PAGE_CONTENT: Record<PublicPageSlug, PublicPageDefinition> =
       eyebrow: "Career notes, without the noise",
       title: "Get two useful reads each month.",
       description: "Practical résumé guidance, hiring-system explainers, and thoughtful product updates—no daily inbox pressure.",
-      label: "Join ProFile AI",
+      label: "Join ProfileAI",
       href: "/register",
     },
   },
@@ -344,7 +344,7 @@ export const PUBLIC_PAGE_CONTENT: Record<PublicPageSlug, PublicPageDefinition> =
     accent: "amber",
     eyebrow: "Legal · Terms of service",
     heroLabel: "Plain-language service terms",
-    heroTitle: "Clear responsibilities for using ProFile AI.",
+    heroTitle: "Clear responsibilities for using ProfileAI.",
     heroDescription:
       "These terms explain account responsibilities, acceptable use, AI-assisted content, subscriptions, intellectual property, and how access may end.",
     heroPoints: [
@@ -366,7 +366,7 @@ export const PUBLIC_PAGE_CONTENT: Record<PublicPageSlug, PublicPageDefinition> =
         eyebrow: "01 · Agreement",
         title: "Acceptance and eligibility",
         paragraphs: [
-          "By creating an account, purchasing a plan, or using ProFile AI, you agree to these terms and the policies linked from them. If you use the service for an organization, you confirm that you have authority to accept these terms for that organization.",
+          "By creating an account, purchasing a plan, or using ProfileAI, you agree to these terms and the policies linked from them. If you use the service for an organization, you confirm that you have authority to accept these terms for that organization.",
           "Individual accounts are intended for people old enough to enter a binding agreement where they live. If local law requires a higher age or guardian involvement, that requirement applies.",
         ],
       },
@@ -387,7 +387,7 @@ export const PUBLIC_PAGE_CONTENT: Record<PublicPageSlug, PublicPageDefinition> =
         title: "Generated content remains a draft until you approve it.",
         paragraphs: [
           "AI suggestions may be incomplete, inaccurate, generic, or unsuitable for a particular employer. You are responsible for reviewing factual accuracy, tone, claims, dates, metrics, qualifications, and legal or professional requirements before use.",
-          "ProFile AI does not guarantee interviews, employment, ATS ranking, or any hiring outcome. Scores and recommendations are decision-support tools, not employer decisions or professional legal advice.",
+          "ProfileAI does not guarantee interviews, employment, ATS ranking, or any hiring outcome. Scores and recommendations are decision-support tools, not employer decisions or professional legal advice.",
         ],
         note: "Never use generated content to fabricate employment, education, credentials, security clearances, achievements, or references.",
       },
@@ -418,7 +418,7 @@ export const PUBLIC_PAGE_CONTENT: Record<PublicPageSlug, PublicPageDefinition> =
         eyebrow: "06 · Ownership",
         title: "Your content stays yours; the product stays ours.",
         paragraphs: [
-          "You retain rights in the career information and original content you provide. You give ProFile AI the limited permission needed to host, process, transform, and export that content to operate features you request.",
+          "You retain rights in the career information and original content you provide. You give ProfileAI the limited permission needed to host, process, transform, and export that content to operate features you request.",
           "The platform, software, brand, interface, documentation, and system templates remain protected by applicable intellectual-property laws. Template customization does not transfer ownership of the underlying platform design system.",
         ],
       },
@@ -449,8 +449,8 @@ export const PUBLIC_PAGE_CONTENT: Record<PublicPageSlug, PublicPageDefinition> =
     closing: {
       eyebrow: "Questions about these terms?",
       title: "We prefer clear questions to hidden assumptions.",
-      description: "Contact the team for an accessible copy, billing clarification, or questions about using ProFile AI for an organization.",
-      label: "Contact ProFile AI",
+      description: "Contact the team for an accessible copy, billing clarification, or questions about using ProfileAI for an organization.",
+      label: "Contact ProfileAI",
       href: "/contact",
     },
   },
@@ -462,7 +462,7 @@ export const PUBLIC_PAGE_CONTENT: Record<PublicPageSlug, PublicPageDefinition> =
     heroLabel: "Privacy for career data",
     heroTitle: "Your career story is sensitive. We treat it that way.",
     heroDescription:
-      "This policy explains what information ProFile AI processes, why it is needed, where service providers are involved, how long records are kept, and the choices available to you.",
+      "This policy explains what information ProfileAI processes, why it is needed, where service providers are involved, how long records are kept, and the choices available to you.",
     heroPoints: [
       "Personal résumé data is not sold",
       "Documents are private unless you choose to publish or share",
@@ -617,7 +617,7 @@ export const PUBLIC_PAGE_CONTENT: Record<PublicPageSlug, PublicPageDefinition> =
         eyebrow: "Your controls",
         title: "Manage storage without losing track of the trade-offs.",
         bullets: [
-          "Use browser settings to inspect, block, or remove site data for ProFile AI.",
+          "Use browser settings to inspect, block, or remove site data for ProfileAI.",
           "Use available consent or preference controls for optional analytics and communications.",
           "Sign out on shared devices and clear site data if the browser should not retain session state.",
           "Remember that blocking essential cookies prevents authenticated dashboard features from working correctly.",

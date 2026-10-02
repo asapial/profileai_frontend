@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, useRef, type FormEvent } from "react";
 import {
   AlertCircle,
+  ArrowRight,
   CheckCircle2,
   Eye,
   EyeOff,
@@ -12,7 +13,6 @@ import {
   Lock,
   Mail,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 import {
   completeDeviceRecovery,
@@ -21,13 +21,14 @@ import {
   postLoginRoute,
 } from "@/lib/auth";
 import { cn } from "@/lib/utils";
+import { AuthCard, AuthBrandMark } from "@/components/auth/AuthCard";
+import { GoogleButton } from "@/components/auth/GoogleButton";
+
+import { api } from "@/lib/api";
+import type { LoginResponse } from "@/types";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/**
- * Mirror of the middleware's safe-redirect check so the client doesn't
- * blindly trust `?redirect=` either.
- */
 function getSafeRedirect(raw: string | null | undefined): string | null {
   if (!raw) return null;
   if (!raw.startsWith("/")) return null;
@@ -36,11 +37,13 @@ function getSafeRedirect(raw: string | null | undefined): string | null {
   return raw;
 }
 
-async function syncFrontendSession(): Promise<boolean> {
+async function syncFrontendSession(accessToken: string): Promise<boolean> {
   try {
     const response = await fetch("/api/auth/post-login", {
       method: "POST",
       credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accessToken }),
     });
     return response.ok;
   } catch {
@@ -58,31 +61,45 @@ export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState(searchParams.get("google") === "1");
   const [recoveringDevices, setRecoveringDevices] = useState(false);
   const [deviceRecoveryToken, setDeviceRecoveryToken] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>(
-    {}
-  );
+  const [error, setError] = useState<string | null>(searchParams.get("oauth_error") ? "Google sign-in was cancelled or unsuccessful. Please try again." : null);
+  const [shakeKey, setShakeKey] = useState(0);
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
+
+  const googleStarted = useRef(false);
+  useEffect(() => {
+    if (searchParams.get("google") !== "1" || googleStarted.current) return;
+    googleStarted.current = true;
+    void (async () => {
+      try {
+        const result = await api.post<LoginResponse>("/auth/google/session", {});
+        if ("deviceLimitReached" in result) { setDeviceRecoveryToken(result.recoveryToken); return; }
+        if (result.twoFactorRequired) { router.replace(`/login/2fa?email=${encodeURIComponent(result.email)}`); return; }
+        if (!(await syncFrontendSession(result.accessToken))) throw new Error("Could not secure the browser session. Please sign in again.");
+        window.location.replace(postLoginRoute(result.user));
+      } catch (e) { setError(e instanceof Error ? e.message : "Google sign-in failed."); }
+      finally { setSubmitting(false); }
+    })();
+  }, [searchParams, router]);
 
   const validate = (): boolean => {
     const next: { email?: string; password?: string } = {};
     if (!email.trim()) next.email = "Email is required.";
-    else if (!EMAIL_RE.test(email.trim()))
-      next.email = "Enter a valid email address.";
+    else if (!EMAIL_RE.test(email.trim())) next.email = "Enter a valid email address.";
     if (!password) next.password = "Password is required.";
-    else if (password.length < 1) next.password = "Password is required.";
     setFieldErrors(next);
     return Object.keys(next).length === 0;
   };
+
+  const triggerShake = () => setShakeKey((k) => k + 1);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
     setDeviceRecoveryToken(null);
-    if (!validate()) return;
+    if (!validate()) { triggerShake(); return; }
 
     setSubmitting(true);
     const result = await login({
@@ -103,15 +120,15 @@ export function LoginForm() {
     if (result.kind === "error") {
       setSubmitting(false);
       setError(result.message);
+      triggerShake();
       return;
     }
 
-    // The proxy requires this marker as well as the access token. Await it so
-    // the first protected navigation cannot race ahead of session setup.
-    if (!(await syncFrontendSession())) {
+    if (!(await syncFrontendSession(result.accessToken))) {
       await clearFailedLogin();
       setSubmitting(false);
       setError("Login succeeded, but the browser session could not be secured. Please try again.");
+      triggerShake();
       return;
     }
 
@@ -134,7 +151,7 @@ export function LoginForm() {
       return;
     }
 
-    if (!(await syncFrontendSession())) {
+    if (!(await syncFrontendSession(result.accessToken))) {
       await clearFailedLogin();
       setRecoveringDevices(false);
       setDeviceRecoveryToken(null);
@@ -148,17 +165,10 @@ export function LoginForm() {
   };
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card/80 p-5 shadow-xl shadow-violet-500/5 backdrop-blur-md min-[360px]:p-6 sm:p-9">
-      {/* Brand mark */}
-      <div className="mb-6 flex items-center gap-2">
-        <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white shadow-lg shadow-violet-500/20">
-          <Sparkles className="h-5 w-5" />
-        </span>
-        <span className="text-lg font-semibold tracking-tight">
-          ProFile <span className="text-gradient">AI</span>
-        </span>
-      </div>
+    <AuthCard>
+      <AuthBrandMark />
 
+      {/* Success banner */}
       {showSuccessBanner && (
         <div
           role="status"
@@ -180,21 +190,33 @@ export function LoginForm() {
       )}
 
       <header>
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Welcome back
-        </h1>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Welcome back</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pick up your drafts and plan your next move.
         </p>
       </header>
 
-      <form noValidate onSubmit={onSubmit} className="mt-7 space-y-5">
+      {/* Google OAuth */}
+      <div className="mt-6">
+        <GoogleButton label="Sign in with Google" disabled={submitting} />
+      </div>
+
+      {/* Divider */}
+      <div className="relative my-5 flex items-center gap-3">
+        <div className="flex-1 border-t border-border/60" />
+        <span className="text-xs font-medium text-muted-foreground">or sign in with email</span>
+        <div className="flex-1 border-t border-border/60" />
+      </div>
+
+      <form
+        noValidate
+        onSubmit={onSubmit}
+        key={shakeKey}
+        className={cn("space-y-5", error && shakeKey > 0 && "animate-auth-shake")}
+      >
         {/* Email */}
         <div>
-          <label
-            htmlFor="email"
-            className="mb-1.5 block text-sm font-medium text-foreground"
-          >
+          <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-foreground">
             Email
           </label>
           <div className="relative">
@@ -212,27 +234,19 @@ export function LoginForm() {
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
-                if (fieldErrors.email)
-                  setFieldErrors((prev) => ({ ...prev, email: undefined }));
+                if (fieldErrors.email) setFieldErrors((p) => ({ ...p, email: undefined }));
               }}
               aria-invalid={Boolean(fieldErrors.email)}
               aria-describedby={fieldErrors.email ? "email-error" : undefined}
               placeholder="you@example.com"
               className={cn(
-                "w-full rounded-md border bg-background py-2.5 pl-9 pr-3 text-sm",
-                "placeholder:text-muted-foreground",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                fieldErrors.email
-                  ? "border-destructive focus-visible:ring-destructive"
-                  : "border-input"
+                "auth-input",
+                fieldErrors.email && "error"
               )}
             />
           </div>
           {fieldErrors.email && (
-            <p
-              id="email-error"
-              className="mt-1.5 flex items-center gap-1 text-xs text-destructive"
-            >
+            <p id="email-error" className="mt-1.5 flex items-center gap-1 text-xs text-destructive">
               <AlertCircle className="h-3.5 w-3.5" />
               {fieldErrors.email}
             </p>
@@ -242,16 +256,10 @@ export function LoginForm() {
         {/* Password */}
         <div>
           <div className="mb-1.5 flex items-center justify-between">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-foreground"
-            >
+            <label htmlFor="password" className="block text-sm font-medium text-foreground">
               Password
             </label>
-            <Link
-              href="/forgot-password"
-              className="text-xs font-medium text-primary hover:underline"
-            >
+            <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
               Forgot password?
             </Link>
           </div>
@@ -268,21 +276,14 @@ export function LoginForm() {
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                if (fieldErrors.password)
-                  setFieldErrors((prev) => ({ ...prev, password: undefined }));
+                if (fieldErrors.password) setFieldErrors((p) => ({ ...p, password: undefined }));
               }}
               aria-invalid={Boolean(fieldErrors.password)}
-              aria-describedby={
-                fieldErrors.password ? "password-error" : undefined
-              }
+              aria-describedby={fieldErrors.password ? "password-error" : undefined}
               placeholder="••••••••"
               className={cn(
-                "w-full rounded-md border bg-background py-2.5 pl-9 pr-10 text-sm",
-                "placeholder:text-muted-foreground",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                fieldErrors.password
-                  ? "border-destructive focus-visible:ring-destructive"
-                  : "border-input"
+                "auth-input pr-10",
+                fieldErrors.password && "error"
               )}
             />
             <button
@@ -292,48 +293,30 @@ export function LoginForm() {
               aria-pressed={showPassword}
               className="absolute right-2 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
           {fieldErrors.password && (
-            <p
-              id="password-error"
-              className="mt-1.5 flex items-center gap-1 text-xs text-destructive"
-            >
+            <p id="password-error" className="mt-1.5 flex items-center gap-1 text-xs text-destructive">
               <AlertCircle className="h-3.5 w-3.5" />
               {fieldErrors.password}
             </p>
           )}
         </div>
 
-        {/* Remember me */}
-        <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
-          <input
-            type="checkbox"
-            checked={remember}
-            onChange={(e) => setRemember(e.target.checked)}
-            className="h-4 w-4 rounded border-input text-primary focus:ring-ring"
-          />
-          <span>Keep me signed in on this device</span>
-        </label>
-
-        {/* Form-level error */}
+        {/* Device limit banner */}
         {deviceRecoveryToken && (
           <div
             role="alert"
-            className="space-y-3 rounded-md border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm"
+            className="space-y-3 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm"
           >
             <div className="flex items-start gap-2 text-amber-200">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
               <div>
                 <p className="font-semibold">Device limit reached</p>
                 <p className="mt-1 text-amber-200/80">
-                  You proved ownership of this account. To continue, sign out all
-                  existing devices and keep only this device signed in.
+                  You proved ownership of this account. To continue, sign out all existing devices and
+                  keep only this device signed in.
                 </p>
               </div>
             </div>
@@ -341,7 +324,7 @@ export function LoginForm() {
               type="button"
               disabled={recoveringDevices}
               onClick={replaceExistingDevices}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-amber-200 px-3 py-2 font-semibold text-amber-950 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-amber-200 px-3 py-2 font-semibold text-amber-950 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {recoveringDevices && <Loader2 className="h-4 w-4 animate-spin" />}
               Sign out existing devices and continue
@@ -349,10 +332,11 @@ export function LoginForm() {
           </div>
         )}
 
+        {/* Error */}
         {error && (
           <div
             role="alert"
-            className="flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-sm text-destructive"
+            className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-sm text-destructive"
           >
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
             <span>{error}</span>
@@ -364,8 +348,10 @@ export function LoginForm() {
           type="submit"
           disabled={submitting}
           className={cn(
-            "inline-flex w-full items-center justify-center gap-2 rounded-md bg-foreground px-4 py-2.5 text-sm font-semibold text-background shadow-sm transition",
-            "hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            "inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-500/30 transition-all",
+            "bg-gradient-to-r from-violet-600 to-fuchsia-600",
+            "hover:from-violet-500 hover:to-fuchsia-500 hover:shadow-violet-500/40",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
             "disabled:cursor-not-allowed disabled:opacity-60"
           )}
         >
@@ -376,22 +362,20 @@ export function LoginForm() {
             </>
           ) : (
             <>
-              <span>Log in</span>
               <ShieldCheck className="h-4 w-4" />
+              <span>Log in</span>
+              <ArrowRight className="h-4 w-4 opacity-70" />
             </>
           )}
         </button>
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        New to ProFile AI?{" "}
-        <Link
-          href="/register"
-          className="font-semibold text-primary hover:underline"
-        >
+        New to ProfileAI?{" "}
+        <Link href="/register" className="font-semibold text-primary hover:underline">
           Create a free account
         </Link>
       </p>
-    </div>
+    </AuthCard>
   );
 }

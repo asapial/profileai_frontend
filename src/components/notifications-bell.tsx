@@ -24,7 +24,7 @@ export function NotificationsBell() {
       {count > 0 ? (
         <span
           className={cn(
-            "absolute -right-0.5 -top-0.5 inline-flex min-w-[18px] items-center justify-center rounded-full bg-violet-600 px-1 text-[10px] font-semibold leading-[1.4] text-white ring-2 ring-background",
+            "absolute -right-0.5 -top-0.5 inline-flex min-w-[18px] items-center justify-center rounded-full bg-violet-600 px-1 text-xs font-semibold leading-[1.4] text-white ring-2 ring-background",
             count > 99 && "px-1.5"
           )}
         >

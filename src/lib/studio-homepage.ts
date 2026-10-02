@@ -6,7 +6,7 @@ const LEGACY: Record<
   hero: {
     title: "Build a job-winning resume with AI.",
     description:
-      "Create, tailor, score, and export a professional resume in minutes. ProFile AI helps you beat applicant tracking systems and land more interviews.",
+      "Create, tailor, score, and export a professional resume in minutes. ProfileAI helps you beat applicant tracking systems and land more interviews.",
   },
   features: {
     title: "Everything you need to land the interview",

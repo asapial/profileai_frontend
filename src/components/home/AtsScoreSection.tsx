@@ -18,7 +18,7 @@ export function AtsScoreSection({ content }: { content?: ManagedHomepageSection 
             align="left"
             eyebrow={content?.eyebrow || "ATS scoring"}
             title={<>{content?.title || "What is an ATS score, in plain English"}</>}
-            description={content?.description || "ProFile AI compares your resume with the role and tells you exactly what to improve."}
+            description={content?.description || "ProfileAI compares your resume with the role and tells you exactly what to improve."}
           />
 
           <ul className="mt-8 space-y-4 text-sm">
@@ -75,7 +75,7 @@ function AtsMockup() {
       <div className="rounded-2xl border border-border bg-card p-6 shadow-xl">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-foreground">ATS Score</p>
-          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
+          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-emerald-700">
             Strong
           </span>
         </div>

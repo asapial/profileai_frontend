@@ -20,7 +20,7 @@ const PLANS: Plan[] = [
     name: "Free",
     price: "$0",
     cadence: "forever",
-    description: "Try ProFile AI and build your first resume — no card needed.",
+    description: "Try ProfileAI and build your first resume — no card needed.",
     features: [
       "1 resume",
       "3 AI generations / month",
@@ -103,12 +103,12 @@ export function PricingSection({
               className={cn(
                 "relative flex flex-col rounded-2xl border bg-card p-6 transition",
                 plan.highlighted
-                  ? "border-violet-500 shadow-xl shadow-violet-500/10"
+                  ? "-translate-y-2 border-violet-500 shadow-[var(--shadow-3)]"
                   : "border-border",
               )}
             >
               {plan.badge && (
-                <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-500 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white shadow">
+                <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-500 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white shadow">
                   <Sparkles className="h-3 w-3" />
                   {plan.badge}
                 </span>

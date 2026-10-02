@@ -1,13 +1,15 @@
+import { AuthScene } from "@/components/auth/AuthScene";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
+import { MinimalAuthFooter } from "@/components/auth/MinimalAuthFooter";
 import { RegisterForm } from "./RegisterForm";
+import { AuthFormFallback } from "@/components/auth/AuthFormFallback";
 
 export const metadata: Metadata = {
-  title: "Create your account — ProFile AI",
+  title: "Create your account — ProfileAI",
   description:
-    "Sign up for ProFile AI and start building AI-powered resumes tailored to every job in minutes.",
+    "Sign up for ProfileAI and start building AI-powered resumes tailored to every job in minutes.",
   robots: { index: false, follow: false },
 };
 
@@ -17,7 +19,7 @@ export default function RegisterPage() {
       <Navbar />
       <main
         id="main"
-        className="relative isolate flex min-h-[calc(100svh-5rem)] items-center justify-center overflow-hidden py-12 sm:py-16"
+        className="auth-page relative isolate flex min-h-[calc(100svh-5rem)] items-center justify-center overflow-hidden py-12 sm:py-16"
       >
         {/* Decorative gradient background + soft mesh grid */}
         <div className="bg-hero absolute inset-0 -z-10" aria-hidden />
@@ -31,13 +33,13 @@ export default function RegisterPage() {
           className="absolute -bottom-24 right-1/4 -z-10 h-72 w-72 rounded-full bg-fuchsia-400/20 blur-3xl"
         />
 
-        <div className="mx-auto w-full max-w-md px-4 sm:px-6">
-          <Suspense fallback={null}>
+        <AuthScene>
+          <Suspense fallback={<AuthFormFallback title="Create your account" description="Loading your registration form…" />}>
             <RegisterForm />
           </Suspense>
-        </div>
+        </AuthScene>
       </main>
-      <Footer />
+      <MinimalAuthFooter />
     </>
   );
 }

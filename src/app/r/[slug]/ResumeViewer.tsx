@@ -314,7 +314,7 @@ export function ResumeViewer({ data }: Props) {
 
   return (
     <div className="min-h-svh bg-muted/30">
-      {/* Floating action bar — small ProFile AI branding + download CTA */}
+      {/* Floating action bar — small ProfileAI branding + download CTA */}
       <header className="sticky top-0 z-10 border-b border-border/60 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 px-4 sm:px-6">
           <div className="flex items-center gap-2 min-w-0">
@@ -343,7 +343,7 @@ export function ResumeViewer({ data }: Props) {
               href="https://profileai.app"
               className="hidden text-xs font-semibold text-muted-foreground hover:text-foreground sm:inline"
             >
-              Made with ProFile AI
+              Made with ProfileAI
             </a>
           </div>
         </div>

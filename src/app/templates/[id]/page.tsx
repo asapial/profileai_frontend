@@ -68,7 +68,7 @@ export default async function TemplateDetailPage({
             </div>
             <div className="mt-6 flex items-start gap-3 rounded-2xl border border-border/70 bg-muted/35 p-4 text-sm text-muted-foreground">
               <ShieldCheck className="mt-0.5 size-5 shrink-0 text-violet-500" />
-              <p>{template.isCommunity ? `Published by ${template.owner?.name || "a ProFile AI creator"} after admin review.` : "Designed and reviewed by the ProFile AI template team."}</p>
+              <p>{template.isCommunity ? `Published by ${template.owner?.name || "a ProfileAI creator"} after admin review.` : "Designed and reviewed by the ProfileAI template team."}</p>
             </div>
           </div>
         </div>

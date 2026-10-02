@@ -5,13 +5,13 @@ import { HelpCenter } from "./HelpCenter";
 import { HELP_ARTICLES, HELP_CATEGORIES } from "./data";
 
 export const metadata: Metadata = {
-  title: "Help Center — ProFile AI",
+  title: "Help Center — ProfileAI",
   description:
-    "Search guides, FAQs, and tutorials for ProFile AI. Find answers about resumes, AI writing, ATS scoring, billing, and account security.",
+    "Search guides, FAQs, and tutorials for ProfileAI. Find answers about resumes, AI writing, ATS scoring, billing, and account security.",
   openGraph: {
-    title: "Help Center — ProFile AI",
+    title: "Help Center — ProfileAI",
     description:
-      "Self-service support for ProFile AI. Search articles or contact our team.",
+      "Self-service support for ProfileAI. Search articles or contact our team.",
     type: "website",
   },
 };

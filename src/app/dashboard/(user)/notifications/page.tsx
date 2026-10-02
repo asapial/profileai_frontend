@@ -125,6 +125,9 @@ export default function NotificationsPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/dashboard/career?tab=Connections">Career delivery status</Link>
+          </Button>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700">
             <Bell className="h-3.5 w-3.5" />
             {unreadCount} unread
@@ -207,7 +210,7 @@ export default function NotificationsPage() {
                       className="flex flex-1 items-start gap-3 text-left"
                     >
                       <span
-                        className={`mt-0.5 inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
+                        className={`mt-0.5 inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
                           TYPE_TONE[n.type] ?? "bg-slate-100 text-slate-700"
                         }`}
                       >
@@ -230,7 +233,7 @@ export default function NotificationsPage() {
                             {n.body}
                           </span>
                         ) : null}
-                        <span className="mt-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
+                        <span className="mt-1 block text-xs uppercase tracking-wide text-muted-foreground">
                           {formatRelative(n.createdAt)}
                         </span>
                       </span>

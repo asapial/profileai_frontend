@@ -402,7 +402,7 @@ function ProfileTab({ user }: { user: AdminUserDetail }) {
           Resumes: {user.limits.resumeLimit ?? "—"} · AI calls:{" "}
           {user.limits.apiLimit ?? "—"}
           {user.limits.overrideByAdmin ? (
-            <Badge variant="outline" className="ml-2 text-[10px]">
+            <Badge variant="outline" className="ml-2 text-xs">
               Override
             </Badge>
           ) : null}
@@ -556,7 +556,7 @@ function SessionsTab({ user }: { user: AdminUserDetail }) {
                 <p className="truncate text-sm font-medium">
                   {s.deviceLabel ?? "Unknown device"}
                   {s.isCurrent ? (
-                    <Badge variant="default" className="ml-2 text-[10px]">
+                    <Badge variant="default" className="ml-2 text-xs">
                       This device
                     </Badge>
                   ) : null}

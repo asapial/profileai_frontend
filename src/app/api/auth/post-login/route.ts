@@ -1,20 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * Sets the `userRole` cookie that the edge middleware reads to decide
- * between `/admin` and `/dashboard` after login.
+ * Copies a freshly issued access token into same-origin, httpOnly frontend
+ * cookies after asking the backend to validate it.
  *
  * Why a separate route?
- *   - The backend's response is consumed in the browser as JSON, but it
- *     sets cookies on the *backend* domain (different origin from the
- *     frontend in dev/prod). Reading the role out of the JWT on the
- *     edge avoids a roundtrip and keeps the cookie same-origin.
- *   - Anything we accept here must be derivable from a JWT we already
- *     trust: we re-encode/decode the cookie-delivered `accessToken`
- *     ourselves rather than trusting a value posted by the client.
+ *   - Cookies set by the backend are scoped to the backend host. They are
+ *     therefore invisible to the frontend's edge proxy when the two apps
+ *     use different hosts.
+ *   - The login endpoints already return the short-lived access token in
+ *     their JSON response. We validate that token through `/auth/me` before
+ *     copying it into a frontend-host cookie; decoded JWT claims alone are
+ *     never treated as proof of authentication here.
  */
 
 type Role = "ADMIN" | "USER";
+
+type PostLoginBody = { accessToken?: unknown };
+type MeResponse = { data?: { user?: { role?: unknown } } };
+
+const ACCESS_TOKEN_MAX_AGE_SECONDS = 12 * 60 * 60;
 
 function decodeJwtRole(token: string): Role | null {
   const parts = token.split(".");
@@ -32,33 +37,80 @@ function decodeJwtRole(token: string): Role | null {
 }
 
 export async function POST(request: NextRequest) {
-  const accessToken = request.cookies.get("accessToken")?.value;
-  if (!accessToken) {
+  let body: PostLoginBody;
+  try {
+    body = (await request.json()) as PostLoginBody;
+  } catch {
+    return NextResponse.json(
+      { ok: false, message: "Invalid request." },
+      { status: 400 }
+    );
+  }
+
+  const accessToken =
+    typeof body.accessToken === "string" ? body.accessToken.trim() : "";
+  if (!accessToken || accessToken.length > 8192) {
     return NextResponse.json(
       { ok: false, message: "Not authenticated." },
       { status: 401 }
     );
   }
 
-  const role = decodeJwtRole(accessToken);
-  if (!role) {
+  const apiBaseUrl = (
+    process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000/api/v1"
+  ).replace(/\/+$/, "");
+
+  let verifiedRole: Role | null = null;
+  try {
+    const verification = await fetch(`${apiBaseUrl}/auth/me`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cache: "no-store",
+      signal: AbortSignal.timeout(5_000),
+    });
+    if (verification.ok) {
+      const payload = (await verification.json()) as MeResponse;
+      const role = payload.data?.user?.role;
+      if (role === "ADMIN" || role === "USER") verifiedRole = role;
+    }
+  } catch {
     return NextResponse.json(
-      { ok: false, message: "Could not determine role." },
-      { status: 400 }
+      { ok: false, message: "Session verification is temporarily unavailable." },
+      { status: 503 }
     );
   }
 
-  const res = NextResponse.json({ ok: true, role });
+  const tokenRole = decodeJwtRole(accessToken);
+  if (!verifiedRole || tokenRole !== verifiedRole) {
+    return NextResponse.json(
+      { ok: false, message: "Not authenticated." },
+      { status: 401 }
+    );
+  }
+
+  const res = NextResponse.json({ ok: true, role: verifiedRole });
+  res.cookies.set({
+    name: "accessToken",
+    value: accessToken,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: ACCESS_TOKEN_MAX_AGE_SECONDS,
+  });
   res.cookies.set({
     name: "userRole",
-    value: role,
+    value: verifiedRole,
     httpOnly: false, // edge must read it; not a security boundary.
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     // Match the authenticated session lifetime. This marker is only a UX
     // hint; the signed JWT remains the authorization source of truth.
-    maxAge: 12 * 60 * 60,
+    maxAge: ACCESS_TOKEN_MAX_AGE_SECONDS,
   });
+  res.headers.set("Cache-Control", "private, no-store, max-age=0");
   return res;
 }

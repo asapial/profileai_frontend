@@ -78,7 +78,7 @@ function Field({
       <span className="block text-xs font-medium text-muted-foreground">{label}</span>
       <span className="relative block">
         {Icon ? (
-          <Icon className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+          <Icon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-violet-600 dark:text-violet-300" />
         ) : null}
         <input
           type="text"
@@ -86,7 +86,7 @@ function Field({
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
           className={`w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm shadow-sm outline-none transition focus-visible:ring-2 focus-visible:ring-violet-500/40 ${
-            Icon ? "pl-8" : ""
+            Icon ? "pl-10" : ""
           }`}
         />
       </span>

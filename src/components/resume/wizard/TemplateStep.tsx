@@ -158,14 +158,14 @@ function TemplateTile({
           </div>
         )}
         <span
-          className={`absolute left-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
+          className={`absolute left-2 top-2 rounded-full px-2 py-0.5 text-xs font-semibold uppercase tracking-wide ${
             CATEGORY_TONE[template.category]
           }`}
         >
           {template.category}
         </span>
         {selected ? (
-          <span className="absolute right-2 top-2 rounded-full bg-violet-600 px-2 py-0.5 text-[10px] font-semibold uppercase text-white">
+          <span className="absolute right-2 top-2 rounded-full bg-violet-600 px-2 py-0.5 text-xs font-semibold uppercase text-white">
             Selected
           </span>
         ) : null}
@@ -225,7 +225,7 @@ function SelectedTemplateDetails({ id }: { id: string }) {
       <p className="text-xs text-muted-foreground">
         {data.template.description ?? "ATS-tested layout."}
       </p>
-      <span className="inline-block rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
+      <span className="inline-block rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-violet-700">
         {data.template.category}
       </span>
     </div>

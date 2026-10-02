@@ -5,8 +5,8 @@ import type {
   ResumeContentData,
   ResumeTemplateRef,
 } from "@/lib/hooks/useResumes";
-import { interpolateWithTokens } from "@/lib/resume/interpolate";
-import { ResumePreviewPane } from "@/components/resume/ResumePreviewPane";
+import { safeInterpolate } from "@/lib/resume/interpolate";
+import { toTemplateData } from "@/lib/resume/normalize";
 
 const A4_WIDTH_PX = 794;
 const A4_HEIGHT_PX = 1123;
@@ -21,35 +21,10 @@ function escapeStyleEndTag(value: string): string {
   return value.replace(/<\/style/gi, "<\\/style");
 }
 
-function copyApplicationStyles(frame: HTMLIFrameElement): void {
-  const frameDocument = frame.contentDocument;
-  const templateStyle = frameDocument?.querySelector(
-    "style[data-resume-template-style]"
-  );
-  if (!frameDocument || !templateStyle) return;
-
-  frameDocument
-    .querySelectorAll("[data-resume-app-style]")
-    .forEach((source) => source.remove());
-
-  // The editor lives in the application document, so its template HTML can
-  // use both template CSS and global utility/font styles. Clone those same
-  // style sources into the isolated preview before the template stylesheet.
-  const styleSources = document.head.querySelectorAll(
-    'link[rel="stylesheet"], style'
-  );
-  styleSources.forEach((source) => {
-    const clone = source.cloneNode(true) as HTMLElement;
-    clone.setAttribute("data-resume-app-style", "");
-    templateStyle.before(clone);
-  });
-}
-
 /**
  * A responsive, non-interactive A4 thumbnail of the same document rendered in
- * the editor. The iframe prevents one resume template's CSS from affecting
- * another card, while copied app stylesheet links preserve utility classes and
- * fonts that the editor's template HTML relies on.
+ * the editor. The iframe prevents dashboard styles from changing the selected
+ * template. It uses the same normalized variable projection as the editor.
  */
 export function ResumeDocumentThumbnail({ resume }: { resume: ThumbnailResume }) {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -59,9 +34,7 @@ export function ResumeDocumentThumbnail({ resume }: { resume: ThumbnailResume })
   let rendered: string | null = null;
   if (template?.htmlLayout) {
     try {
-      rendered = interpolateWithTokens(template.htmlLayout, [
-        resume.contentData as Record<string, unknown>,
-      ]).html;
+      rendered = safeInterpolate(template.htmlLayout, toTemplateData(resume.contentData));
     } catch {
       rendered = null;
     }
@@ -103,7 +76,7 @@ export function ResumeDocumentThumbnail({ resume }: { resume: ThumbnailResume })
         color-scheme: light;
       }
       *, *::before, *::after { box-sizing: border-box; }
-      .resume-sheet__inner {
+      .profileai-template-stage {
         width: ${A4_WIDTH_PX}px;
         min-height: ${A4_HEIGHT_PX}px;
         margin: 0 auto;
@@ -112,21 +85,10 @@ export function ResumeDocumentThumbnail({ resume }: { resume: ThumbnailResume })
     </style>
   </head>
   <body>
-    <article class="resume-sheet__inner">${rendered}</article>
+    <article class="profileai-template-stage">${rendered}</article>
   </body>
 </html>`
     : null;
-
-  useLayoutEffect(() => {
-    const frame = frameRef.current;
-    if (!frame || !srcDoc) return;
-
-    const syncStyles = () => copyApplicationStyles(frame);
-    frame.addEventListener("load", syncStyles);
-    syncStyles();
-
-    return () => frame.removeEventListener("load", syncStyles);
-  }, [srcDoc]);
 
   return (
     <div
@@ -156,19 +118,8 @@ export function ResumeDocumentThumbnail({ resume }: { resume: ThumbnailResume })
           }}
         />
       ) : (
-        <div
-          className="absolute left-0 top-0 bg-white"
-          style={{
-            width: A4_WIDTH_PX,
-            minHeight: A4_HEIGHT_PX,
-            transform: "scale(var(--resume-thumbnail-scale))",
-            transformOrigin: "top left",
-          }}
-        >
-          <ResumePreviewPane
-            content={resume.contentData}
-            className="min-h-[1123px] rounded-none border-0 shadow-none"
-          />
+        <div className="grid h-full place-items-center bg-amber-50 p-5 text-center text-xs text-amber-900">
+          This template preview is unavailable. Open the editor to choose a valid template.
         </div>
       )}
     </div>

@@ -21,20 +21,20 @@ export function WizardStepper({
   onStepClick?: (index: number) => void;
 }) {
   return (
-    <ol className="space-y-1">
+    <ol className="flex snap-x snap-mandatory gap-2 overflow-x-auto pb-1 xl:block xl:space-y-1 xl:overflow-visible xl:pb-0">
       {steps.map((step, i) => {
         const isCurrent = i === currentIndex;
         const isComplete = completedIds.includes(step.id) || i < currentIndex;
         const clickable = Boolean(onStepClick) && (isComplete || i === currentIndex);
 
         return (
-          <li key={step.id}>
+          <li key={step.id} className="min-w-[9.5rem] snap-start xl:min-w-0">
             <button
               type="button"
               disabled={!clickable}
               onClick={() => clickable && onStepClick?.(i)}
               className={cn(
-                "group flex w-full items-start gap-3 rounded-lg p-3 text-left transition",
+                "group flex h-full w-full items-center gap-2.5 rounded-xl p-2.5 text-left transition xl:items-start xl:gap-3 xl:rounded-lg xl:p-3",
                 clickable
                   ? "cursor-pointer hover:bg-accent"
                   : "cursor-not-allowed",
@@ -43,7 +43,7 @@ export function WizardStepper({
             >
               <span
                 className={cn(
-                  "mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-semibold transition",
+                  "grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-semibold transition xl:mt-0.5",
                   isComplete
                     ? "bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white shadow"
                     : isCurrent
@@ -63,7 +63,7 @@ export function WizardStepper({
                   {step.label}
                 </span>
                 {step.description ? (
-                  <span className="mt-0.5 block text-xs text-muted-foreground">
+                  <span className="mt-0.5 hidden text-xs text-muted-foreground xl:block">
                     {step.description}
                   </span>
                 ) : null}

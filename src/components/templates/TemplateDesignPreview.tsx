@@ -17,26 +17,6 @@ function escapeStyleEndTag(value: string): string {
   return value.replace(/<\/style/gi, "<\\/style");
 }
 
-function copyApplicationStyles(frame: HTMLIFrameElement): void {
-  const frameDocument = frame.contentDocument;
-  const templateStyle = frameDocument?.querySelector(
-    "style[data-template-preview-style]",
-  );
-  if (!frameDocument || !templateStyle) return;
-
-  frameDocument
-    .querySelectorAll("[data-template-app-style]")
-    .forEach((source) => source.remove());
-
-  document.head
-    .querySelectorAll('link[rel="stylesheet"], style')
-    .forEach((source) => {
-      const clone = source.cloneNode(true) as HTMLElement;
-      clone.setAttribute("data-template-app-style", "");
-      templateStyle.before(clone);
-    });
-}
-
 export const TEMPLATE_SAMPLE_DATA: Record<string, unknown> = {
   firstName: "Alex",
   lastName: "Morgan",
@@ -152,19 +132,6 @@ export function TemplateDesignPreview({
 
     return () => observer.disconnect();
   }, []);
-
-  useLayoutEffect(() => {
-    const frame = frameRef.current;
-    if (!frame) return;
-
-    const syncStyles = () => copyApplicationStyles(frame);
-    frame.addEventListener("load", syncStyles);
-    // The srcDoc may finish loading before React hydrates and attaches an
-    // onLoad handler, so always synchronize the already-loaded document too.
-    syncStyles();
-
-    return () => frame.removeEventListener("load", syncStyles);
-  }, [srcDoc]);
 
   return (
     <div

@@ -10,8 +10,10 @@ import type { ResumeType } from "@/lib/hooks/useResumes";
  * keep it in React state to avoid pulling another dependency.
  */
 export type WizardState = {
+  jobId: string;
   templateId: string;
   type: ResumeType;
+  contentDepth: "CONCISE" | "STANDARD" | "DETAILED" | "COMPREHENSIVE";
   title: string;
   targetJobTitle: string;
   jobDescription: string;
@@ -41,7 +43,6 @@ export type WizardStepValidation = {
 
 export const STEPS = [
   { id: "template", label: "Template", description: "Pick a layout" },
-  { id: "type", label: "Document type", description: "Resume or CV" },
   { id: "profile", label: "Your data", description: "Review profile" },
   { id: "job", label: "Job details", description: "Role & JD" },
   { id: "preview", label: "Preview & export", description: "ATS & PDF" },
@@ -58,10 +59,6 @@ export function isStepValid(
       return state.templateId
         ? { canContinue: true }
         : { canContinue: false, reason: "Pick a template to continue." };
-    case "type":
-      return state.type
-        ? { canContinue: true }
-        : { canContinue: false, reason: "Choose a document type." };
     case "profile":
       // Profile data is derived server-side; always valid once it loads.
       return { canContinue: true };

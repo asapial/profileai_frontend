@@ -112,10 +112,14 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
+      { source: "/dashboard/resumes", destination: "/dashboard/documents", permanent: true },
+      { source: "/dashboard/resumes/new", destination: "/dashboard/documents/new", permanent: true },
+      { source: "/dashboard/resume/create", destination: "/dashboard/documents/new", permanent: true },
+      { source: "/dashboard/resume/:id/edit", destination: "/dashboard/documents/:id/edit", permanent: true },
       { source: "/admin/templates/new", destination: "/admin/templates/create", permanent: true },
-      { source: "/resume/create", destination: "/dashboard/resumes/new", permanent: true },
-      { source: "/resume/:id/edit", destination: "/dashboard/resume/:id/edit", permanent: true },
-      { source: "/resumes", destination: "/dashboard/resumes", permanent: true },
+      { source: "/resume/create", destination: "/dashboard/documents/new", permanent: true },
+      { source: "/resume/:id/edit", destination: "/dashboard/documents/:id/edit", permanent: true },
+      { source: "/resumes", destination: "/dashboard/documents", permanent: true },
       { source: "/applications", destination: "/dashboard/applications", permanent: true },
       { source: "/applications/:path*", destination: "/dashboard/applications/:path*", permanent: true },
       { source: "/cover-letter", destination: "/dashboard/cover-letters", permanent: true },

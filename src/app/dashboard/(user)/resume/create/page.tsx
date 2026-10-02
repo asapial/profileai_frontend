@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
@@ -11,7 +11,6 @@ import {
   TemplateStep,
   TemplateStepSidebar,
 } from "@/components/resume/wizard/TemplateStep";
-import { TypeStep } from "@/components/resume/wizard/TypeStep";
 import { ProfileStep } from "@/components/resume/wizard/ProfileStep";
 import { JobStep } from "@/components/resume/wizard/JobStep";
 import { PreviewStep } from "@/components/resume/wizard/PreviewStep";
@@ -27,6 +26,7 @@ import {
   type ResumeType,
 } from "@/lib/hooks/useResumes";
 import { useDashboardSummary } from "@/lib/hooks/useDashboardSummary";
+import { useJob } from "@/lib/hooks/useJobs";
 
 const STEP_CONTENT_IDS: Record<WizardStepId, number> = STEPS.reduce(
   (acc, s, i) => ({ ...acc, [s.id]: i }),
@@ -45,19 +45,34 @@ export default function CreateResumePage() {
   const searchParams = useSearchParams();
   const queryTemplateId = searchParams.get("templateId") ?? "";
   const queryType = searchParams.get("type") === "CV" ? "CV" : "RESUME";
+  const queryJobId = searchParams.get("jobId") ?? "";
+  const selectedJob = useJob(queryJobId);
 
   const [stepIndex, setStepIndex] = useState(() =>
     queryTemplateId ? STEP_CONTENT_IDS.job : STEP_CONTENT_IDS.template
   );
   const [state, setState] = useState<WizardState>({
+    jobId: queryJobId,
     templateId: queryTemplateId,
     type: queryType,
+    contentDepth: queryType === "CV" ? "COMPREHENSIVE" : "STANDARD",
     title: "",
     targetJobTitle: "",
     jobDescription: "",
     profileSnapshot: null,
   });
   const [showPreview, setShowPreview] = useState(false);
+
+  useEffect(() => {
+    const job = selectedJob.data;
+    if (!job || state.jobId !== job.id || state.jobDescription) return;
+    setState((current) => ({
+      ...current,
+      title: current.title || `${job.title} — ${job.company}`.slice(0, 100),
+      targetJobTitle: job.title.slice(0, 100),
+      jobDescription: job.description.slice(0, 5000),
+    }));
+  }, [selectedJob.data, state.jobDescription, state.jobId]);
 
   const generateMutation = useGenerateResume({
     onError: (err) => {
@@ -134,36 +149,37 @@ export default function CreateResumePage() {
       templateId: state.templateId,
       title: state.title.trim(),
       type: state.type,
+      contentDepth: state.contentDepth,
       targetJobTitle: state.targetJobTitle.trim(),
       jobDescription: state.jobDescription || undefined,
     });
-    toast.success("Resume generated.");
+    toast.success("Document generated.");
     setShowPreview(true);
     // Pre-warm the dashboard editor route so the "Open in editor" click
     // feels instant. We deliberately route to the canonical dashboard
     // URL (instead of `/resume/[id]/edit`, which is a redirect hop) to
     // avoid any chance the redirect chain swallows the navigation.
-    router.prefetch(`/dashboard/resume/${resume.id}/edit`);
+    router.prefetch(`/dashboard/documents/${resume.id}/edit`);
   }
 
   const generatedResume: ResumeDetail | undefined = generateMutation.data;
 
   return (
-    <div className="min-w-0 space-y-6 p-4 sm:p-6 md:p-8">
+    <div className="mx-auto w-full max-w-7xl min-w-0 space-y-4 px-3 py-4 sm:space-y-6 sm:px-5 sm:py-6 lg:px-6 lg:py-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Create resume
+            Create document
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Tell the AI what role this resume should win.
+            Build a tailored resume or CV from your profile and target role.
           </p>
         </div>
         {showPreview && generatedResume ? (
           <Button
             variant="default"
-            onClick={() => router.push(`/dashboard/resume/${generatedResume.id}/edit`)}
-            className="gap-2"
+            onClick={() => router.push(`/dashboard/documents/${generatedResume.id}/edit`)}
+            className="w-full gap-2 sm:w-auto"
           >
             <ArrowRight className="h-4 w-4" />
             Continue to editor
@@ -171,9 +187,9 @@ export default function CreateResumePage() {
         ) : null}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
-        <aside className="lg:sticky lg:top-20 lg:self-start">
-          <div className="rounded-2xl border border-border bg-card p-3">
+      <div className="grid min-w-0 gap-4 sm:gap-6 xl:grid-cols-[240px_minmax(0,1fr)]">
+        <aside className="min-w-0 xl:sticky xl:top-20 xl:self-start">
+          <div className="rounded-2xl border border-border bg-card/80 p-2.5 backdrop-blur-xl sm:p-3">
             <WizardStepper
               steps={STEPS.map((s) => ({ ...s }))}
               currentIndex={stepIndex}
@@ -189,12 +205,12 @@ export default function CreateResumePage() {
 
         <div className="min-w-0 space-y-6">
           {!showPreview ? (
-            <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+            <div className="rounded-2xl border border-border bg-card p-4 sm:p-6">
               {currentStep.id === "template" && (
                 <TemplateStep
                   templateId={state.templateId}
                   documentType={state.type}
-                  onDocumentTypeChange={(type) => setState((current) => ({ ...current, type, templateId: "" }))}
+                  onDocumentTypeChange={(type) => setState((current) => ({ ...current, type, templateId: "", contentDepth: type === "CV" ? "COMPREHENSIVE" : current.contentDepth === "COMPREHENSIVE" ? "STANDARD" : current.contentDepth }))}
                   onSelect={setTemplateId}
                   onAfterSelect={() => {
                     // Picking a template advances the wizard automatically,
@@ -206,20 +222,19 @@ export default function CreateResumePage() {
                   }}
                 />
               )}
-              {currentStep.id === "type" && (
-                <TypeStep type={state.type} onChange={setType} />
-              )}
               {currentStep.id === "profile" && <ProfileStep />}
               {currentStep.id === "job" && (
                 <JobStep
+                  selectedJobId={state.jobId}
+                  setSelectedJobId={(jobId) => setState((current) => ({ ...current, jobId }))}
                   title={state.title}
                   setTitle={setTitle}
-                  type={state.type}
-                  setType={setType}
                   targetJobTitle={state.targetJobTitle}
                   setTargetJobTitle={setTargetJobTitle}
                   jobDescription={state.jobDescription}
                   setJobDescription={setJobDescription}
+                  contentDepth={state.contentDepth}
+                  setContentDepth={(contentDepth) => setState((current) => ({ ...current, contentDepth }))}
                 />
               )}
               {currentStep.id === "preview" && !generatedResume ? (
@@ -229,7 +244,7 @@ export default function CreateResumePage() {
           ) : generatedResume ? (
             <PreviewStep
               resume={generatedResume}
-              onEdit={() => router.push(`/dashboard/resume/${generatedResume.id}/edit`)}
+              onEdit={() => router.push(`/dashboard/documents/${generatedResume.id}/edit`)}
               onRegenerate={() => {
                 setShowPreview(false);
                 generateMutation.reset();
@@ -239,12 +254,12 @@ export default function CreateResumePage() {
           ) : null}
 
           {!showPreview ? (
-            <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="sticky bottom-2 z-20 flex items-center justify-between gap-2 rounded-2xl border border-border/70 bg-background/85 p-2 shadow-xl backdrop-blur-xl sm:static sm:gap-3 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none">
               <Button
                 variant="outline"
                 onClick={goBack}
                 disabled={stepIndex === 0}
-                className="gap-1"
+                className="min-w-0 flex-1 gap-1 sm:flex-none"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Back
@@ -252,7 +267,7 @@ export default function CreateResumePage() {
               <Button
                 onClick={goNext}
                 disabled={!validation.canContinue || generateMutation.isPending}
-                className="gap-2"
+                className="min-w-0 flex-1 gap-2 sm:flex-none"
               >
                 {currentStep.id === "preview" && !generatedResume ? (
                   <>
@@ -286,16 +301,18 @@ function EmptyPreviewStep({
   blocked: boolean;
 }) {
   return (
-    <div className="space-y-4 text-center sm:py-8">
-      <Sparkles className="mx-auto h-8 w-8 text-violet-500" />
-      <h2 className="text-lg font-semibold">Ready to generate?</h2>
-      <p className="mx-auto max-w-md text-sm text-muted-foreground">
-        We&apos;ll send your inputs to the AI and build a structured resume. You
-        can edit every field afterward.
+    <div className="relative overflow-hidden rounded-3xl border border-violet-500/20 bg-[radial-gradient(circle_at_50%_0%,rgba(139,92,246,.18),transparent_46%),linear-gradient(145deg,rgba(255,255,255,.78),rgba(245,243,255,.58))] px-4 py-9 text-center shadow-[0_30px_90px_-45px_rgba(76,29,149,.5)] backdrop-blur-2xl dark:bg-[radial-gradient(circle_at_50%_0%,rgba(139,92,246,.22),transparent_46%),linear-gradient(145deg,rgba(24,17,32,.8),rgba(15,10,23,.65))] sm:px-6 sm:py-16">
+      <div className="pointer-events-none absolute -left-12 bottom-0 size-40 rounded-full bg-cyan-400/10 blur-3xl" />
+      <span className="relative mx-auto grid size-16 place-items-center rounded-2xl bg-gradient-to-br from-violet-600 via-fuchsia-500 to-cyan-500 text-white shadow-xl shadow-violet-500/25"><Sparkles className="size-7" /></span>
+      <p className="relative mt-5 text-xs font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-300">Final step</p>
+      <h2 className="relative mt-2 text-2xl font-semibold tracking-tight">Ready to create your document?</h2>
+      <p className="relative mx-auto mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
+        AI will structure your verified profile content for the selected role and template. You can review every field before exporting.
       </p>
+      <div className="relative mx-auto mt-6 grid max-w-xl gap-2 text-left sm:grid-cols-3"><div className="rounded-xl border border-white/60 bg-white/55 p-3 backdrop-blur dark:border-white/10 dark:bg-white/5"><p className="text-xs font-semibold">Grounded content</p><p className="mt-1 text-[11px] text-muted-foreground">Built from your profile</p></div><div className="rounded-xl border border-white/60 bg-white/55 p-3 backdrop-blur dark:border-white/10 dark:bg-white/5"><p className="text-xs font-semibold">Selected design</p><p className="mt-1 text-[11px] text-muted-foreground">One consistent template</p></div><div className="rounded-xl border border-white/60 bg-white/55 p-3 backdrop-blur dark:border-white/10 dark:bg-white/5"><p className="text-xs font-semibold">Editable result</p><p className="mt-1 text-[11px] text-muted-foreground">Refine before export</p></div></div>
       {blocked ? (
-        <p className="text-xs text-rose-600">
-          Resume or AI credit limit reached. Upgrade your plan to continue.
+        <p className="relative mx-auto mt-5 max-w-md rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-xs text-rose-700 dark:text-rose-300">
+          Document or AI credit limit reached. Upgrade your plan to continue.
         </p>
       ) : null}
     </div>

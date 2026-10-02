@@ -4,29 +4,35 @@ import Link from "next/link";
 import { Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useDashboardSummary } from "@/lib/hooks/useDashboardSummary";
+import { useJobs } from "@/lib/hooks/useJobs";
 
 const JD_MAX = 5000;
 
 export function JobStep({
+  selectedJobId,
+  setSelectedJobId,
   title,
   setTitle,
-  type,
-  setType,
   targetJobTitle,
   setTargetJobTitle,
   jobDescription,
   setJobDescription,
+  contentDepth,
+  setContentDepth,
 }: {
+  selectedJobId: string;
+  setSelectedJobId: (v: string) => void;
   title: string;
   setTitle: (v: string) => void;
-  type: "RESUME" | "CV";
-  setType: (v: "RESUME" | "CV") => void;
   targetJobTitle: string;
   setTargetJobTitle: (v: string) => void;
   jobDescription: string;
   setJobDescription: (v: string) => void;
+  contentDepth: "CONCISE" | "STANDARD" | "DETAILED" | "COMPREHENSIVE";
+  setContentDepth: (v: "CONCISE" | "STANDARD" | "DETAILED" | "COMPREHENSIVE") => void;
 }) {
   const { data } = useDashboardSummary();
+  const jobs = useJobs();
   const limits = data?.limits;
 
   const resumeRemaining =
@@ -64,8 +70,51 @@ export function JobStep({
       ) : null}
 
       <div className="grid gap-4">
+        <fieldset className="space-y-2">
+          <legend className="text-sm font-medium">Content depth</legend>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {([
+              ["CONCISE", "Concise", "Focused one-page document"],
+              ["STANDARD", "Standard", "Balanced detail for most roles"],
+              ["DETAILED", "Detailed", "More context and stronger bullets"],
+              ["COMPREHENSIVE", "Comprehensive", "Full career history for a CV"],
+            ] as const).map(([value, label, description]) => (
+              <button key={value} type="button" onClick={() => setContentDepth(value)} className={`rounded-xl border p-3 text-left transition ${contentDepth === value ? "border-violet-500 bg-violet-500/10 ring-2 ring-violet-500/15" : "border-border bg-background/65 hover:border-violet-400/50"}`}>
+                <span className="block text-sm font-semibold">{label}</span><span className="mt-0.5 block text-xs text-muted-foreground">{description}</span>
+              </button>
+            ))}
+          </div>
+        </fieldset>
+
         <label className="space-y-1.5">
-          <span className="text-sm font-medium">Resume title</span>
+          <span className="text-sm font-medium">Saved job description</span>
+          <select
+            value={selectedJobId}
+            onChange={(event) => {
+              const nextId = event.target.value;
+              setSelectedJobId(nextId);
+              const job = jobs.data?.find((item) => item.id === nextId);
+              if (!job) return;
+              setTitle(`${job.title} — ${job.company}`.slice(0, 100));
+              setTargetJobTitle(job.title.slice(0, 100));
+              setJobDescription(job.description.slice(0, JD_MAX));
+            }}
+            className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+          >
+            <option value="">Use a manually entered job description</option>
+            {jobs.data?.map((job) => (
+              <option key={job.id} value={job.id}>
+                {job.title} · {job.company}
+              </option>
+            ))}
+          </select>
+          <span className="text-xs text-muted-foreground">
+            Selecting a saved job fills the role and description below. Resume content is generated from these details and your profile.
+          </span>
+        </label>
+
+        <label className="space-y-1.5">
+          <span className="text-sm font-medium">Document title</span>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -75,26 +124,6 @@ export function JobStep({
           <span className="text-xs text-muted-foreground">
             Shown in your dashboard. {title.length}/100
           </span>
-        </label>
-
-        <label className="space-y-1.5">
-          <span className="text-sm font-medium">Document type</span>
-          <div className="flex gap-2">
-            {(["RESUME", "CV"] as const).map((opt) => (
-              <button
-                key={opt}
-                type="button"
-                onClick={() => setType(opt)}
-                className={`flex-1 rounded-lg border px-4 py-2 text-sm font-medium transition ${
-                  type === opt
-                    ? "border-violet-500 bg-violet-50 text-violet-700"
-                    : "border-border bg-card hover:border-violet-300"
-                }`}
-              >
-                {opt}
-              </button>
-            ))}
-          </div>
         </label>
 
         <label className="space-y-1.5">

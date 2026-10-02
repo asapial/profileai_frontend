@@ -16,6 +16,7 @@ import {
   useResume,
   useResumeAnalytics,
   useResumeHistory,
+  useOptimizeResumeForAts,
   useShareResume,
   useUpdateResume,
   useUpdateResumeTemplate,
@@ -49,6 +50,7 @@ export default function EditResumePage() {
   const updateMutation = useUpdateResume(id ?? "");
   const updateTemplateMutation = useUpdateResumeTemplate(id ?? "");
   const atsMutation = useAtsCheck(id ?? "");
+  const atsOptimizeMutation = useOptimizeResumeForAts(id ?? "");
   const aiMutation = useAiModify(id ?? "");
   const shareMutation = useShareResume(id ?? "");
   const exportMutation = useExportResume();
@@ -290,6 +292,22 @@ export default function EditResumePage() {
     }
   }
 
+  async function handleOptimizeAts() {
+    if (!id || !(await ensureDraftSaved())) return;
+    try {
+      const result = await atsOptimizeMutation.mutateAsync();
+      const normalized = normalizeContentData(result.resume.contentData);
+      draftRef.current = normalized;
+      lastSavedRef.current = contentSignature(normalized);
+      setDraft(normalized);
+      setAtsData(result.atsData);
+      const scoreChange = result.beforeScore === null ? `Score ${result.afterScore}` : `${result.beforeScore} → ${result.afterScore}`;
+      toast.success(`ATS optimization complete · ${scoreChange}`);
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : "ATS optimization failed.");
+    }
+  }
+
   async function handleExport(fileType: "PDF" | "DOCX" = "PDF") {
     if (!id || !(await ensureDraftSaved())) return;
     try {
@@ -327,6 +345,19 @@ export default function EditResumePage() {
     }
   }
 
+  async function handleRename(title: string) {
+    const nextTitle = title.trim();
+    if (!id || !nextTitle || nextTitle === resume?.title) return;
+    if (!(await ensureDraftSaved())) return;
+    try {
+      await updateMutation.mutateAsync({ title: nextTitle });
+      toast.success("Document name saved.");
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : "Could not save the document name.");
+      throw cause;
+    }
+  }
+
   async function handleShare(enabled: boolean) {
     if (!id || (enabled && !(await ensureDraftSaved()))) return;
     try {
@@ -354,7 +385,7 @@ export default function EditResumePage() {
     duplicateMutation.mutate(id, {
       onSuccess: (data) => {
         toast.success("Duplicated. Opening the copy…");
-        router.push(`/dashboard/resume/${data.id}/edit`);
+        router.push(`/dashboard/documents/${data.id}/edit`);
       },
       onError: (cause) =>
         toast.error(cause instanceof Error ? cause.message : "Duplicate failed."),
@@ -368,7 +399,7 @@ export default function EditResumePage() {
     deleteMutation.mutate(id, {
       onSuccess: () => {
         toast.success("Resume deleted.");
-        router.push("/dashboard/resumes");
+        router.push("/dashboard/documents");
       },
       onError: (cause) =>
         toast.error(cause instanceof Error ? cause.message : "Delete failed."),
@@ -386,6 +417,20 @@ export default function EditResumePage() {
   }
 
   const currentAtsData = atsData ?? resume?.aiSuggestions ?? null;
+  const hasUnsavedChanges = Boolean(
+    resume && contentSignature(draft) !== lastSavedRef.current
+  );
+
+  useEffect(() => {
+    if (!hasUnsavedChanges) return;
+    const warnBeforeLeaving = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warnBeforeLeaving);
+    return () => window.removeEventListener("beforeunload", warnBeforeLeaving);
+  }, [hasUnsavedChanges]);
+
   const shareUrl =
     resume?.isPublic && resume.slug && typeof window !== "undefined"
       ? `${window.location.origin}/r/${resume.slug}`
@@ -417,7 +462,7 @@ export default function EditResumePage() {
               "An unexpected error occurred."}
         </p>
         <Button asChild variant="outline">
-          <Link href="/dashboard/resumes" className="gap-1">
+          <Link href="/dashboard/documents" className="gap-1">
             <ArrowLeft className="h-4 w-4" />
             Back to resumes
           </Link>
@@ -427,7 +472,7 @@ export default function EditResumePage() {
   }
 
   return (
-    <div className="min-w-0 space-y-3">
+    <div className="w-full min-w-0 max-w-full space-y-3 overflow-x-clip">
       {hasConflict ? (
         <div className="mx-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950 sm:mx-4 lg:mx-6">
           <span>
@@ -454,6 +499,8 @@ export default function EditResumePage() {
         resume={resume}
         draft={draft}
         saving={saving}
+        hasUnsavedChanges={hasUnsavedChanges}
+        renamePending={updateMutation.isPending}
         templates={templates}
         templatesLoading={templatesLoading}
         templateChanging={updateTemplateMutation.isPending}
@@ -462,6 +509,7 @@ export default function EditResumePage() {
         deletePending={deleteMutation.isPending}
         atsData={currentAtsData}
         atsLoading={atsMutation.isPending}
+        atsOptimizing={atsOptimizeMutation.isPending}
         aiWriting={aiMutation.isPending}
         historyOpen={historyOpen}
         historyEntries={historyEntries}
@@ -481,10 +529,12 @@ export default function EditResumePage() {
         handleAiRewriteExperience={handleAiRewriteExperience}
         handleAiRewriteSection={handleAiRewriteSection}
         handleRunAts={handleRunAts}
+        handleOptimizeAts={handleOptimizeAts}
         handleExport={handleExport}
         handleDuplicate={handleDuplicate}
         handleDelete={handleDelete}
         handleTemplateChange={handleTemplateChange}
+        handleRename={handleRename}
         handleShare={handleShare}
         handleCopyShareLink={handleCopyShareLink}
         setHistoryOpen={setHistoryOpen}

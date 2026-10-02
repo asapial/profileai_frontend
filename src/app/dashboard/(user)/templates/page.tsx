@@ -92,7 +92,7 @@ export default function TemplatesPage() {
     });
     setPreview(null);
     setEditing(null);
-    router.push(`/dashboard/resume/create?${params.toString()}`);
+    router.push(`/dashboard/documents/new?${params.toString()}`);
   };
 
   const customizeFromPreview = () => {

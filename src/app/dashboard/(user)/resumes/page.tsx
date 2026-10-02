@@ -7,7 +7,6 @@ import toast from "react-hot-toast";
 import {
   Copy,
   Download,
-  FileText,
   Loader2,
   MoreVertical,
   Plus,
@@ -98,40 +97,30 @@ export default function ResumesListPage() {
   }, [dashboard?.limits]);
 
   return (
-    <div className="space-y-6 p-4 sm:p-6 md:p-8">
-      <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div className="documents-workspace career-workspace relative mx-auto w-full max-w-5xl space-y-6 px-4 pb-16 lg:px-6 [scrollbar-gutter:stable]">
+      <header className="career-glass-surface flex flex-col gap-4 rounded-3xl border border-violet-500/20 p-6 sm:flex-row sm:items-end sm:justify-between sm:p-8">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            My resumes
+            My Documents
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Open a resume to keep editing, or start a new AI-generated draft.
+            Manage your resumes and CVs in one place.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Button asChild variant="outline" size="sm" className="gap-1">
-            <Link href="/dashboard/career?tab=Alignment">
-              <Sparkles className="h-4 w-4" /> Analyze for a job
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="sm" className="gap-1">
-            <Link href="/templates">
-              <FileText className="h-4 w-4" /> Browse templates
-            </Link>
-          </Button>
           <Button
-            onClick={() => router.push("/resume/create")}
+            onClick={() => router.push("/dashboard/documents/new")}
             disabled={limitReached}
             className="gap-2"
           >
             <Plus className="h-4 w-4" />
-            {limitReached ? "Limit reached" : "New resume"}
+            {limitReached ? "Limit reached" : "Create document"}
           </Button>
         </div>
       </header>
 
       {limitReached ? (
-        <Card className="border-amber-200 bg-amber-50">
+        <Card className="career-glass-surface border-amber-300/50">
           <CardContent className="flex items-center gap-3 p-4 text-sm text-amber-900">
             <Sparkles className="h-4 w-4 text-amber-600" />
             <span>
@@ -142,13 +131,13 @@ export default function ResumesListPage() {
         </Card>
       ) : null}
 
-      <Card>
+      <Card className="career-glass-surface">
         <CardHeader className="space-y-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <CardTitle className="text-base">All resumes</CardTitle>
+            <CardTitle className="text-base">All documents</CardTitle>
             <div className="text-xs text-muted-foreground">
               {meta
-                ? `${meta.total} ${meta.total === 1 ? "resume" : "resumes"}`
+                ? `${meta.total} ${meta.total === 1 ? "document" : "documents"}`
                 : " "}
               {isFetching ? (
                 <Loader2 className="ml-2 inline h-3 w-3 animate-spin" />
@@ -209,7 +198,7 @@ export default function ResumesListPage() {
               hasFilters={Boolean(
                 debouncedSearch || type !== "ALL" || status !== "ALL"
               )}
-              onCreate={() => router.push("/dashboard/resume/create")}
+              onCreate={() => router.push("/dashboard/documents/new")}
               onClearFilters={() => {
                 setSearch("");
                 setType("ALL");
@@ -315,7 +304,7 @@ function ResumeCard({
     duplicate.mutate(resume.id, {
       onSuccess: (data) => {
         toast.success("Duplicated.");
-        router.push(`/dashboard/resume/${data.id}/edit`);
+        router.push(`/dashboard/documents/${data.id}/edit`);
       },
       onError: (err) =>
         toast.error(err instanceof Error ? err.message : "Duplicate failed."),
@@ -354,9 +343,9 @@ function ResumeCard({
 
   return (
     <>
-      <Card className="group relative flex flex-col">
+      <Card className="career-glass-surface group relative flex flex-col">
         <Link
-          href={`/dashboard/resume/${resume.id}/edit`}
+          href={`/dashboard/documents/${resume.id}/edit`}
           aria-label={`Open ${resume.title} in the resume editor`}
           className="relative block overflow-hidden rounded-t-xl border-b border-border bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-inset dark:bg-slate-900"
         >
@@ -370,7 +359,7 @@ function ResumeCard({
         <CardHeader className="space-y-2">
         <div className="flex items-start justify-between gap-2">
           <Link
-            href={`/dashboard/resume/${resume.id}/edit`}
+            href={`/dashboard/documents/${resume.id}/edit`}
             className="block flex-1 hover:underline"
           >
             <CardTitle className="line-clamp-1 text-base">{resume.title}</CardTitle>
@@ -457,7 +446,7 @@ function ResumeCard({
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>Updated {formatRelative(resume.updatedAt)}</span>
           <Link
-            href={`/dashboard/resume/${resume.id}/edit`}
+            href={`/dashboard/documents/${resume.id}/edit`}
             className="font-medium text-violet-700 hover:underline"
           >
             Open →
@@ -522,12 +511,12 @@ function EmptyState({
     <div className="grid place-items-center rounded-xl border border-dashed border-border bg-muted/30 p-10 text-center">
       <Sparkles className="h-8 w-8 text-violet-500" />
       <h3 className="mt-3 text-base font-semibold">
-        {hasFilters ? "No resumes match" : "No resumes yet"}
+        {hasFilters ? "No documents match" : "No documents yet"}
       </h3>
       <p className="mt-1 max-w-sm text-sm text-muted-foreground">
         {hasFilters
           ? "Try clearing your filters or adjusting your search."
-          : "Generate your first resume with AI in under a minute."}
+          : "Create your first resume or CV with AI."}
       </p>
       <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
         {hasFilters ? (

@@ -69,17 +69,17 @@ export function TemplateStep({
         </p>
       </header>
 
-      <div className="flex flex-wrap gap-1.5">
+      <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
         {(["RESUME", "CV"] as const).map((type) => (
-          <button key={type} type="button" onClick={() => onDocumentTypeChange(type)} className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${documentType === type ? "border-slate-950 bg-slate-950 text-white" : "border-border bg-background hover:border-violet-300"}`}>{type === "RESUME" ? "Résumés" : "CVs"}</button>
+          <button key={type} type="button" onClick={() => onDocumentTypeChange(type)} className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold transition ${documentType === type ? "border-slate-950 bg-slate-950 text-white" : "border-border bg-background hover:border-violet-300"}`}>{type === "RESUME" ? "Résumés" : "CVs"}</button>
         ))}
-        <span className="mx-1 h-6 w-px bg-border" />
+        <span className="mx-1 h-6 w-px shrink-0 bg-border" />
         {CATEGORIES.map((c) => (
           <button
             key={c.value}
             type="button"
             onClick={() => setCategory(c.value)}
-            className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+            className={`shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition ${
               category === c.value
                 ? "border-violet-500 bg-violet-500 text-white"
                 : "border-border bg-background hover:border-violet-300"
@@ -103,7 +103,7 @@ export function TemplateStep({
           No templates match this category.
         </p>
       ) : (
-        <div className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:gap-4 md:grid-cols-3">
           {templates.map((t) => (
             <TemplateTile
               key={t.id}

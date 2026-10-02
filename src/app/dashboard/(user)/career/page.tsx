@@ -119,7 +119,10 @@ export default function CareerPage() {
     return tabs.some((item) => item.id === requested) ? (requested as TabId) : "Career story";
   });
   const [busy, setBusy] = useState(false);
-  const [jobId, setJobId] = useState("");
+  const [jobId, setJobId] = useState(() => {
+    if (typeof window === "undefined") return "";
+    return new URLSearchParams(window.location.search).get("jobId") ?? "";
+  });
   const [resumeId, setResumeId] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [analysisDocumentId, setAnalysisDocumentId] = useState("");
@@ -389,7 +392,7 @@ export default function CareerPage() {
               <PathwayLinks
                 links={[
                   { href: "/dashboard/ats", label: "JD Analyzer", detail: "Review the same job description in ATS analysis" },
-                  { href: "/dashboard/resumes", label: "Resumes", detail: "Open, edit, or review a tailored resume version" },
+                  { href: "/dashboard/documents", label: "Documents", detail: "Open, edit, or review a resume or CV" },
                 ]}
               />
               {contextSelector}

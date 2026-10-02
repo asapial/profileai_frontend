@@ -1,14 +1,15 @@
 import { ServerApiError, adminApi } from "@/lib/adminApi";
 import { AdminUsersTable } from "@/components/admin/AdminUsersTable";
+import type { AdminUserListResponse } from "@/lib/hooks/useAdminUsers";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminUsersPage() {
   let initial: Awaited<
-    ReturnType<typeof adminApi.get<unknown>>
+    ReturnType<typeof adminApi.get<AdminUserListResponse>>
   > | null = null;
   try {
-    initial = await adminApi.get<unknown>(
+    initial = await adminApi.get<AdminUserListResponse>(
       "/admin/users?page=1&limit=20",
     );
   } catch (err: unknown) {
@@ -26,10 +27,7 @@ export default async function AdminUsersPage() {
           Search, filter, and manage every account on the platform.
         </p>
       </div>
-      <AdminUsersTable
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initial={(initial?.data as any) ?? undefined}
-      />
+      <AdminUsersTable initial={initial?.data} />
     </div>
   );
 }

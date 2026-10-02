@@ -556,7 +556,7 @@ function DevicesTab() {
                   <p className="truncate text-sm font-medium">
                     {s.deviceLabel ?? "Unknown device"}
                     {s.isCurrent ? (
-                      <Badge variant="default" className="ml-2 text-[10px]">
+                      <Badge variant="default" className="ml-2 text-xs">
                         This device
                       </Badge>
                     ) : null}

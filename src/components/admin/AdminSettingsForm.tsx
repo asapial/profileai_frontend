@@ -312,7 +312,7 @@ export function AdminSettingsForm({ initial }: Props) {
                   {f.description}
                 </p>
                 {f.min !== undefined || f.max !== undefined ? (
-                  <p className="text-muted-foreground text-[11px]">
+                  <p className="text-muted-foreground text-xs">
                     Allowed range: {f.min ?? "—"} to {f.max ?? "—"} {f.suffix ?? ""}
                   </p>
                 ) : null}
@@ -320,7 +320,7 @@ export function AdminSettingsForm({ initial }: Props) {
                   <p className="text-destructive text-xs">{row.error}</p>
                 ) : null}
                 {isDirty && !row.error ? (
-                  <p className="text-[11px] text-amber-600">
+                  <p className="text-xs text-amber-600">
                     Current value is {row.original}. Saving will change it to{" "}
                     {Number.isFinite(num) ? num : row.value}.
                   </p>

@@ -303,7 +303,7 @@ export function AdminTemplatesClient() {
                             {t.description}
                           </span>
                         ) : null}
-                        {t.owner ? <span className="text-[11px] text-violet-600">Submitted by {t.owner.name}{t.owner.email ? ` · ${t.owner.email}` : ""}</span> : null}
+                        {t.owner ? <span className="text-xs text-violet-600">Submitted by {t.owner.name}{t.owner.email ? ` · ${t.owner.email}` : ""}</span> : null}
                       </div>
                     </div>
                   </TableCell>

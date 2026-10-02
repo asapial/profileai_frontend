@@ -236,7 +236,7 @@ function Funnel({ data }: { data: AdminAnalyticsSummary["funnel"] }) {
               <span className="flex items-center gap-2">
                 <span className="font-medium">{stage.count.toLocaleString()}</span>
                 {stepDrop !== null ? (
-                  <Badge variant="secondary" className="text-[10px]">
+                  <Badge variant="secondary" className="text-xs">
                     −{stepDrop}%
                   </Badge>
                 ) : null}

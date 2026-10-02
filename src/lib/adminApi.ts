@@ -64,10 +64,9 @@ async function request<T>(
       ...(cookieHeader ? { Cookie: cookieHeader } : {}),
       ...(init.headers ?? {}),
     },
-    // Server components can use the Next data cache; admin data is short
-    // lived anyway. 60s revalidation is consistent with the client
-    // default `staleTime`.
-    next: { revalidate: 60, tags: [path] },
+    // Admin screens must always reflect the current database state. Caching
+    // here can also preserve an older response contract after a deployment.
+    cache: "no-store",
   });
 
   let payload: ServerResponse<T> | null = null;

@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { HomepageConfig } from "@/lib/homepage";
 export function Footer({ content }: { content?: HomepageConfig["site"] }) {
+  const brandName = (content?.brandName || "ProfileAI").replace(/ProFile\s*AI/gi, "ProfileAI");
   return (
     <footer className="studio-footer">
       <div className="studio-container">
@@ -9,7 +10,7 @@ export function Footer({ content }: { content?: HomepageConfig["site"] }) {
           <div>
             <Link href="/" className="studio-brand">
               <Image src="/brand/profileai-mark.svg" alt="" width={40} height={40} className="studio-logo-mark" />
-              {content?.brandName || "ProfileAI"}
+              {brandName}
             </Link>
             <p className="mt-5 max-w-xs text-sm leading-7 text-muted-foreground">
               {(content?.footerDescription?.startsWith(
@@ -71,7 +72,7 @@ export function Footer({ content }: { content?: HomepageConfig["site"] }) {
         </div>
         <div className="flex flex-wrap justify-between gap-4 border-t py-6 text-xs text-muted-foreground">
           <p>
-            © {new Date().getFullYear()} {content?.brandName || "ProfileAI"}
+            © {new Date().getFullYear()} {brandName}
           </p>
           <p>
             {content?.footerNote || "Make your next move a considered one."}

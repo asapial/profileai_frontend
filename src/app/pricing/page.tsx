@@ -5,11 +5,11 @@ import { Footer } from "@/components/layout/Footer";
 import { PricingClient } from "./PricingClient";
 
 export const metadata: Metadata = {
-  title: "Pricing — ProFile AI",
+  title: "Pricing — ProfileAI",
   description:
     "Choose the plan that fits your job search. Start free, upgrade for unlimited AI, cover letters, and the application tracker. No surprises.",
   openGraph: {
-    title: "Pricing — ProFile AI",
+    title: "Pricing — ProfileAI",
     description:
       "Simple, transparent pricing. Free, Pro, and Business plans built for job seekers and teams.",
     type: "website",

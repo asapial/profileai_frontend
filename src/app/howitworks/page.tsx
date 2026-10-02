@@ -20,8 +20,8 @@ import { Navbar1 } from "@/components/navbar1";
 import { Footer } from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
-  title: "How It Works — ProFile AI",
-  description: "See how ProFile AI turns your real experience and a target role into a tailored, review-ready application workflow.",
+  title: "How It Works — ProfileAI",
+  description: "See how ProfileAI turns your real experience and a target role into a tailored, review-ready application workflow.",
 };
 
 const steps = [
@@ -38,7 +38,7 @@ const steps = [
     icon: ScanSearch,
     eyebrow: "Understand the role",
     title: "Turn a job description into a clear brief.",
-    description: "ProFile AI identifies responsibilities, skills, and language in the role, then compares them with your confirmed experience. The result is guidance—not a promise of hiring outcomes.",
+    description: "ProfileAI identifies responsibilities, skills, and language in the role, then compares them with your confirmed experience. The result is guidance—not a promise of hiring outcomes.",
     details: ["See important requirements", "Spot evidence gaps", "Prioritize the most relevant experience"],
   },
   {
@@ -74,13 +74,13 @@ export default function HowItWorksPage() {
         <section className="relative isolate px-4 pb-16 pt-10 sm:px-6 sm:pb-24 sm:pt-16 lg:px-8">
           <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[34rem] bg-[radial-gradient(circle_at_25%_20%,rgba(34,211,238,.13),transparent_34%),radial-gradient(circle_at_80%_15%,rgba(139,92,246,.16),transparent_32%)]" aria-hidden="true" />
           <div className="mx-auto max-w-7xl">
-            <div data-aos="fade-up" className="mx-auto max-w-4xl text-center">
+            <div className="mx-auto max-w-4xl text-center">
               <span className="premium-kicker"><Sparkles className="h-4 w-4" /> One connected workflow</span>
               <h1 className="mt-6 font-serif text-4xl leading-[1.04] tracking-[-0.05em] sm:text-6xl lg:text-7xl">
                 From lived experience to a stronger application.
               </h1>
               <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">
-                ProFile AI helps you organize the truth, understand the role, tailor with intention, and keep the whole job search moving—without handing control to the AI.
+                ProfileAI helps you organize the truth, understand the role, tailor with intention, and keep the whole job search moving—without handing control to the AI.
               </p>
               <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
                 <Link href="/register" className="studio-button min-h-12 justify-center rounded-xl px-6">Start your workspace <ArrowRight className="h-4 w-4" /></Link>
@@ -88,7 +88,7 @@ export default function HowItWorksPage() {
               </div>
             </div>
 
-            <div data-aos="fade-up" data-aos-delay="100" className="glass-panel premium-ring mx-auto mt-14 max-w-5xl rounded-[2rem] p-4 sm:p-7">
+            <div className="glass-panel premium-ring mx-auto mt-14 max-w-5xl rounded-[2rem] p-4 sm:p-7">
               <div className="grid gap-3 sm:grid-cols-4">
                 {["Your evidence", "Role analysis", "Tailored drafts", "Application progress"].map((label, index) => (
                   <div key={label} className="relative rounded-2xl border bg-card/70 p-4 text-center">
@@ -104,16 +104,16 @@ export default function HowItWorksPage() {
 
         <section className="px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            <div data-aos="fade-up" className="max-w-3xl">
+            <div className="max-w-3xl">
               <p className="studio-eyebrow">THE PROCESS</p>
               <h2 className="mt-4 font-serif text-4xl tracking-[-0.04em] sm:text-5xl">Four steps. One source of truth.</h2>
               <p className="mt-4 max-w-2xl leading-7 text-muted-foreground">Each stage keeps the original evidence close, so the final application remains specific, defensible, and recognizably yours.</p>
             </div>
             <ol className="mt-12 space-y-5">
-              {steps.map((step, index) => {
+              {steps.map((step) => {
                 const Icon = step.icon;
                 return (
-                  <li key={step.number} data-aos="fade-up" data-aos-delay={String(index * 60)} className="glass-panel grid gap-6 rounded-[1.75rem] p-6 sm:p-8 lg:grid-cols-[110px_minmax(0,1fr)_minmax(260px,.7fr)] lg:items-center lg:gap-10">
+                  <li key={step.number} className="glass-panel grid gap-6 rounded-[1.75rem] p-6 sm:p-8 lg:grid-cols-[110px_minmax(0,1fr)_minmax(260px,.7fr)] lg:items-center lg:gap-10">
                     <div className="flex items-center gap-4 lg:block">
                       <span className="font-serif text-4xl text-primary/60">{step.number}</span>
                       <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary/10 text-primary lg:mt-5"><Icon className="h-5 w-5" /></span>
@@ -136,14 +136,14 @@ export default function HowItWorksPage() {
         <section className="border-y bg-muted/20 px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <div className="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
-              <div data-aos="fade-up">
+              <div>
                 <p className="studio-eyebrow">WHAT STAYS CONNECTED</p>
                 <h2 className="mt-4 font-serif text-4xl tracking-[-0.04em] sm:text-5xl">Less context switching. More useful context.</h2>
                 <p className="mt-5 leading-7 text-muted-foreground">The tools share the information you choose to save, so you spend less time copying the same details between disconnected documents.</p>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
-                {tools.map(({ icon: Icon, title, text }, index) => (
-                  <article key={title} data-aos="fade-up" data-aos-delay={String(index * 50)} className="rounded-2xl border bg-card p-5 shadow-sm">
+                {tools.map(({ icon: Icon, title, text }) => (
+                  <article key={title} className="rounded-2xl border bg-card p-5 shadow-sm">
                     <Icon className="h-5 w-5 text-primary" />
                     <h3 className="mt-4 font-semibold">{title}</h3>
                     <p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p>
@@ -156,13 +156,13 @@ export default function HowItWorksPage() {
 
         <section className="px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
           <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-2">
-            <div data-aos="fade-right" className="rounded-[1.75rem] border border-emerald-500/20 bg-emerald-500/5 p-7 sm:p-9">
+            <div className="rounded-[1.75rem] border border-emerald-500/20 bg-emerald-500/5 p-7 sm:p-9">
               <BadgeCheck className="h-7 w-7 text-emerald-600" />
               <p className="mt-6 text-xs font-bold uppercase tracking-[0.16em] text-emerald-700 dark:text-emerald-400">You remain the editor</p>
               <h2 className="mt-3 text-3xl font-semibold tracking-tight">Suggestions are a starting point, not the final say.</h2>
-              <p className="mt-4 leading-7 text-muted-foreground">Review, rewrite, remove, or ignore any suggestion. ProFile AI is designed to support your judgment—not replace it or submit applications without your approval.</p>
+              <p className="mt-4 leading-7 text-muted-foreground">Review, rewrite, remove, or ignore any suggestion. ProfileAI is designed to support your judgment—not replace it or submit applications without your approval.</p>
             </div>
-            <div data-aos="fade-left" className="rounded-[1.75rem] border border-violet-500/20 bg-violet-500/5 p-7 sm:p-9">
+            <div className="rounded-[1.75rem] border border-violet-500/20 bg-violet-500/5 p-7 sm:p-9">
               <LockKeyhole className="h-7 w-7 text-violet-600" />
               <p className="mt-6 text-xs font-bold uppercase tracking-[0.16em] text-violet-700 dark:text-violet-400">Privacy by intent</p>
               <h2 className="mt-3 text-3xl font-semibold tracking-tight">Share only when you decide to.</h2>
@@ -172,7 +172,7 @@ export default function HowItWorksPage() {
         </section>
 
         <section className="px-4 pb-20 sm:px-6 sm:pb-28 lg:px-8">
-          <div data-aos="zoom-in" className="premium-ring mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-foreground px-6 py-12 text-background sm:px-12 lg:flex lg:items-center lg:justify-between lg:gap-12 lg:py-16 dark:bg-card dark:text-foreground">
+          <div className="premium-ring mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-foreground px-6 py-12 text-background sm:px-12 lg:flex lg:items-center lg:justify-between lg:gap-12 lg:py-16 dark:bg-card dark:text-foreground">
             <div className="max-w-2xl">
               <p className="text-xs font-bold uppercase tracking-[0.18em] opacity-65">READY WHEN YOU ARE</p>
               <h2 className="mt-4 font-serif text-4xl tracking-[-0.04em] sm:text-5xl">Make the next application easier to finish.</h2>

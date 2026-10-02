@@ -49,15 +49,15 @@ export async function generateMetadata({
   const data = await fetchResume(slug);
   if (!data) {
     return {
-      title: "Resume not found — ProFile AI",
+      title: "Resume not found — ProfileAI",
       robots: { index: false, follow: false },
     };
   }
-  const title = `${data.title} — ProFile AI`;
+  const title = `${data.title} — ProfileAI`;
   const description =
     typeof data.contentData?.summary === "string" && data.contentData.summary
       ? data.contentData.summary.slice(0, 160)
-      : `${data.title} — a resume built with ProFile AI.`;
+      : `${data.title} — a resume built with ProfileAI.`;
 
   return {
     title,

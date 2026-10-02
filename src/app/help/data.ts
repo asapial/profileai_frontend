@@ -54,13 +54,13 @@ export const HELP_ARTICLES: HelpArticle[] = [
     readTime: 4,
     updatedAt: "2026-05-12",
     tags: ["starter", "guide"],
-    body: `ProFile AI is built so you can produce a clean, ATS-friendly resume in your first session — no template wrestling, no formatting cleanup.
+    body: `ProfileAI is built so you can produce a clean, ATS-friendly resume in your first session — no template wrestling, no formatting cleanup.
 
 **Step 1 — Create your account.** Sign up with email or Google. You can stay on the Free plan forever; Pro is only needed if you want unlimited AI generations and cover letters.
 
 **Step 2 — Start a new resume.** From the dashboard, click "New resume". Pick a template that matches the role you're targeting — Modern for tech and product, Classic for finance and law, Creative for design and marketing.
 
-**Step 3 — Fill in the basics.** Enter your contact info, a one-line headline, and a short summary. If you already have an old resume, paste it into the importer and ProFile AI will pre-fill the rest.
+**Step 3 — Fill in the basics.** Enter your contact info, a one-line headline, and a short summary. If you already have an old resume, paste it into the importer and ProfileAI will pre-fill the rest.
 
 **Step 4 — Let AI draft your bullets.** Click the sparkle icon next to any experience or project. Give the AI the role title and a few rough notes; it returns three to five quantified bullet points you can edit.
 
@@ -223,7 +223,7 @@ Public links to your resumes will start returning a 404 immediately. We don't re
     slug: "import-existing-resume",
     title: "Import an existing resume",
     excerpt:
-      "Paste a PDF or Word document and let ProFile AI pre-fill every section.",
+      "Paste a PDF or Word document and let ProfileAI pre-fill every section.",
     category: "resume",
     readTime: 3,
     updatedAt: "2026-04-18",
@@ -246,7 +246,7 @@ Public links to your resumes will start returning a 404 immediately. We don't re
 **The 10-minute tailoring workflow.**
 
 1. Open the target JD and copy the full text.
-2. In ProFile AI, open your base resume and click "Tailor to JD". Paste the description.
+2. In ProfileAI, open your base resume and click "Tailor to JD". Paste the description.
 3. Review the suggested changes: reordered skills, a tighter summary, bullets reworded to mirror the JD's phrasing.
 4. Accept the changes you like; revert the ones you don't.
 5. Run an ATS scan to confirm the score is above 80.

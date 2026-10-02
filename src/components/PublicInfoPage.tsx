@@ -136,33 +136,6 @@ const ACCENTS = {
   },
 } as const;
 
-/* ─── AOS (Animate On Scroll) Hook ───────────────────────────────── */
-function useScrollReveal() {
-  useEffect(() => {
-    const els = document.querySelectorAll<HTMLElement>("[data-aos]");
-    if (!els.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const el = entry.target as HTMLElement;
-            const delay = el.dataset.aosDelay ?? "0";
-            setTimeout(() => {
-              el.classList.add("aos-visible");
-            }, Number(delay));
-            observer.unobserve(el);
-          }
-        });
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -60px 0px" }
-    );
-
-    els.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-}
-
 /* ─── Active Section Hook ─────────────────────────────────────────── */
 function useActiveSection(ids: string[]) {
   const [activeId, setActiveId] = useState<string>("");
@@ -221,8 +194,6 @@ function useTilt(ref: React.RefObject<HTMLElement | null>) {
 
 /* ─── Main Component ─────────────────────────────────────────────── */
 export function PublicInfoPage({ page, definition }: Props) {
-  useScrollReveal();
-
   const accent = ACCENTS[definition.accent];
   const updatedAt = new Intl.DateTimeFormat("en", {
     day: "numeric",
@@ -255,7 +226,6 @@ export function PublicInfoPage({ page, definition }: Props) {
         {/* Hero section */}
         <section className="px-4 pb-14 pt-10 sm:px-6 sm:pb-20 sm:pt-16 lg:px-8">
           <div
-            data-aos="fade-up"
             className="glass-panel premium-ring relative mx-auto max-w-7xl overflow-hidden rounded-[2rem] p-6 sm:p-10 lg:p-14"
           >
             <div className={cn("pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br", accent.soft)} aria-hidden="true" />
@@ -321,8 +291,6 @@ export function PublicInfoPage({ page, definition }: Props) {
 
             {/* Metrics row */}
             <dl
-              data-aos="fade-up"
-              data-aos-delay="150"
               className="mt-10 grid grid-cols-2 gap-3 border-t border-border/60 pt-7 lg:grid-cols-4"
             >
               {definition.metrics.map((metric) => (
@@ -344,7 +312,7 @@ export function PublicInfoPage({ page, definition }: Props) {
           <aside aria-label="On this page" className="hidden lg:block">
             <div className="sticky top-24 space-y-1">
               <div className="glass-subtle rounded-2xl p-5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
                   On this page
                 </p>
                 <nav className="mt-4" aria-label={`${page.title} sections`}>
@@ -372,7 +340,7 @@ export function PublicInfoPage({ page, definition }: Props) {
                   </ul>
                 </nav>
                 <div className="mt-5 border-t border-border/60 pt-4">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Last updated</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Last updated</p>
                   <p className="mt-1 text-sm font-medium text-foreground">{updatedAt}</p>
                 </div>
               </div>
@@ -393,7 +361,6 @@ export function PublicInfoPage({ page, definition }: Props) {
             {/* Overview */}
             <section
               id="overview"
-              data-aos="fade-up"
               className="glass-panel scroll-mt-28 rounded-[1.75rem] p-6 sm:p-8 lg:p-10"
             >
               <p className={cn("text-xs font-bold uppercase tracking-[0.16em]", accent.text)}>Overview</p>
@@ -410,8 +377,6 @@ export function PublicInfoPage({ page, definition }: Props) {
               <section
                 id={section.id}
                 key={section.id}
-                data-aos="fade-up"
-                data-aos-delay={String(sectionIndex * 60)}
                 className="glass-panel scroll-mt-28 overflow-hidden rounded-[1.75rem] p-6 sm:p-8 lg:p-10"
               >
                 <div className="flex items-center gap-3">
@@ -431,11 +396,9 @@ export function PublicInfoPage({ page, definition }: Props) {
                 )}
                 {section.cards && (
                   <div className="mt-7 grid gap-4 sm:grid-cols-2">
-                    {section.cards.map((card, cardIdx) => (
+                    {section.cards.map((card) => (
                       <div
                         key={card.title}
-                        data-aos="fade-up"
-                        data-aos-delay={String(cardIdx * 80)}
                       >
                         <InfoCard card={card} accent={accent} />
                       </div>
@@ -444,11 +407,9 @@ export function PublicInfoPage({ page, definition }: Props) {
                 )}
                 {section.bullets && (
                   <ul className="mt-7 grid gap-3 sm:grid-cols-2">
-                    {section.bullets.map((bullet, i) => (
+                    {section.bullets.map((bullet) => (
                       <li
                         key={bullet}
-                        data-aos="fade-up"
-                        data-aos-delay={String(i * 60)}
                         className="glass-subtle flex gap-3 rounded-xl p-4 text-sm leading-6 text-foreground/85"
                       >
                         <Check className={cn("mt-0.5 h-4 w-4 shrink-0", accent.text)} aria-hidden="true" />
@@ -459,7 +420,6 @@ export function PublicInfoPage({ page, definition }: Props) {
                 )}
                 {section.note && (
                   <div
-                    data-aos="fade-up"
                     className={cn("mt-7 rounded-2xl border border-border/60 bg-gradient-to-r p-5", accent.soft)}
                   >
                     <p className="flex gap-3 text-sm leading-6 text-foreground/85">
@@ -473,7 +433,6 @@ export function PublicInfoPage({ page, definition }: Props) {
 
             {/* Closing CTA */}
             <section
-              data-aos="fade-up"
               className="glass-panel premium-ring relative overflow-hidden rounded-[1.75rem] p-7 sm:p-9"
             >
               <div className={cn("pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br", accent.soft)} aria-hidden="true" />
@@ -549,7 +508,7 @@ function InfoCard({ card, accent }: { card: PublicPageCard; accent: (typeof ACCE
           <Icon className="h-5 w-5" aria-hidden="true" />
         </span>
         {card.meta && (
-          <span className="rounded-full border border-border/60 bg-background/60 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          <span className="rounded-full border border-border/60 bg-background/60 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
             {card.meta}
           </span>
         )}

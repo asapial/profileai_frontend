@@ -82,7 +82,7 @@ export function ContactPageClient() {
     <>
       <section className="relative isolate overflow-hidden px-4 pb-14 pt-10 sm:px-6 sm:pb-20 sm:pt-16 lg:px-8">
         <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-96 bg-gradient-to-b from-cyan-500/10 via-violet-500/5 to-transparent" aria-hidden="true" />
-        <div data-aos="fade-up" className="glass-panel premium-ring mx-auto max-w-7xl overflow-hidden rounded-[2rem] p-6 sm:p-10 lg:p-14">
+        <div className="glass-panel premium-ring mx-auto max-w-7xl overflow-hidden rounded-[2rem] p-6 sm:p-10 lg:p-14">
           <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_.9fr] lg:gap-16">
             <div>
               <span className="premium-kicker"><Sparkles className="h-4 w-4" /> Contact the team</span>
@@ -118,10 +118,10 @@ export function ContactPageClient() {
               [LifeBuoy, "Product support", "Account access, resumes, templates, exports, or application tracking."],
               [Building2, "Teams & partnerships", "Coaches, universities, workforce programs, and hiring teams."],
               [LockKeyhole, "Privacy & security", "Data requests, suspicious activity, or responsible disclosure."],
-            ].map(([Icon, title, description], index) => {
+            ].map(([Icon, title, description]) => {
               const Symbol = Icon as typeof LifeBuoy;
               return (
-                <article key={String(title)} data-aos="fade-up" data-aos-delay={String(index * 70)} className="glass-subtle rounded-2xl p-5">
+                <article key={String(title)} className="glass-subtle rounded-2xl p-5">
                   <Symbol className="h-5 w-5 text-primary" />
                   <h2 className="mt-4 font-semibold">{String(title)}</h2>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">{String(description)}</p>
@@ -137,7 +137,7 @@ export function ContactPageClient() {
             </p>
           </aside>
 
-          <div data-aos="fade-up" className="glass-panel rounded-[1.75rem] p-5 sm:p-8 lg:p-10">
+          <div className="glass-panel rounded-[1.75rem] p-5 sm:p-8 lg:p-10">
             {reference ? (
               <div className="flex min-h-[520px] flex-col items-center justify-center text-center" role="status">
                 <span className="grid h-16 w-16 place-items-center rounded-full bg-emerald-500/10 text-emerald-600"><CheckCircle2 className="h-8 w-8" /></span>
@@ -185,7 +185,7 @@ export function ContactPageClient() {
                   <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
                   <label className="flex items-start gap-3 rounded-xl border bg-muted/20 p-4 text-sm leading-6 text-muted-foreground">
                     <input name="consent" type="checkbox" onChange={() => fieldErrors.consent && setFieldErrors((current) => ({ ...current, consent: undefined }))} className="mt-1 h-4 w-4 rounded border-input" />
-                    <span>I agree that ProFile AI may use these details to respond to this request. See the <Link href="/privacy" className="font-semibold text-primary hover:underline">Privacy Policy</Link>.</span>
+                    <span>I agree that ProfileAI may use these details to respond to this request. See the <Link href="/privacy" className="font-semibold text-primary hover:underline">Privacy Policy</Link>.</span>
                   </label>
                   {fieldErrors.consent && <p className="text-sm text-destructive">{fieldErrors.consent}</p>}
                   {error && <div role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">{error}</div>}

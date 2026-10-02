@@ -24,12 +24,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const article = getArticleBySlug(slug);
-  if (!article) return { title: "Article not found — ProFile AI" };
+  if (!article) return { title: "Article not found — ProfileAI" };
   return {
-    title: `${article.title} — ProFile AI Help`,
+    title: `${article.title} — ProfileAI Help`,
     description: article.excerpt,
     openGraph: {
-      title: `${article.title} — ProFile AI Help`,
+      title: `${article.title} — ProfileAI Help`,
       description: article.excerpt,
       type: "article",
     },
@@ -62,7 +62,7 @@ export default async function HelpArticlePage({
           </Link>
 
           <header className="mt-6">
-            <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               {category?.label ?? article.category}
             </span>
             <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">

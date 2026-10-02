@@ -4,8 +4,8 @@ import { Footer } from "@/components/layout/Footer";
 import { ContactPageClient } from "./ContactPageClient";
 
 export const metadata: Metadata = {
-  title: "Contact — ProFile AI",
-  description: "Contact the ProFile AI team about product support, billing, partnerships, privacy, or security.",
+  title: "Contact — ProfileAI",
+  description: "Contact the ProfileAI team about product support, billing, partnerships, privacy, or security.",
 };
 
 export default function ContactPage() {

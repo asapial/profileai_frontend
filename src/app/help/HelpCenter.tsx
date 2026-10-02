@@ -37,31 +37,6 @@ const QUICK_PATHS = [
   { slug: "enable-two-factor-auth", label: "Protect your account", description: "Add two-factor authentication and recovery codes.", icon: ShieldCheck },
 ] as const;
 
-/* ─── AOS Hook ────────────────────────────────────────────────────── */
-function useScrollReveal() {
-  useEffect(() => {
-    const els = document.querySelectorAll<HTMLElement>("[data-aos]");
-    if (!els.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const el = entry.target as HTMLElement;
-            const delay = Number(el.dataset.aosDelay ?? "0");
-            setTimeout(() => el.classList.add("aos-visible"), delay);
-            observer.unobserve(el);
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
-    );
-
-    els.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  });
-}
-
 /* ─── 3D Tilt ─────────────────────────────────────────────────────── */
 function useTilt(ref: React.RefObject<HTMLElement | null>) {
   useEffect(() => {
@@ -86,8 +61,6 @@ function useTilt(ref: React.RefObject<HTMLElement | null>) {
 
 /* ─── Article category counts for sidebar badge ──────────────────── */
 export function HelpCenter({ articles, categories }: Props) {
-  useScrollReveal();
-
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<HelpCategory | "all">("all");
   const filtered = useMemo(() => {
@@ -125,7 +98,6 @@ export function HelpCenter({ articles, categories }: Props) {
       {/* Hero */}
       <section className="px-4 pb-14 pt-10 sm:px-6 sm:pb-20 sm:pt-16 lg:px-8">
         <div
-          data-aos="fade-up"
           className="glass-panel premium-ring relative mx-auto max-w-7xl overflow-hidden rounded-[2rem] p-6 sm:p-10 lg:p-14"
         >
           <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-violet-500/14 via-cyan-500/6 to-transparent" aria-hidden="true" />
@@ -173,8 +145,6 @@ export function HelpCenter({ articles, categories }: Props) {
 
           {/* Metrics */}
           <dl
-            data-aos="fade-up"
-            data-aos-delay="120"
             className="mt-10 grid grid-cols-2 gap-3 border-t border-border/60 pt-7 lg:grid-cols-4"
           >
             <MetricCard value={String(articles.length)} label="practical guides" />
@@ -188,7 +158,6 @@ export function HelpCenter({ articles, categories }: Props) {
       {/* Quick paths */}
       <section aria-labelledby="quick-paths-heading" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div
-          data-aos="fade-up"
           className="flex items-end justify-between gap-4"
         >
           <div>
@@ -201,9 +170,9 @@ export function HelpCenter({ articles, categories }: Props) {
         </div>
 
         <div className="mt-6 grid gap-4 md:grid-cols-3">
-          {quickPaths.map(({ article, label, description, icon: Icon }, i) =>
+          {quickPaths.map(({ article, label, description, icon: Icon }) =>
             article ? (
-              <div key={article.slug} data-aos="fade-up" data-aos-delay={String(i * 80)}>
+              <div key={article.slug}>
                 <QuickPathCard
                   href={`/help/${article.slug}`}
                   icon={Icon}
@@ -227,7 +196,7 @@ export function HelpCenter({ articles, categories }: Props) {
         <aside aria-label="Help categories" className="hidden lg:block">
           <div className="sticky top-24 space-y-1">
             <div className="glass-subtle rounded-2xl p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Browse by topic</p>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">Browse by topic</p>
               <ul className="mt-4 space-y-0.5">
                 {categories.map((category) => {
                   const active = activeCategory === category.id;
@@ -253,7 +222,7 @@ export function HelpCenter({ articles, categories }: Props) {
                         <span className="line-clamp-2 leading-snug">{category.label}</span>
                         <span
                           className={cn(
-                            "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                            "shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold",
                             active ? "bg-background/15 text-background" : "bg-background/70 text-muted-foreground",
                           )}
                         >
@@ -281,7 +250,6 @@ export function HelpCenter({ articles, categories }: Props) {
         {/* Articles */}
         <div className="min-w-0">
           <div
-            data-aos="fade-up"
             className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"
           >
             <div>
@@ -320,8 +288,8 @@ export function HelpCenter({ articles, categories }: Props) {
             <EmptyState query={query} onReset={() => { setQuery(""); setActiveCategory("all"); }} />
           ) : (
             <ul className="grid gap-4 sm:grid-cols-2">
-              {filtered.map((article, i) => (
-                <li key={article.slug} data-aos="fade-up" data-aos-delay={String((i % 4) * 60)}>
+              {filtered.map((article) => (
+                <li key={article.slug}>
                   <ArticleCard article={article} />
                 </li>
               ))}
@@ -330,7 +298,6 @@ export function HelpCenter({ articles, categories }: Props) {
 
           {/* Human support CTA */}
           <div
-            data-aos="fade-up"
             className="glass-panel premium-ring relative mt-12 overflow-hidden rounded-[1.75rem] p-6 sm:p-8"
           >
             <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-violet-500/14 via-cyan-500/7 to-transparent" aria-hidden="true" />
@@ -459,7 +426,7 @@ function ArticleCard({ article }: { article: HelpArticle }) {
       style={{ transformStyle: "preserve-3d" }}
     >
       <div className="flex items-start justify-between gap-3">
-        <span className="inline-flex rounded-full border border-violet-500/15 bg-violet-500/8 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">
+        <span className="inline-flex rounded-full border border-violet-500/15 bg-violet-500/8 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">
           {article.category.replace("-", " ")}
         </span>
         <BookOpen className="h-4 w-4 text-muted-foreground" aria-hidden="true" />

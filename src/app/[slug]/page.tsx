@@ -20,11 +20,11 @@ const ALLOWED = new Set(Object.keys(PUBLIC_PAGE_CONTENT));
 
 const FALLBACK_OVERVIEWS: Record<PublicPageSlug, { title: string; body: string }> = {
   about: {
-    title: "About ProFile AI",
-    body: "ProFile AI is a private career workspace for turning real experience into clear resumes, tailored applications, and confident next steps. Our tools are designed to support human judgment—not replace it.",
+    title: "About ProfileAI",
+    body: "ProfileAI is a private career workspace for turning real experience into clear resumes, tailored applications, and confident next steps. Our tools are designed to support human judgment—not replace it.",
   },
   contact: {
-    title: "Contact ProFile AI",
+    title: "Contact ProfileAI",
     body: "Choose the channel that matches your question so we can respond with the right context. Never send passwords, one-time codes, payment card details, or sensitive identity documents by email.",
   },
   blog: {
@@ -33,11 +33,11 @@ const FALLBACK_OVERVIEWS: Record<PublicPageSlug, { title: string; body: string }
   },
   terms: {
     title: "Terms of Service",
-    body: "These terms explain the rules for using ProFile AI, the responsibilities attached to an account, and how subscriptions, user content, acceptable use, and service changes are handled.",
+    body: "These terms explain the rules for using ProfileAI, the responsibilities attached to an account, and how subscriptions, user content, acceptable use, and service changes are handled.",
   },
   privacy: {
     title: "Privacy Policy",
-    body: "This policy explains what information ProFile AI processes, why it is needed, how it is protected, and the choices available to access, correct, export, unpublish, or delete your data.",
+    body: "This policy explains what information ProfileAI processes, why it is needed, how it is protected, and the choices available to access, correct, export, unpublish, or delete your data.",
   },
   cookies: {
     title: "Cookie Policy",
@@ -93,7 +93,7 @@ export async function generateMetadata({
   const page = await loadPage(slug);
 
   return page
-    ? { title: `${page.title} · ProFile AI`, description: page.description }
+    ? { title: `${page.title} · ProfileAI`, description: page.description }
     : {};
 }
 

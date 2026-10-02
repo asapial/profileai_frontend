@@ -44,7 +44,7 @@ const PLANS: StaticPlan[] = [
     id: "free",
     name: "Free",
     tagline: "Forever free",
-    description: "Try ProFile AI and build your first resume — no card needed.",
+    description: "Try ProfileAI and build your first resume — no card needed.",
     monthlyPrice: 0,
     yearlyPrice: 0,
     features: [
@@ -152,7 +152,7 @@ export function PricingClient() {
       {/* Hero / toggle */}
       <section className="relative isolate overflow-hidden px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
         <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-gradient-to-b from-violet-500/10 to-transparent" aria-hidden="true" />
-        <div data-aos="fade-up" className="glass-panel premium-ring mx-auto max-w-7xl overflow-hidden rounded-[2rem] px-5 py-10 sm:px-10 sm:py-14 lg:px-14">
+        <div className="glass-panel premium-ring mx-auto max-w-7xl overflow-hidden rounded-[2rem] px-5 py-10 sm:px-10 sm:py-14 lg:px-14">
           <SectionHeader
             headingTag="h1"
             eyebrow="Simple, transparent pricing"
@@ -178,7 +178,7 @@ export function PricingClient() {
                 onClick={() => onToggle("yearly")}
               >
                 Yearly
-                <span className="ml-2 inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                <span className="ml-2 inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
                   −25%
                 </span>
               </ToggleButton>
@@ -200,7 +200,6 @@ export function PricingClient() {
             {cards.map((plan) => (
               <li
                 key={plan.id}
-                data-aos="fade-up"
                 className={cn(
                   "relative flex flex-col rounded-[1.75rem] border bg-card p-6 transition duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-7",
                   plan.highlighted
@@ -209,7 +208,7 @@ export function PricingClient() {
                 )}
               >
                 {plan.badge && (
-                  <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-500 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white shadow">
+                  <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-500 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white shadow">
                     <Sparkles className="h-3 w-3" />
                     {plan.badge}
                   </span>
@@ -277,7 +276,7 @@ export function PricingClient() {
             description="A quick look at the limits and features included in Free, Pro, and Business."
           />
 
-          <div data-aos="fade-up" className="mt-12 overflow-x-auto rounded-[1.5rem] border border-border bg-card shadow-sm">
+          <div className="mt-12 overflow-x-auto rounded-[1.5rem] border border-border bg-card shadow-sm">
             <table className="w-full min-w-[640px] text-left text-sm">
               <caption className="sr-only">Feature comparison for Free, Pro, and Business plans</caption>
               <thead>
@@ -312,7 +311,7 @@ export function PricingClient() {
             eyebrow="Pricing FAQ"
             title={<>Questions about plans and billing</>}
           />
-          <ul data-aos="fade-up" className="mt-10 divide-y divide-border rounded-[1.5rem] border border-border bg-card shadow-sm">
+          <ul className="mt-10 divide-y divide-border rounded-[1.5rem] border border-border bg-card shadow-sm">
             {FAQS.map((item) => (
               <li key={item.q} className="px-5 py-4">
                 <details className="group">

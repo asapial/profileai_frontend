@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { setAiChatPageContext } from "@/lib/aiChatContextBridge";
 import Link from "next/link";
 import {
@@ -20,6 +20,7 @@ import {
   Languages as LanguagesIcon,
   List,
   Loader2,
+  MoreHorizontal,
   Palette,
   Save,
   Share2,
@@ -132,7 +133,7 @@ function PlusMark({ className }: { className?: string }) {
     <span
       className={`grid place-items-center rounded-sm border border-current leading-none ${className ?? ""}`}
     >
-      <span className="-mt-0.5 text-[10px] font-bold">+</span>
+      <span className="-mt-0.5 text-xs font-bold">+</span>
     </span>
   );
 }
@@ -146,7 +147,7 @@ function RibbonGroup({
 }) {
   return (
     <div className="flex items-center gap-2 rounded-md border border-transparent px-1 transition hover:border-border">
-      <span className="hidden text-[9px] font-medium uppercase tracking-wide text-muted-foreground lg:inline">
+      <span className="hidden text-xs font-medium uppercase tracking-wide text-muted-foreground lg:inline">
         {label}
       </span>
       {children}
@@ -231,6 +232,7 @@ export function WordStyleEditor({
   const [templateMenuOpen, setTemplateMenuOpen] = useState(false);
   const [sharePanelOpen, setSharePanelOpen] = useState(false);
   const [exportPanelOpen, setExportPanelOpen] = useState(false);
+  const [actionMenuOpen, setActionMenuOpen] = useState(false);
   const [mobilePane, setMobilePane] = useState<"preview" | "edit">("edit");
   const [focusPreview, setFocusPreview] = useState(false);
 
@@ -239,7 +241,19 @@ export function WordStyleEditor({
     return () => setAiChatPageContext({});
   }, [section]);
 
-  const [zoom, setZoom] = useState(0.7);
+  const [zoom, setZoom] = useState(0.85);
+  const [zoomMode, setZoomMode] = useState<"fit" | "manual">("fit");
+  const previewHostRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (zoomMode !== "fit" || !previewHostRef.current) return;
+    const host = previewHostRef.current;
+    const fit = () => setZoom(Math.max(ZOOM_MIN, Math.min(1, (host.clientWidth - 48) / 794)));
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(host);
+    return () => observer.disconnect();
+  }, [zoomMode, mobilePane, focusPreview]);
 
   const normalizedDraft = useMemo(
     () => normalizeContentData(draft),
@@ -400,10 +414,10 @@ export function WordStyleEditor({
 
   return (
     <div
-      className="mx-2 flex min-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-slate-100/70 shadow-2xl shadow-slate-950/10 sm:mx-4 dark:border-white/10 dark:bg-slate-950/60"
+      className="mx-2 flex min-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-2xl border border-violet-200/70 bg-violet-50/40 shadow-[var(--shadow-3)] sm:mx-4 dark:border-violet-300/15 dark:bg-[#1a1724]"
     >
       {/* File bar */}
-      <div className="relative z-40 flex flex-wrap items-center justify-between gap-2 border-b border-white/10 bg-slate-950 px-3 py-3 text-white sm:px-4">
+      <div className="relative z-40 flex items-center justify-between gap-2 border-b border-white/10 bg-violet-950 px-3 py-3 text-white sm:px-4 dark:bg-[#24132f]">
         <div className="flex min-w-0 items-center gap-2">
           <Button
             asChild
@@ -416,13 +430,13 @@ export function WordStyleEditor({
             </Link>
           </Button>
           <span className="mx-1 hidden h-5 w-px bg-white/30 sm:block" />
-          <div className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 via-fuchsia-500 to-cyan-400 shadow-lg shadow-violet-500/20 sm:flex">
+          <div className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-700 shadow-sm sm:flex">
             <FileText className="h-4 w-4" />
           </div>
-          <span className="min-w-0 truncate text-sm font-semibold sm:text-base">
+          <span className="min-w-0 max-w-[42vw] truncate text-sm font-semibold sm:max-w-[30rem] sm:text-base" title={`${resume.title}${currentTemplate ? ` · ${currentTemplate.name}` : ""}`}>
             <span className="block truncate">{resume.title}</span>
             {currentTemplate ? (
-              <span className="block text-[10px] font-medium uppercase tracking-widest text-slate-400">
+              <span className="block text-xs font-medium uppercase tracking-widest text-slate-400">
                 Career Canvas · {currentTemplate.name} · {resume.type === "CV" ? "Curriculum Vitae" : "Professional Résumé"}
               </span>
             ) : null}
@@ -431,9 +445,9 @@ export function WordStyleEditor({
         <div className="relative flex flex-wrap items-center justify-end gap-1 overflow-visible">
           <div className="mr-1 hidden items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-2.5 py-1.5 md:flex" title={`${completionPercentage}% complete`}>
             <div className="relative grid h-7 w-7 place-items-center rounded-full" style={{ background: `conic-gradient(#a78bfa ${completionPercentage}%, rgba(255,255,255,.12) 0)` }}>
-              <div className="grid h-5 w-5 place-items-center rounded-full bg-slate-950 text-[8px] font-bold">{completionPercentage}</div>
+              <div className="grid h-5 w-5 place-items-center rounded-full bg-violet-950 text-xs font-bold">{completionPercentage}</div>
             </div>
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-300">Profile strength</span>
+            <span className="text-xs font-semibold uppercase tracking-widest text-slate-300">Profile strength</span>
           </div>
           <Button
             variant="ghost"
@@ -533,18 +547,33 @@ export function WordStyleEditor({
           </div>
           <Button
             variant="ghost"
-            size="sm"
-            className="gap-1 text-rose-100 hover:bg-white/15 hover:text-white"
-            onClick={handleDelete}
-            disabled={deletePending}
+            size="icon-sm"
+            className="text-white hover:bg-white/15 hover:text-white"
+            onClick={() => {
+              setActionMenuOpen((open) => !open);
+              setTemplateMenuOpen(false);
+              setSharePanelOpen(false);
+              setExportPanelOpen(false);
+            }}
+            aria-label="More resume actions"
+            aria-expanded={actionMenuOpen}
           >
-            {deletePending ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Trash2 className="h-3.5 w-3.5" />
-            )}
-            <span className="hidden xl:inline">Delete</span>
+            <MoreHorizontal className="h-4 w-4" />
           </Button>
+
+          {actionMenuOpen ? (
+            <div className="absolute right-0 top-full z-30 mt-2 w-56 rounded-xl border border-border bg-popover p-1.5 text-foreground shadow-2xl">
+              <button
+                type="button"
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-rose-700 hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-950/30"
+                onClick={() => { setActionMenuOpen(false); handleDelete(); }}
+                disabled={deletePending}
+              >
+                {deletePending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                Delete resume…
+              </button>
+            </div>
+          ) : null}
 
           {templateMenuOpen ? (
             <div className="absolute right-0 top-full z-30 mt-2 w-72 rounded-xl border border-border bg-popover p-2 text-foreground shadow-2xl">
@@ -566,7 +595,7 @@ export function WordStyleEditor({
                     }`}
                   >
                     <span className="font-semibold">{template.name}</span>
-                    <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] uppercase text-muted-foreground">
+                    <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs uppercase text-muted-foreground">
                       {template.category}
                     </span>
                   </button>
@@ -600,7 +629,7 @@ export function WordStyleEditor({
                   </div>
                   <div className="mt-3 grid grid-cols-2 gap-2">
                     <div className="rounded-lg bg-muted/60 p-2">
-                      <span className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
+                      <span className="flex items-center gap-1 text-xs uppercase tracking-wide text-muted-foreground">
                         <Eye className="h-3 w-3" /> Views
                       </span>
                       <p className="mt-1 text-lg font-semibold">
@@ -608,7 +637,7 @@ export function WordStyleEditor({
                       </p>
                     </div>
                     <div className="rounded-lg bg-muted/60 p-2">
-                      <span className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
+                      <span className="flex items-center gap-1 text-xs uppercase tracking-wide text-muted-foreground">
                         <Download className="h-3 w-3" /> Downloads
                       </span>
                       <p className="mt-1 text-lg font-semibold">
@@ -634,14 +663,14 @@ export function WordStyleEditor({
           {exportPanelOpen ? (
             <div className="absolute right-0 top-full z-30 mt-2 w-72 rounded-xl border border-border bg-popover p-2 text-foreground shadow-2xl">
               <p className="px-2 py-1 text-xs font-semibold">Export selected design</p>
-              <p className="px-2 pb-2 text-[11px] leading-relaxed text-muted-foreground">Both formats use the active template and your latest auto-saved content.</p>
+              <p className="px-2 pb-2 text-xs leading-relaxed text-muted-foreground">Both formats use the active template and your latest auto-saved content.</p>
               <button type="button" onClick={() => { setExportPanelOpen(false); void handleExport("PDF"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left hover:bg-muted">
                 <Download className="h-4 w-4 text-violet-500" />
-                <span><span className="block text-xs font-semibold">Pixel-perfect PDF</span><span className="block text-[10px] text-muted-foreground">Best visual match for sharing</span></span>
+                <span><span className="block text-xs font-semibold">Pixel-perfect PDF</span><span className="block text-xs text-muted-foreground">Best visual match for sharing</span></span>
               </button>
               <button type="button" onClick={() => { setExportPanelOpen(false); void handleExport("DOCX"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left hover:bg-muted">
                 <FileText className="h-4 w-4 text-blue-500" />
-                <span><span className="block text-xs font-semibold">Design-matched Word DOCX</span><span className="block text-[10px] text-muted-foreground">Best template fidelity in Microsoft Word</span></span>
+                <span><span className="block text-xs font-semibold">Design-matched Word DOCX</span><span className="block text-xs text-muted-foreground">Best template fidelity in Microsoft Word</span></span>
               </button>
             </div>
           ) : null}
@@ -699,11 +728,11 @@ export function WordStyleEditor({
       </div>
 
       {/* Ribbon: contextual groups */}
-      <div className="flex min-h-12 flex-wrap items-center gap-3 border-b border-border bg-background/95 px-3 py-2 text-xs shadow-sm backdrop-blur-xl">
+      <div className="flex min-h-12 items-center gap-3 overflow-x-auto border-b border-border bg-background px-3 py-2 text-xs shadow-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {ribbon === "home" && (
           <>
             <RibbonGroup label="Your story">
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-nowrap gap-1.5">
                 {(
                   [
                     ["personal", "Personal", User],
@@ -739,7 +768,7 @@ export function WordStyleEditor({
             <RibbonSeparator />
             <RibbonGroup label="Quick style">
               <button type="button" className="grid h-7 w-7 place-items-center rounded-lg border bg-background shadow-sm transition hover:bg-muted" onClick={() => goToRibbon("design")} title="View template design" aria-label="View template design"><Palette className="h-3.5 w-3.5 text-violet-500" /></button>
-              <span className="ml-1 text-[10px] text-muted-foreground">
+              <span className="ml-1 text-xs text-muted-foreground">
                 Tune your visual signature
               </span>
             </RibbonGroup>
@@ -842,7 +871,7 @@ export function WordStyleEditor({
                       : "Make the summary more concise and outcome-driven."
                   );
                 }}
-                className="flex items-center gap-1 rounded-md bg-gradient-to-br from-violet-600 to-fuchsia-500 px-2.5 py-1 font-medium text-white shadow hover:from-violet-700 hover:to-fuchsia-600"
+                className="flex items-center gap-1 rounded-md bg-violet-600 px-2.5 py-1 font-medium text-white shadow hover:bg-violet-700"
               >
                 <Sparkles className="h-3 w-3" /> Rewrite summary
               </button>
@@ -891,7 +920,7 @@ export function WordStyleEditor({
       {/* Workspace */}
       <div className="flex min-h-0 flex-1 bg-slate-200/40 dark:bg-slate-950/30">
         {/* Page column */}
-        <div className={`${mobilePane === "preview" ? "flex" : "hidden"} relative flex-1 items-start justify-center overflow-auto bg-[radial-gradient(circle_at_top,rgba(139,92,246,.12),transparent_32%),linear-gradient(135deg,rgba(255,255,255,.35),transparent)] p-3 sm:p-6 lg:flex`}>
+        <div ref={previewHostRef} className={`${mobilePane === "preview" ? "flex" : "hidden"} relative flex-1 items-start justify-center overflow-auto bg-violet-100/35 p-3 sm:p-6 lg:flex dark:bg-[#17131f]`}>
           <div
             className="relative w-[210mm] max-w-full origin-top bg-white shadow-[0_24px_80px_-24px_rgba(15,23,42,.35)] ring-1 ring-black/5"
             style={{
@@ -901,11 +930,7 @@ export function WordStyleEditor({
               minHeight: "297mm",
             }}
           >
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-3 bg-gradient-to-b from-black/5 to-transparent" />
-            <div className="pointer-events-none absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/5 to-transparent" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-3 bg-gradient-to-l from-black/5 to-transparent" />
-
-            <div className="relative text-[#111]">
+            <div className="theme-paper relative bg-white text-[#111] [color-scheme:light]">
               <InlineEditablePreview
                 resume={previewResume}
                 scale={1}
@@ -922,15 +947,15 @@ export function WordStyleEditor({
         </div>
 
         {/* Side panel: editable fields */}
-        <aside className={`${mobilePane === "edit" ? "flex" : "hidden"} w-full shrink-0 flex-col gap-3 border-l border-border bg-card/95 p-4 backdrop-blur-xl ${focusPreview ? "lg:hidden" : "lg:flex lg:max-w-[420px] xl:max-w-[460px]"}`}>
-          <header className="flex items-center justify-between rounded-xl border border-violet-500/10 bg-gradient-to-r from-violet-500/10 to-fuchsia-500/5 px-3 py-2.5">
+        <aside className={`${mobilePane === "edit" ? "flex" : "hidden"} w-full shrink-0 flex-col gap-3 border-l border-border bg-card p-4 ${focusPreview ? "lg:hidden" : "lg:flex lg:max-w-[420px] xl:max-w-[460px]"}`}>
+          <header className="flex items-center justify-between rounded-xl border border-violet-500/15 bg-violet-500/[0.06] px-3 py-2.5 dark:bg-violet-400/[0.06]">
             <div className="flex items-center gap-2">
               <Hash className="h-4 w-4 text-violet-500" />
               <h3 className="text-sm font-semibold">
                 Edit {sectionLabel(section)}
               </h3>
             </div>
-            <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+            <span className="text-xs uppercase tracking-wide text-muted-foreground">
               Auto-saved
             </span>
           </header>
@@ -1017,7 +1042,7 @@ export function WordStyleEditor({
       </div>
 
       {/* Status bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-slate-950 px-3 py-2 text-[11px] text-slate-200">
+      <div className="flex min-h-11 flex-wrap items-center justify-between gap-2 border-t border-violet-300/15 bg-violet-950 px-3 py-1.5 text-xs text-violet-100 dark:bg-[#24132f]">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1">
             {saving ? (
@@ -1057,9 +1082,10 @@ export function WordStyleEditor({
           </span>
           <button
             type="button"
-            onClick={() =>
-              setZoom((z) => Math.max(ZOOM_MIN, +(z - ZOOM_STEP).toFixed(2)))
-            }
+            onClick={() => {
+              setZoomMode("manual");
+              setZoom((z) => Math.max(ZOOM_MIN, +(z - ZOOM_STEP).toFixed(2)));
+            }}
             className="grid h-5 w-5 place-items-center rounded hover:bg-white/15"
             aria-label="Zoom out"
           >
@@ -1071,15 +1097,16 @@ export function WordStyleEditor({
             max={ZOOM_MAX * 100}
             step={5}
             value={Math.round(zoom * 100)}
-            onChange={(e) => setZoom(Number(e.target.value) / 100)}
-            className="h-1 w-28 accent-white"
+            onChange={(e) => { setZoomMode("manual"); setZoom(Number(e.target.value) / 100); }}
+            className="hidden h-1 w-24 accent-white sm:block"
             aria-label="Zoom level"
           />
           <button
             type="button"
-            onClick={() =>
-              setZoom((z) => Math.min(ZOOM_MAX, +(z + ZOOM_STEP).toFixed(2)))
-            }
+            onClick={() => {
+              setZoomMode("manual");
+              setZoom((z) => Math.min(ZOOM_MAX, +(z + ZOOM_STEP).toFixed(2)));
+            }}
             className="grid h-5 w-5 place-items-center rounded hover:bg-white/15"
             aria-label="Zoom in"
           >
@@ -1087,10 +1114,10 @@ export function WordStyleEditor({
           </button>
           <button
             type="button"
-            onClick={() => setZoom(1)}
+            onClick={() => setZoomMode("fit")}
             className="rounded px-1.5 py-0.5 hover:bg-white/15"
           >
-            100%
+            Fit
           </button>
         </div>
 

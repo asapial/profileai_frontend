@@ -130,7 +130,7 @@ export function TemplatePreviewModal({
 function Tile({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-border p-3">
-      <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
       <p className="mt-1 text-sm font-semibold tabular-nums">{value}</p>

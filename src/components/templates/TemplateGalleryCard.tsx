@@ -57,21 +57,21 @@ export function TemplateGalleryCard({
         )}
         <div className="absolute left-2 top-2 flex flex-wrap gap-1">
           <span
-            className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${categoryTone[template.category]}`}
+            className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase tracking-wide ${categoryTone[template.category]}`}
           >
             {template.category}
           </span>
           {template.isDefault ? (
-            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700">
+            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-amber-700">
               Default
             </span>
           ) : null}
-          <span className="rounded-full bg-slate-950/85 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+          <span className="rounded-full bg-slate-950/85 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-white">
             {template.documentType === "CV" ? "CV design" : "Résumé design"}
           </span>
         </div>
         <div
-          className={`absolute right-2 top-2 flex items-center gap-1 rounded-full ${atsTone} px-2 py-0.5 text-[10px] font-semibold uppercase text-white`}
+          className={`absolute right-2 top-2 flex items-center gap-1 rounded-full ${atsTone} px-2 py-0.5 text-xs font-semibold uppercase text-white`}
         >
           ATS {ats}
         </div>

@@ -1,0 +1,149 @@
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    background: var(--background);
+    color-scheme: light;
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    min-width: 0;
+    overflow-x: clip;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-ui), system-ui, sans-serif;
+    font-size: var(--font-size-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  main,
+  section,
+  article,
+  fieldset,
+  .grid > * {
+    min-width: 0;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  button,
+  a,
+  input,
+  textarea,
+  select,
+  summary,
+  [tabindex]:not([tabindex="-1"]) {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring) !important;
+    outline-offset: 2px !important;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+}
+
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+.font-display,
+.premium-home :is(h1, h2),
+.studio-public-page :is(h1, h2) {
+  font-family: var(--font-display), Georgia, serif;
+}
+
+/* Daily-use application surfaces stay calm and opaque. Decorative glass and
+   global hover lift are limited to public/auth presentation layers. */
+.premium-dashboard :is([data-slot="card"], .glass-panel, .glass-subtle) {
+  background: var(--card) !important;
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow-2) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+.premium-dashboard :is([data-slot="card"], .glass-panel, .glass-subtle)::before {
+  background: var(--edge-highlight) !important;
+}
+
+.premium-dashboard :is([data-slot="card"], .glass-panel, .glass-subtle):hover {
+  transform: none;
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow-2) !important;
+}
+
+.premium-dashboard :is(
+  [data-slot="sheet-content"],
+  [data-slot="dropdown-menu-content"],
+  [data-slot="select-content"],
+  [data-slot="popover-content"],
+  [data-slot="drawer-content"],
+  [data-slot="alert-dialog-content"]
+) {
+  background: var(--popover) !important;
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow-3) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 120ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  [data-tilt] {
+    transform: none !important;
+  }
+}
+

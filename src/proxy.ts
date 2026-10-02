@@ -13,15 +13,16 @@ import { NextRequest, NextResponse } from "next/server";
  *
  * Trust model
  * -----------
- * • `accessToken`  — set by the backend as `httpOnly`. The proxy requires a
- *                    structurally valid, unexpired token.
+ * • `accessToken`  — validated against the backend and copied into a
+ *                    same-origin `httpOnly` cookie by `/api/auth/post-login`.
+ *                    The proxy requires a structurally valid, unexpired token.
  * • `userRole`     — frontend login marker set by `/api/auth/post-login` and
  *                    cleared by `/api/auth/post-logout`. The proxy requires
  *                    it to match the token role, so a backend-domain cookie
  *                    left behind after logout cannot reopen protected pages.
  *
- * Anything the client posts to us is ignored — the post-login route
- * derives the role from the cookie-delivered `accessToken` itself.
+ * The post-login route validates the client-delivered token against the
+ * backend before setting either frontend cookie.
  *
  * Limits of this file
  * -------------------

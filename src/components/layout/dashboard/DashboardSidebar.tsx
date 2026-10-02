@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 const NAV = [
   { href: "/dashboard/career", label: "Career studio", icon: Sparkles },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/resumes", label: "Resumes", icon: FileText },
+  { href: "/dashboard/documents", label: "Documents", icon: FileText },
   { href: "/dashboard/jobs", label: "Job workspace", icon: Compass },
   { href: "/templates", label: "Templates", icon: LayoutTemplate },
   { href: "/dashboard/cover-letters", label: "Cover Letters", icon: ScrollText },

@@ -66,7 +66,7 @@ const USER_CONFIG: SidebarConfig = {
     { title: "Overview", url: "/dashboard", icon: IconDashboard },
     { title: "Job workspace", url: "/dashboard/jobs", icon: IconSearch },
     { title: "Career Studio", url: "/dashboard/career", icon: IconFileDescription },
-    { title: "Resumes", url: "/dashboard/resumes", icon: IconListDetails },
+    { title: "Documents", url: "/dashboard/documents", icon: IconListDetails },
     {
       title: "Templates",
       url: "/dashboard/templates",
@@ -92,7 +92,7 @@ const USER_CONFIG: SidebarConfig = {
     { title: "Support", url: "/dashboard/support", icon: IconHelp },
     { title: "Settings", url: "/dashboard/settings", icon: IconSettings },
   ],
-  quickCreate: { label: "New resume", href: "/dashboard/resumes/new" },
+  quickCreate: { label: "Create document", href: "/dashboard/documents/new" },
 };
 
 const ADMIN_CONFIG: SidebarConfig = {

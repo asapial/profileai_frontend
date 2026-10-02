@@ -32,6 +32,7 @@ export function RouteVisuals() {
   const decorative =
     pathname === "/" ||
     matches(pathname, "/dashboard/career") ||
+    matches(pathname, "/dashboard/documents") ||
     AUTH_PREFIXES.some((prefix) => matches(pathname, prefix)) ||
     PUBLIC_PREFIXES.some((prefix) => matches(pathname, prefix));
 

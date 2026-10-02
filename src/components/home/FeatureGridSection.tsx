@@ -14,7 +14,7 @@ const FEATURES = [
     title: "A resume that sounds like you.",
     description:
       "Shape your experience into a clear story. Edit each section, explore different layouts, and export when it feels right.",
-    href: "/dashboard/resumes",
+    href: "/dashboard/documents",
     icon: FileText,
     label: "Resume studio",
   },

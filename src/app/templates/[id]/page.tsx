@@ -58,7 +58,7 @@ export default async function TemplateDetailPage({
             </ul>
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
               <Button asChild size="lg">
-                <Link href={`/dashboard/resumes/new?templateId=${template.id}`}>
+                <Link href={`/dashboard/documents/new?templateId=${template.id}`}>
                   Use this template
                 </Link>
               </Button>

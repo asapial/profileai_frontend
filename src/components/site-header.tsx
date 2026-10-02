@@ -8,8 +8,8 @@ import { NotificationsBell } from "@/components/notifications-bell";
 import type { Role } from "@/types";
 
 const ROUTE_TITLES: Array<[string, string]> = [
-  ["/dashboard/resumes/new", "Create resume"],
-  ["/dashboard/resumes", "Resumes"],
+  ["/dashboard/documents/new", "Create document"],
+  ["/dashboard/documents", "Documents"],
   ["/dashboard/jobs", "Job workspace"],
   ["/dashboard/cover-letters", "Cover letters"],
   ["/dashboard/templates", "Templates"],

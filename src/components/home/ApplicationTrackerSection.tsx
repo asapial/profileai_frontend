@@ -101,7 +101,7 @@ export function ApplicationTrackerSection({
                       </p>
                     </div>
                     <span
-                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${TONE_STYLES[row.tone]}`}
+                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${TONE_STYLES[row.tone]}`}
                     >
                       <Icon className="h-3 w-3" />
                       {row.status}

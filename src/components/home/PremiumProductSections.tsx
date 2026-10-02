@@ -52,7 +52,7 @@ export function CareerWorkspaceSection({
             title={<>{content?.title || "Your entire job search, moving as one."}</>}
             description={
               content?.description ||
-              "ProFile AI connects the work before, during and after every application so nothing falls through the cracks."
+              "ProfileAI connects the work before, during and after every application so nothing falls through the cracks."
             }
           />
           <div className="mt-8 grid gap-3">
@@ -72,7 +72,7 @@ export function CareerWorkspaceSection({
                       {asText(item.title, "Connected workflow")}
                     </h3>
                     {item.label ? (
-                      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-primary">
                         {String(item.label)}
                       </span>
                     ) : null}
@@ -99,7 +99,7 @@ export function CareerWorkspaceSection({
             <div className="rounded-[1.45rem] border border-white/40 bg-background/45 p-4 shadow-inner backdrop-blur-xl dark:border-white/8 dark:bg-white/3 sm:p-6">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
                     Career command center
                   </p>
                   <p className="mt-1 text-lg font-semibold">Senior Product Designer</p>
@@ -117,7 +117,7 @@ export function CareerWorkspaceSection({
                 ].map(([value, label]) => (
                   <div key={label} className="glass-subtle rounded-xl p-3 sm:p-4">
                     <p className="text-xl font-bold tracking-tight sm:text-2xl">{value}</p>
-                    <p className="mt-1 text-[10px] text-muted-foreground sm:text-xs">{label}</p>
+                    <p className="mt-1 text-xs text-muted-foreground sm:text-xs">{label}</p>
                   </div>
                 ))}
               </div>
@@ -267,7 +267,7 @@ export function PrivacyControlSection({
               </h2>
               <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
                 {content?.description ||
-                  "Premium software should feel safe as well as beautiful. ProFile AI keeps you in control of every document, suggestion and shared link."}
+                  "Premium software should feel safe as well as beautiful. ProfileAI keeps you in control of every document, suggestion and shared link."}
               </p>
               <div className="mt-7">
                 <CtaButton

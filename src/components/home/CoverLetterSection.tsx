@@ -30,7 +30,7 @@ export function CoverLetterSection({ content }: { content?: ManagedHomepageSecti
                 <Mail className="h-4 w-4 text-violet-600" />
                 Cover letter — Senior Engineer
               </div>
-              <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold text-accent-foreground">
+              <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">
                 <Sparkles className="h-3 w-3" /> AI
               </span>
             </div>

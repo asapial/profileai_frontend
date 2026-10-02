@@ -39,7 +39,7 @@ export function TestimonialsSection({
         <SectionHeader
           eyebrow={content?.eyebrow || "Loved by job seekers"}
           title={<>{content?.title || "Real people, real interviews"}</>}
-          description={content?.description || "Join thousands of job seekers who've used ProFile AI to land more interviews in less time."}
+          description={content?.description || "Join thousands of job seekers who've used ProfileAI to land more interviews in less time."}
         />
 
         <ul className="mt-12 grid gap-5 lg:grid-cols-3">

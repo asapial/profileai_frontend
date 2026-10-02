@@ -25,8 +25,8 @@ export function WorkflowSection({
   return (
     <section id="workflow" className="studio-workflow">
       <div className="studio-container">
-        <div className="studio-section-heading" data-aos="fade-up">
-          <p className="studio-eyebrow">01 / THE PROCESS</p>
+        <div className="studio-section-heading">
+          <p className="studio-eyebrow">THE PROCESS</p>
           <h2>
             {content?.title || (
               <>
@@ -43,8 +43,8 @@ export function WorkflowSection({
         </div>
         <ol className="studio-steps">
           {steps.map((step, index) => (
-            <li key={index} data-aos="fade-up" data-aos-delay={index * 70}>
-              <span className="studio-step-number">0{index + 1}</span>
+            <li key={index}>
+
               <h3>{String(step.title)}</h3>
               <p>{String(step.description)}</p>
             </li>

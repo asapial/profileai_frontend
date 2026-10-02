@@ -17,21 +17,17 @@ import {
   ChevronUp,
   History,
   Quote,
-  Lock,
-  Layers,
   Code2,
-  Calendar,
-  Users,
   Target,
   FileCheck2,
   X,
-  ExternalLink,
   Briefcase,
   MapPin,
   DollarSign,
   Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { MyProfile } from "@/lib/hooks/useMyProfile";
 
 export type EvidenceEntry = {
   id: string;
@@ -76,11 +72,14 @@ export function EvidenceStudio({
   busy,
   run,
   onDelete,
+  profile,
 }: Actions & {
   evidence: EvidenceEntry[];
   onDelete: (id: string) => void;
+  profile?: MyProfile;
 }) {
   const [editing, setEditing] = useState<EvidenceEntry | null>(null);
+  const [useProfileDraft, setUseProfileDraft] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [expandedDetailsId, setExpandedDetailsId] = useState<string | null>(null);
 
@@ -124,7 +123,7 @@ export function EvidenceStudio({
               </span>
               <div>
                 <CardTitle className="text-lg font-semibold">
-                  {editing ? "Edit Evidence" : "Add Real Evidence"}
+                  {editing ? "Edit Career Highlight" : "Add Career Highlight"}
                 </CardTitle>
                 <CardDescription className="text-xs">
                   {editing
@@ -147,12 +146,23 @@ export function EvidenceStudio({
                 Cancel
               </Button>
             )}
+            {!editing && profile && (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="h-8 px-2 text-xs"
+                onClick={() => setUseProfileDraft((value) => !value)}
+              >
+                {useProfileDraft ? "Clear profile draft" : "Prefill from profile"}
+              </Button>
+            )}
           </div>
         </CardHeader>
 
         <CardContent className="pt-5">
           <form
-            key={editing?.id ?? "new"}
+            key={editing?.id ?? (useProfileDraft ? "profile-draft" : "new")}
             className="space-y-4"
             onSubmit={(event) => {
               event.preventDefault();
@@ -185,6 +195,7 @@ export function EvidenceStudio({
                 }
                 form.reset();
                 setEditing(null);
+                setUseProfileDraft(false);
                 setShowDetails(false);
               });
             }}
@@ -199,7 +210,7 @@ export function EvidenceStudio({
                 minLength={2}
                 maxLength={160}
                 placeholder="e.g. Distributed Payment Pipeline Redesign"
-                defaultValue={editing?.title}
+                defaultValue={editing?.title ?? (useProfileDraft ? profile?.headline ?? "" : "")}
                 className={inputClass}
               />
             </div>
@@ -215,7 +226,7 @@ export function EvidenceStudio({
                 maxLength={3000}
                 rows={3}
                 placeholder="Describe what you built, resolved, or led, and the real impact..."
-                defaultValue={editing?.statement}
+                defaultValue={editing?.statement ?? (useProfileDraft ? profile?.bio ?? "" : "")}
                 className={inputClass}
               />
             </div>
@@ -223,7 +234,7 @@ export function EvidenceStudio({
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Evidence Source
+                  Proof or Source
                 </label>
                 <input
                   name="source"
@@ -231,7 +242,7 @@ export function EvidenceStudio({
                   minLength={2}
                   maxLength={500}
                   placeholder="e.g. GitHub PR #412, JIRA, Performance Review"
-                  defaultValue={editing?.source}
+                  defaultValue={editing?.source ?? (useProfileDraft ? "Profile — professional details" : "")}
                   className={inputClass}
                 />
               </div>
@@ -263,7 +274,7 @@ export function EvidenceStudio({
               <input
                 name="technologies"
                 placeholder="TypeScript, PostgreSQL, Redis, Kafka"
-                defaultValue={editing?.technologies?.join(", ")}
+                defaultValue={editing?.technologies?.join(", ") ?? (useProfileDraft ? profile?.skills.join(", ") : "")}
                 className={inputClass}
               />
             </div>
@@ -293,7 +304,7 @@ export function EvidenceStudio({
                   </p>
                   {starDetails.map(({ key, label, placeholder }) => (
                     <div key={key} className="space-y-1">
-                      <label className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                      <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                         {label}
                       </label>
                       <textarea
@@ -313,7 +324,7 @@ export function EvidenceStudio({
                     </div>
                   ))}
                   <div className="space-y-1">
-                    <label className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                       Team size (if applicable)
                     </label>
                     <input
@@ -336,7 +347,7 @@ export function EvidenceStudio({
                 disabled={busy}
                 className="bg-violet-600 text-white hover:bg-violet-700 shadow-sm"
               >
-                {editing ? "Update Evidence" : "Save Evidence"}
+                {editing ? "Update Highlight" : "Save Highlight"}
               </Button>
               {editing && (
                 <Button
@@ -356,7 +367,7 @@ export function EvidenceStudio({
         </CardContent>
       </Card>
 
-      {/* Evidence Bank List (7 cols on lg) */}
+      {/* Career highlights list (7 cols on lg) */}
       <Card className="w-full min-w-0 border-border/70 lg:col-span-7">
         <CardHeader className="border-b border-border/60 pb-5">
           <div className="flex items-center justify-between">
@@ -365,9 +376,9 @@ export function EvidenceStudio({
                 <ShieldCheck className="size-4" />
               </span>
               <div>
-                <CardTitle className="text-lg font-semibold">Evidence Bank</CardTitle>
+                <CardTitle className="text-lg font-semibold">Career Highlights</CardTitle>
                 <CardDescription className="text-xs">
-                  Your grounded record of professional facts and milestones
+                  Profile-connected achievements, professional facts, and milestones
                 </CardDescription>
               </div>
             </div>
@@ -422,7 +433,7 @@ export function EvidenceStudio({
                         {item.technologies.map((tech) => (
                           <span
                             key={tech}
-                            className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
+                            className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground"
                           >
                             <Code2 className="size-3 text-violet-500" />
                             {tech}
@@ -459,7 +470,7 @@ export function EvidenceStudio({
                           <div className="mt-2.5 grid gap-2 rounded-lg bg-muted/40 p-3 text-xs">
                             {Object.entries(item.details).map(([k, val]) => (
                               <div key={k} className="flex flex-col sm:flex-row sm:gap-2">
-                                <span className="font-semibold uppercase tracking-wider text-muted-foreground text-[10px] sm:w-20 shrink-0">
+                                <span className="font-semibold uppercase tracking-wider text-muted-foreground text-xs sm:w-20 shrink-0">
                                   {k}:
                                 </span>
                                 <span className="text-foreground/90">{String(val)}</span>
@@ -621,7 +632,7 @@ export function InterviewStudio({
                       )}
                     >
                       <p className="text-xs font-semibold text-foreground line-clamp-1">{d.title}</p>
-                      <p className="mt-1 text-[11px] text-muted-foreground line-clamp-2">{d.body}</p>
+                      <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{d.body}</p>
                     </button>
                   ))}
               </div>
@@ -754,7 +765,7 @@ export type DiscoveryPreferences = {
   workplace?: string;
   salaryMin?: number | null;
   salaryCurrency?: string | null;
-  writingStyle?: { tone: string; length: string };
+  writingStyle?: { tone: string; length: string; targetCharacters?: number };
 };
 
 export function PreferencesForm({

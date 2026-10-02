@@ -80,6 +80,11 @@ type Analysis = {
     requirements: Array<{
       requirement: string;
       status: string;
+      coverage: number;
+      confidence: string;
+      importance: string;
+      rationale?: string;
+      components?: { lexical: number; semantic: number; evidenceQuality: number };
       citation: { source: string; quote: string } | null;
     }>;
     breakdown: Record<string, string | number | null>;
@@ -511,21 +516,33 @@ export default function CareerPage() {
                         key={i}
                         className="rounded-xl border border-border/60 bg-card p-4 transition-all duration-150 hover:border-violet-500/30"
                       >
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <span
                             className={cn(
                               "rounded-full px-2 py-0.5 text-xs font-bold uppercase tracking-wider",
-                              r.status === "MATCHED" || r.status === "VERIFIED"
+                              r.status === "strong"
                                 ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
-                                : r.status === "PARTIAL"
+                                : r.status === "partial"
                                 ? "bg-amber-500/10 text-amber-600 border border-amber-500/20"
                                 : "bg-rose-500/10 text-rose-600 border border-rose-500/20"
                             )}
                           >
                             {r.status}
                           </span>
+                          <span className="text-xs font-semibold text-foreground">{r.coverage}% coverage</span>
+                          <span className="rounded-full border border-border/70 bg-muted/40 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                            {r.importance} · {r.confidence} confidence
+                          </span>
                         </div>
                         <p className="mt-2 text-xs font-medium text-foreground">{r.requirement}</p>
+                        {r.components && (
+                          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
+                            <span>Lexical {r.components.lexical}%</span>
+                            <span>Semantic {r.components.semantic}%</span>
+                            <span>Evidence quality {r.components.evidenceQuality}%</span>
+                          </div>
+                        )}
+                        {r.rationale && <p className="mt-2 text-xs text-muted-foreground">{r.rationale}</p>}
                         {r.citation && (
                           <blockquote className="mt-2.5 border-l-2 border-violet-500/40 pl-3 text-xs text-muted-foreground">
                             &ldquo;{r.citation.quote}&rdquo;

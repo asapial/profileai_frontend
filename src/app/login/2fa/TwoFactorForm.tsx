@@ -29,11 +29,13 @@ function getSafeRedirect(raw: string | null | undefined): string | null {
   return raw;
 }
 
-async function syncFrontendSession(): Promise<boolean> {
+async function syncFrontendSession(accessToken: string): Promise<boolean> {
   try {
     const response = await fetch("/api/auth/post-login", {
       method: "POST",
       credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accessToken }),
     });
     return response.ok;
   } catch {
@@ -92,7 +94,7 @@ export function TwoFactorForm() {
       return;
     }
 
-    if (!(await syncFrontendSession())) {
+    if (!(await syncFrontendSession(result.accessToken))) {
       await clearFailedLogin();
       setSubmitting(false);
       setError("Verification succeeded, but the browser session could not be secured. Please log in again.");
@@ -118,7 +120,7 @@ export function TwoFactorForm() {
       return;
     }
 
-    if (!(await syncFrontendSession())) {
+    if (!(await syncFrontendSession(result.accessToken))) {
       await clearFailedLogin();
       setRecoveringDevices(false);
       setDeviceRecoveryToken(null);

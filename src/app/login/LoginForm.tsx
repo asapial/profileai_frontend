@@ -37,11 +37,13 @@ function getSafeRedirect(raw: string | null | undefined): string | null {
   return raw;
 }
 
-async function syncFrontendSession(): Promise<boolean> {
+async function syncFrontendSession(accessToken: string): Promise<boolean> {
   try {
     const response = await fetch("/api/auth/post-login", {
       method: "POST",
       credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accessToken }),
     });
     return response.ok;
   } catch {
@@ -75,7 +77,7 @@ export function LoginForm() {
         const result = await api.post<LoginResponse>("/auth/google/session", {});
         if ("deviceLimitReached" in result) { setDeviceRecoveryToken(result.recoveryToken); return; }
         if (result.twoFactorRequired) { router.replace(`/login/2fa?email=${encodeURIComponent(result.email)}`); return; }
-        if (!(await syncFrontendSession())) throw new Error("Could not secure the browser session. Please sign in again.");
+        if (!(await syncFrontendSession(result.accessToken))) throw new Error("Could not secure the browser session. Please sign in again.");
         window.location.replace(postLoginRoute(result.user));
       } catch (e) { setError(e instanceof Error ? e.message : "Google sign-in failed."); }
       finally { setSubmitting(false); }
@@ -122,7 +124,7 @@ export function LoginForm() {
       return;
     }
 
-    if (!(await syncFrontendSession())) {
+    if (!(await syncFrontendSession(result.accessToken))) {
       await clearFailedLogin();
       setSubmitting(false);
       setError("Login succeeded, but the browser session could not be secured. Please try again.");
@@ -149,7 +151,7 @@ export function LoginForm() {
       return;
     }
 
-    if (!(await syncFrontendSession())) {
+    if (!(await syncFrontendSession(result.accessToken))) {
       await clearFailedLogin();
       setRecoveringDevices(false);
       setDeviceRecoveryToken(null);
@@ -369,7 +371,7 @@ export function LoginForm() {
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        New to ProFile AI?{" "}
+        New to ProfileAI?{" "}
         <Link href="/register" className="font-semibold text-primary hover:underline">
           Create a free account
         </Link>

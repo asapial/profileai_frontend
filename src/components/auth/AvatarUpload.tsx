@@ -111,7 +111,7 @@ export function AvatarUpload({ onUpload, disabled, onBusyChange }: AvatarUploadP
           ) : (
             <span className="flex h-full w-full flex-col items-center justify-center gap-1 text-muted-foreground">
               <User className="h-7 w-7" />
-              <span className="text-[10px] font-medium">Photo</span>
+              <span className="text-xs font-medium">Photo</span>
             </span>
           )}
 
@@ -119,7 +119,7 @@ export function AvatarUpload({ onUpload, disabled, onBusyChange }: AvatarUploadP
           {!uploading && (
             <span className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
               <Camera className="h-5 w-5 text-white" />
-              <span className="mt-0.5 text-[10px] font-semibold text-white">
+              <span className="mt-0.5 text-xs font-semibold text-white">
                 {preview ? "Change" : "Upload"}
               </span>
             </span>

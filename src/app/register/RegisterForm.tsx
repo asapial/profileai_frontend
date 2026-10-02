@@ -165,11 +165,6 @@ export function RegisterForm() {
         onSubmit={onSubmit}
         className={cn("space-y-5", error && shakeKey > 0 && "animate-auth-shake")}
       >
-        {/* Avatar Upload */}
-        <div className="flex justify-center">
-          <AvatarUpload onUpload={setAvatarUrl} onBusyChange={setPhotoBusy} disabled={submitting} />
-        </div>
-
         {/* Name */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
@@ -349,6 +344,14 @@ export function RegisterForm() {
           )}
         </div>
 
+        <details className="auth-optional" open={Boolean(fieldErrors.referredByCode) || undefined}>
+          <summary>Add a photo or referral code <span>Optional</span></summary>
+          <div className="space-y-5 pt-5">
+        {/* Avatar Upload */}
+        <div className="flex justify-center">
+          <AvatarUpload onUpload={setAvatarUrl} onBusyChange={setPhotoBusy} disabled={submitting} />
+        </div>
+
         {/* Referral code */}
         <div>
           <label htmlFor="referredByCode" className="mb-1.5 block text-sm font-medium text-foreground">
@@ -380,6 +383,9 @@ export function RegisterForm() {
             </p>
           )}
         </div>
+
+          </div>
+        </details>
 
         {/* Accept terms */}
         <div>

@@ -1,13 +1,13 @@
 import { AuthScene } from "@/components/auth/AuthScene";
 import type { Metadata } from "next";
 import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
+import { MinimalAuthFooter } from "@/components/auth/MinimalAuthFooter";
 import { ForgotPasswordForm } from "./ForgotPasswordForm";
 
 export const metadata: Metadata = {
-  title: "Forgot password — ProFile AI",
+  title: "Forgot password — ProfileAI",
   description:
-    "Reset your ProFile AI password. We'll email you a one-time code to confirm it's really you.",
+    "Reset your ProfileAI password. We'll email you a one-time code to confirm it's really you.",
   robots: { index: false, follow: false },
 };
 
@@ -34,7 +34,7 @@ export default function ForgotPasswordPage() {
           <ForgotPasswordForm />
         </AuthScene>
       </main>
-      <Footer />
+      <MinimalAuthFooter />
     </>
   );
 }

@@ -2,14 +2,14 @@ import { AuthScene } from "@/components/auth/AuthScene";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
+import { MinimalAuthFooter } from "@/components/auth/MinimalAuthFooter";
 import { VerifyEmailForm } from "./VerifyEmailForm";
 import { AuthFormFallback } from "@/components/auth/AuthFormFallback";
 
 export const metadata: Metadata = {
-  title: "Verify your email — ProFile AI",
+  title: "Verify your email — ProfileAI",
   description:
-    "Enter the 6-digit code we sent to your email to finish creating your ProFile AI account.",
+    "Enter the 6-digit code we sent to your email to finish creating your ProfileAI account.",
   robots: { index: false, follow: false },
 };
 
@@ -38,7 +38,7 @@ export default function VerifyEmailPage() {
           </Suspense>
         </AuthScene>
       </main>
-      <Footer />
+      <MinimalAuthFooter />
     </>
   );
 }

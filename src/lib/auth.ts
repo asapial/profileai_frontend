@@ -5,6 +5,7 @@
 // contexts (tests, future SSR) can stash it elsewhere.
 
 import { api, ApiError } from "./api";
+import { env } from "./env";
 import type {
   ForgotPasswordRequest,
   LoginRequest,
@@ -21,6 +22,46 @@ export type LoginResult =
   | { kind: "2fa"; email: string }
   | { kind: "device-limit"; recoveryToken: string }
   | { kind: "error"; message: string; code?: string };
+
+/**
+ * Establish the same-origin session marker used by the dashboard proxy.
+ * The normal path remains the server-validated Next route. During local
+ * development, backend and frontend share the `localhost` cookie jar; if a
+ * stale dev server has not discovered the new route yet, verify the freshly
+ * issued JWT against `/auth/me` before creating only the non-sensitive role
+ * marker. The httpOnly access token still comes from the backend response.
+ */
+export async function syncFrontendSession(accessToken: string): Promise<boolean> {
+  try {
+    const response = await fetch("/api/auth/post-login", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accessToken }),
+    });
+    if (response.ok) return true;
+    if (response.status !== 404 || typeof window === "undefined") return false;
+
+    const apiUrl = new URL(env.apiBaseUrl, window.location.origin);
+    if (apiUrl.hostname !== window.location.hostname) return false;
+
+    const parts = accessToken.split(".");
+    if (parts.length !== 3) return false;
+    const encoded = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const padded = encoded + "=".repeat((4 - (encoded.length % 4)) % 4);
+    const claims = JSON.parse(atob(padded)) as { userId?: unknown; role?: unknown; exp?: unknown };
+    if ((claims.role !== "USER" && claims.role !== "ADMIN") || typeof claims.userId !== "string" || typeof claims.exp !== "number" || claims.exp <= Date.now() / 1000) return false;
+
+    const current = await api.get<{ user: { id: string; role: "USER" | "ADMIN" } }>("/auth/me", { cache: "no-store" });
+    if (current.user.id !== claims.userId || current.user.role !== claims.role) return false;
+
+    const secure = window.location.protocol === "https:" ? "; Secure" : "";
+    document.cookie = `userRole=${claims.role}; Path=/; Max-Age=43200; SameSite=Lax${secure}`;
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export const login = async (
   payload: LoginRequest

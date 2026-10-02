@@ -118,6 +118,30 @@ export type ResumeContentData = {
 
 export type AtsResult = {
   atsScore: number;
+  confidence?: "HIGH" | "MEDIUM" | "LOW";
+  methodologyVersion?: string;
+  analysisMode?: "FULL_HYBRID" | "DETERMINISTIC_FALLBACK";
+  sourceHash?: string;
+  breakdown?: {
+    requirementCoverage: number;
+    evidenceStrength: number;
+    semanticRelevance: number;
+    experienceAlignment: number;
+    contentQuality: number;
+    parsingSafety: number;
+    completeness: number;
+  };
+  requirements?: Array<{
+    label: string;
+    priority: "required" | "responsibility" | "preferred";
+    category: string;
+    matched: boolean;
+    matchType: "exact" | "alias" | "semantic" | "missing";
+    matchConfidence: number;
+    evidenceStrength: number;
+    evidenceSection: string | null;
+    evidence: string | null;
+  }>;
   matchedKeywords: string[];
   missingKeywords: string[];
   suggestions: Array<{ section: string; issue: string; suggestion: string }>;
@@ -149,6 +173,7 @@ export type GenerateResumePayload = {
   templateId: string;
   title: string;
   type: ResumeType;
+  contentDepth: "CONCISE" | "STANDARD" | "DETAILED" | "COMPREHENSIVE";
   targetJobTitle: string;
   jobDescription?: string;
 };
@@ -272,6 +297,7 @@ export function useUpdateResume(
     onSuccess: (...args) => {
       const [data] = args as unknown as [ResumeDetail, UpdateResumePayload];
       qc.setQueryData(detailKey(id), data);
+      qc.invalidateQueries({ queryKey: ["resumes", "list"] });
       qc.invalidateQueries({ queryKey: historyKey(id) });
       (options?.onSuccess as ((...a: typeof args) => void) | undefined)?.(
         ...args
@@ -348,6 +374,26 @@ export function useAtsCheck(
       (options?.onSuccess as ((...a: typeof args) => void) | undefined)?.(
         ...args
       );
+    },
+  });
+}
+
+export type AtsOptimizeResult = {
+  resume: ResumeDetail;
+  atsData: AtsResult;
+  changes: string[];
+  beforeScore: number | null;
+  afterScore: number;
+};
+
+export function useOptimizeResumeForAts(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post<AtsOptimizeResult>(`/resumes/${id}/ats-optimize`, {}),
+    onSuccess: (data) => {
+      qc.setQueryData(detailKey(id), data.resume);
+      qc.invalidateQueries({ queryKey: historyKey(id) });
+      qc.invalidateQueries({ queryKey: ["resumes", "list"] });
     },
   });
 }

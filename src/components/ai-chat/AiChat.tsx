@@ -2,6 +2,7 @@
 
 import { ArrowUpRight, Bot, LockKeyhole, MessageCircle, RotateCcw, Sparkles, Trash2 } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { AiChatComposer } from "@/components/ai-chat/AiChatComposer";
 import { AiChatMessage } from "@/components/ai-chat/AiChatMessage";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { track } from "@/lib/analytics";
 
 export function AiChat() {
   const chat = useAiChat();
+  const pathname = usePathname();
   const isMobile = useIsMobile();
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -19,7 +21,8 @@ export function AiChat() {
     if (chat.isOpen) endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [chat.isOpen, chat.messages, chat.isSending]);
 
-  if (!chat.enabled || chat.isLoadingConfig) return null;
+  const blocksPrimaryEditorActions = /^\/dashboard\/resume\/[^/]+\/edit/.test(pathname);
+  if (!chat.enabled || chat.isLoadingConfig || blocksPrimaryEditorActions) return null;
 
   return (
     <>
@@ -27,11 +30,10 @@ export function AiChat() {
         type="button"
         size="lg"
         onClick={() => { track({ name: "ai_chat_opened", properties: { role: chat.config?.role ?? "VISITOR" } }); chat.setIsOpen(true); }}
-        className="group fixed bottom-5 right-5 z-40 h-14 overflow-visible rounded-full border border-white/20 bg-slate-950 px-3 text-white shadow-[0_24px_60px_-16px_rgba(79,70,229,0.75)] transition duration-300 hover:-translate-y-1 hover:bg-slate-900 hover:shadow-[0_28px_70px_-15px_rgba(124,58,237,0.85)] md:bottom-7 md:right-7 md:px-4"
-        aria-label={`Open ${chat.config?.title ?? "ProFile Assistant"}`}
+        className="group fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-40 size-12 overflow-hidden rounded-full border border-violet-400/30 bg-violet-950 p-1.5 text-white shadow-lg transition duration-200 hover:-translate-y-0.5 hover:bg-violet-900 md:bottom-6 md:right-6 md:h-12 md:w-auto md:px-2.5"
+        aria-label={`Open ${chat.config?.title ?? "ProfileAI Assistant"}`}
       >
-        <span className="absolute inset-0 -z-10 rounded-full bg-violet-500/40 blur-xl transition group-hover:bg-fuchsia-500/50" />
-        <span className="relative grid size-9 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-inner">
+        <span className="relative grid size-9 place-items-center rounded-full bg-violet-700 shadow-inner">
           <MessageCircle className="size-5" />
           <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-slate-950 bg-emerald-400" />
         </span>
@@ -55,7 +57,7 @@ export function AiChat() {
               <div className="min-w-0 flex-1 text-left">
                 <div className="flex items-center gap-2">
                   <SheetTitle className="text-base tracking-tight">{chat.config?.title}</SheetTitle>
-                  <span className="rounded-full border border-violet-200/80 bg-violet-50/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-violet-700 dark:border-violet-800 dark:bg-violet-950/60 dark:text-violet-200">AI</span>
+                  <span className="rounded-full border border-violet-200/80 bg-violet-50/80 px-2 py-0.5 text-xs font-bold uppercase tracking-[0.14em] text-violet-700 dark:border-violet-800 dark:bg-violet-950/60 dark:text-violet-200">AI</span>
                 </div>
                 <SheetDescription id="ai-chat-description" className="mt-0.5 truncate text-xs">
                   {chat.config?.role === "ADMIN" ? "Permission-aware analysis and drafts" : chat.config?.role === "USER" ? "Private guidance for your career workspace" : "Product, template and ATS guidance"}
@@ -63,7 +65,7 @@ export function AiChat() {
               </div>
               <Button type="button" variant="ghost" size="icon-sm" className="rounded-xl text-muted-foreground hover:bg-white/80 hover:text-foreground dark:hover:bg-white/10" onClick={() => void chat.clear()} aria-label="Clear conversation"><Trash2 className="size-4" /></Button>
             </div>
-            <div className="relative mt-3 flex items-center gap-1.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-300">
+            <div className="relative mt-3 flex items-center gap-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
               <LockKeyhole className="size-3" /> Secure context · You control every action
             </div>
           </SheetHeader>
@@ -86,7 +88,7 @@ export function AiChat() {
 
                 {chat.messages.length <= 1 && chat.quickActions.length ? (
                   <div className="grid gap-2 pt-1">
-                    <p className="px-1 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Suggested for this page</p>
+                    <p className="px-1 text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">Suggested for this page</p>
                     {chat.quickActions.map((action) => (
                       <button key={action} type="button" className="group flex min-h-12 items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 text-left text-sm font-medium shadow-[0_8px_28px_-20px_rgba(15,23,42,0.45)] backdrop-blur transition hover:-translate-y-0.5 hover:border-violet-300 hover:bg-white hover:shadow-[0_14px_34px_-18px_rgba(124,58,237,0.38)] dark:border-white/10 dark:bg-white/[0.05] dark:hover:border-violet-500/50 dark:hover:bg-white/[0.08]" onClick={() => void chat.send(action)}>
                         <span>{action}</span><ArrowUpRight className="size-4 shrink-0 text-slate-400 transition group-hover:text-violet-600" />
@@ -100,7 +102,7 @@ export function AiChat() {
                     <div className="grid size-7 shrink-0 place-items-center rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-950"><Sparkles className="size-3.5" /></div>
                     <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-md border border-slate-200/80 bg-white/90 px-4 py-3.5 shadow-sm dark:border-white/10 dark:bg-white/[0.06]">
                       {[0, 1, 2].map((dot) => <span key={dot} className="size-1.5 animate-pulse rounded-full bg-violet-500" style={{ animationDelay: `${dot * 160}ms` }} />)}
-                      <span className="sr-only">ProFile Assistant is thinking</span>
+                      <span className="sr-only">ProfileAI Assistant is thinking</span>
                     </div>
                   </div>
                 ) : null}

@@ -85,10 +85,10 @@ export function NavbarShell({ isAuthenticated, userName }: NavbarShellProps) {
         url: "#",
         items: [
           {
-            title: "Applications",
-            description: "Keep every opportunity organized in one place",
+            title: "Job workspace",
+            description: "Keep every role and next step organized in one place",
             icon: <Briefcase className="size-5 shrink-0" />,
-            url: "/applications",
+            url: "/dashboard/jobs",
           },
           {
             title: "Notifications",
@@ -155,16 +155,16 @@ export function NavbarShell({ isAuthenticated, userName }: NavbarShellProps) {
         <Link
           href="/dashboard"
           className="group flex items-center gap-2.5"
-          aria-label="ProFile AI home"
+          aria-label="ProfileAI home"
         >
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-violet-600 via-fuchsia-500 to-violet-500 text-white shadow-lg shadow-violet-500/30 ring-1 ring-violet-500/20 transition-transform group-hover:scale-105 group-hover:shadow-violet-500/40">
             <Sparkles className="h-4 w-4" />
           </span>
           <span className="flex flex-col leading-tight">
             <span className="text-base font-semibold tracking-tight text-gradient">
-              ProFile AI
+              ProfileAI
             </span>
-            <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Career Studio
             </span>
           </span>
@@ -197,7 +197,7 @@ export function NavbarShell({ isAuthenticated, userName }: NavbarShellProps) {
       {isAuthenticated && userName && (
         <div className="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 sm:block">
           <div className="pointer-events-auto hidden items-center gap-2 rounded-full border border-border/60 bg-background/80 py-1 pl-1 pr-3 text-xs shadow-sm lg:flex">
-            <span className="grid h-7 w-7 place-items-center rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-500 text-[10px] font-semibold text-white shadow shadow-violet-500/30">
+            <span className="grid h-7 w-7 place-items-center rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-500 text-xs font-semibold text-white shadow shadow-violet-500/30">
               {userName
                 .split(" ")
                 .map((p) => p[0])

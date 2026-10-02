@@ -8,6 +8,7 @@
 import Link from "next/link";
 import { FileText, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { useDashboardSummary } from "@/lib/hooks/useDashboardSummary";
 import {
   WidgetCard,
@@ -15,12 +16,6 @@ import {
   WidgetError,
   WidgetSkeleton,
 } from "./WidgetCard";
-
-const statusStyles: Record<string, string> = {
-  DRAFT: "bg-amber-100 text-amber-700",
-  GENERATED: "bg-violet-100 text-violet-700",
-  EXPORTED: "bg-emerald-100 text-emerald-700",
-};
 
 function formatDate(iso?: string) {
   if (!iso) return "";
@@ -116,11 +111,7 @@ export function RecentResumesList() {
                 {r.title}
               </Link>
               <div className="flex shrink-0 items-center gap-3">
-                <span
-                  className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${statusStyles[r.status] ?? "bg-muted text-muted-foreground"}`}
-                >
-                  {r.status.toLowerCase()}
-                </span>
+                <StatusBadge status={r.status} />
                 <span className="text-xs text-muted-foreground tabular-nums">
                   {formatDate(r.updatedAt)}
                 </span>

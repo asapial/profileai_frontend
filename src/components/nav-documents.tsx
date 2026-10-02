@@ -11,6 +11,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 
 const isCurrent = (pathname: string, url: string) =>
@@ -24,10 +25,14 @@ export function NavDocuments({
   label?: string
 }) {
   const pathname = usePathname()
+  const { isMobile, setOpenMobile } = useSidebar()
+  const closeMobileNavigation = () => {
+    if (isMobile) setOpenMobile(false)
+  }
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel className="px-2 text-[10px] font-bold uppercase tracking-[0.16em]">
+      <SidebarGroupLabel className="sidebar-section-label px-2 text-xs font-bold uppercase tracking-[0.18em]">
         {label}
       </SidebarGroupLabel>
       <SidebarGroupContent>
@@ -38,9 +43,13 @@ export function NavDocuments({
                 asChild
                 tooltip={item.title}
                 isActive={isCurrent(pathname, item.url)}
-                className="h-9 rounded-lg px-2.5 data-[active=true]:bg-gradient-to-r data-[active=true]:from-violet-500/15 data-[active=true]:to-fuchsia-500/10 data-[active=true]:text-primary"
+                className="sidebar-nav-button h-10 rounded-xl px-2.5"
               >
-                <Link href={item.url}>
+                <Link
+                  href={item.url}
+                  aria-current={isCurrent(pathname, item.url) ? "page" : undefined}
+                  onClick={closeMobileNavigation}
+                >
                   <item.icon />
                   <span>{item.title}</span>
                 </Link>

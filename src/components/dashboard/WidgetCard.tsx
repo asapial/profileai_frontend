@@ -32,7 +32,7 @@ export function WidgetCard({
   children: ReactNode;
 }) {
   return (
-    <Card className="h-full">
+    <Card className="h-fit">
       <CardHeader className="flex flex-row items-start justify-between gap-3">
         <div className="space-y-1">
           <CardTitle className="flex items-center gap-2">

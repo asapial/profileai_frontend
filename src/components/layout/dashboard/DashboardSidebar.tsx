@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   FileText,
-  Briefcase,
   Bell,
   LayoutTemplate,
   UserRound,
@@ -22,7 +21,6 @@ const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/resumes", label: "Resumes", icon: FileText },
   { href: "/dashboard/jobs", label: "Job workspace", icon: Compass },
-  { href: "/dashboard/applications", label: "Applications", icon: Briefcase },
   { href: "/templates", label: "Templates", icon: LayoutTemplate },
   { href: "/dashboard/cover-letters", label: "Cover Letters", icon: ScrollText },
   { href: "/dashboard/ats", label: "JD Analyzer", icon: BarChart3 },
@@ -43,9 +41,9 @@ export function DashboardSidebar() {
           </span>
           <span className="flex flex-col leading-tight">
             <span className="text-base font-semibold tracking-tight text-gradient">
-              ProFile AI
+              ProfileAI
             </span>
-            <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Career Studio
             </span>
           </span>
@@ -54,7 +52,7 @@ export function DashboardSidebar() {
 
       {/* Primary nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-5">
-        <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Workspace
         </p>
         <ul className="space-y-1">
@@ -118,8 +116,8 @@ export function DashboardSidebar() {
             </span>
           </span>
         </Link>
-        <p className="mt-3 text-center text-[10px] uppercase tracking-wider text-muted-foreground/70">
-          © {new Date().getFullYear()} ProFile AI
+        <p className="mt-3 text-center text-xs uppercase tracking-wider text-muted-foreground/70">
+          © {new Date().getFullYear()} ProfileAI
         </p>
       </div>
     </aside>

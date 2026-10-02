@@ -127,7 +127,7 @@ export default function TemplatesPage() {
       <div className="flex flex-col gap-3 rounded-2xl border border-border/70 bg-background/50 p-3 backdrop-blur-xl xl:flex-row xl:items-center xl:justify-between">
         <div className="flex flex-wrap gap-2">
           <Segment active={view === "gallery"} onClick={() => setView("gallery")} icon={LayoutGrid}>Public gallery</Segment>
-          <Segment active={view === "mine"} onClick={() => setView("mine")} icon={Pencil}>My gallery <span className="ml-1 rounded-full bg-current/10 px-1.5 py-0.5 text-[10px]">{myQuery.data?.length ?? 0}</span></Segment>
+          <Segment active={view === "mine"} onClick={() => setView("mine")} icon={Pencil}>My gallery <span className="ml-1 rounded-full bg-current/10 px-1.5 py-0.5 text-xs">{myQuery.data?.length ?? 0}</span></Segment>
         </div>
         <div className="flex w-fit rounded-xl border border-border/70 bg-muted/35 p-1">
           <Segment active={documentType === "RESUME"} onClick={() => setDocumentType("RESUME")} icon={FileText}>Résumés</Segment>
@@ -172,7 +172,7 @@ function Segment({ active, onClick, icon: Icon, children }: { active: boolean; o
 }
 
 function Stat({ value, label, icon: Icon }: { value: string; label: string; icon: typeof FileText }) {
-  return <div className="rounded-xl border border-border/60 bg-background/50 p-3 text-center backdrop-blur-xl"><Icon className="mx-auto h-4 w-4 text-violet-500" /><p className="mt-2 font-bold">{value}</p><p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p></div>;
+  return <div className="rounded-xl border border-border/60 bg-background/50 p-3 text-center backdrop-blur-xl"><Icon className="mx-auto h-4 w-4 text-violet-500" /><p className="mt-2 font-bold">{value}</p><p className="text-xs uppercase tracking-wider text-muted-foreground">{label}</p></div>;
 }
 
 function MyTemplateCard({ template, onEdit, onUse }: { template: Template; onEdit: () => void; onUse: () => void }) {

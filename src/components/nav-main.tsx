@@ -11,6 +11,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 export function NavMain({
@@ -32,6 +33,10 @@ export function NavMain({
   label?: string;
 }) {
   const pathname = usePathname();
+  const { isMobile, setOpenMobile } = useSidebar();
+  const closeMobileNavigation = () => {
+    if (isMobile) setOpenMobile(false);
+  };
   const isCurrent = (url: string) =>
     pathname === url ||
     (url !== "/dashboard" &&
@@ -40,21 +45,24 @@ export function NavMain({
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel className="px-2 text-[10px] font-bold uppercase tracking-[0.16em]">
+      <SidebarGroupLabel className="sidebar-section-label px-2 text-xs font-bold uppercase tracking-[0.18em]">
         {label}
       </SidebarGroupLabel>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-2">
+          <SidebarMenuItem className="mb-1 flex items-center gap-2">
             <SidebarMenuButton
               tooltip={quickCreate?.label ?? "Quick Create"}
               asChild={Boolean(quickCreate?.href)}
-              className="h-10 min-w-8 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+              className="sidebar-quick-create h-12 min-w-8 rounded-xl bg-primary px-2.5 text-primary-foreground shadow-lg shadow-primary/15 hover:bg-primary/90 hover:text-primary-foreground"
             >
               {quickCreate?.href ? (
-                <Link href={quickCreate.href}>
+                <Link href={quickCreate.href} onClick={closeMobileNavigation}>
                   <IconCirclePlusFilled />
-                  <span>{quickCreate.label}</span>
+                  <span className="grid min-w-0 leading-tight group-data-[collapsible=icon]:hidden">
+                    <span className="truncate font-semibold">{quickCreate.label}</span>
+                    <span className="truncate text-xs font-medium text-primary-foreground/65">Create something new</span>
+                  </span>
                 </Link>
               ) : (
                 <>
@@ -72,9 +80,13 @@ export function NavMain({
                 asChild
                 tooltip={item.title}
                 isActive={isCurrent(item.url)}
-                className="h-9 rounded-lg px-2.5 data-[active=true]:bg-gradient-to-r data-[active=true]:from-violet-500/15 data-[active=true]:to-fuchsia-500/10 data-[active=true]:text-primary"
+                className="sidebar-nav-button h-10 rounded-xl px-2.5"
               >
-                <Link href={item.url}>
+                <Link
+                  href={item.url}
+                  aria-current={isCurrent(item.url) ? "page" : undefined}
+                  onClick={closeMobileNavigation}
+                >
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
                 </Link>

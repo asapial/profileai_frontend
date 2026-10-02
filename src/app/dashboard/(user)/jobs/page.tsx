@@ -72,7 +72,10 @@ export default function JobsPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-3">
                         <div><h3 className="font-semibold leading-5">{job.title}</h3><p className="mt-1 text-sm text-muted-foreground">{job.company}</p></div>
-                        <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-300">{job.lifecycle.replaceAll("_", " ")}</span>
+                        <div className="flex flex-wrap justify-end gap-1.5">
+                          {Boolean(job._count?.applications) && <span className="rounded-full bg-violet-500/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-300">Application tracked</span>}
+                          <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-300">{job.lifecycle.replaceAll("_", " ")}</span>
+                        </div>
                       </div>
                       <div className="mt-4 flex flex-wrap gap-2 text-xs text-muted-foreground">
                         {job.location && <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1"><MapPin className="size-3" />{job.location}</span>}

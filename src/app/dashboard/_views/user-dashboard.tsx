@@ -6,11 +6,8 @@ import { RecentApplicationsList } from "@/components/dashboard/RecentApplication
 import { RecentResumesList } from "@/components/dashboard/RecentResumesList";
 export function UserDashboardView() {
   return (
-    <div className="mx-auto w-full max-w-[1400px] space-y-7 px-4 py-3 sm:px-6 lg:px-8">
+    <div className="mx-auto w-full max-w-5xl space-y-7 px-4 py-3 sm:px-6 lg:px-8">
       <header className="studio-dashboard-intro">
-        <p className="studio-eyebrow mb-4 text-primary">
-          YOUR WORK, IN PROGRESS
-        </p>
         <GreetingHeader />
       </header>
       <section aria-label="Start your next task">

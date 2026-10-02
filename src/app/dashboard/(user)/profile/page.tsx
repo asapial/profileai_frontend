@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 
 import { motion, AnimatePresence } from "framer-motion";
-import { BriefcaseBusiness, Eye, Sparkles, User } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, Eye, Sparkles, User } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PersonalTab } from "./PersonalTab";
 import { ProfessionalTab } from "./ProfessionalTab";
@@ -20,8 +21,11 @@ const tabs = [
 ] as const;
 
 export default function ProfilePage() {
-  const [value, setValue] = useState<string>("personal");
-
+  const [value, setValue] = useState<string>(() => {
+    if (typeof window === "undefined") return "personal";
+    const requestedTab = new URLSearchParams(window.location.search).get("tab");
+    return tabs.some((tab) => tab.value === requestedTab) ? requestedTab! : "personal";
+  });
 
 
   return (
@@ -34,7 +38,8 @@ export default function ProfilePage() {
       >
 
 
-        <div className="relative z-10 max-w-2xl">
+        <div className="relative z-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div className="max-w-2xl">
           <div className="studio-eyebrow mb-4 text-primary">
             <Sparkles className="h-3.5 w-3.5" /> Your professional identity
           </div>
@@ -42,10 +47,18 @@ export default function ProfilePage() {
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
             Keep your career story current and turn it into stronger resumes, cover letters, and recommendations.
           </p>
+          </div>
+          <Link
+            href="/dashboard/career?tab=Career%20story"
+            className="group inline-flex shrink-0 items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90"
+          >
+            Open Career Story
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
         </div>
       </motion.section>
 
-      <Tabs value={value} onValueChange={setValue} data-aos="fade-up">
+      <Tabs value={value} onValueChange={setValue}>
         <div className="overflow-x-auto pb-1">
           <TabsList className="flex h-auto w-max min-w-full gap-1 sm:min-w-0">
             {tabs.map((t) => {

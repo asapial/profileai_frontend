@@ -19,6 +19,7 @@ import {
   Briefcase,
   FileText,
   ScanSearch,
+  Sparkles,
   ArrowUpRight,
   type LucideIcon,
 } from "lucide-react";
@@ -32,7 +33,7 @@ import { useDashboardSummary } from "@/lib/hooks/useDashboardSummary";
 import { track } from "@/lib/analytics";
 
 type Tile = {
-  id: "create" | "analyze" | "track";
+  id: "career" | "create" | "analyze" | "track";
   label: string;
   description: string;
   href: string;
@@ -41,6 +42,14 @@ type Tile = {
 };
 
 const TILES: Tile[] = [
+  {
+    id: "career",
+    label: "Career Studio",
+    description: "Connect your story, applications, and next steps.",
+    href: "/dashboard/career",
+    icon: Sparkles,
+    accent: "from-indigo-500/15 to-violet-500/10 text-indigo-700",
+  },
   {
     id: "create",
     label: "Create resume",
@@ -51,7 +60,7 @@ const TILES: Tile[] = [
   },
   {
     id: "analyze",
-    label: "Understand the role",
+    label: "Role insights / ATS",
     description: "Find the skills that matter.",
     href: "/dashboard/ats",
     icon: ScanSearch,
@@ -59,9 +68,9 @@ const TILES: Tile[] = [
   },
   {
     id: "track",
-    label: "Track application",
-    description: "Add to your job pipeline.",
-    href: "/dashboard/applications",
+    label: "Job workspace",
+    description: "Track roles and application progress together.",
+    href: "/dashboard/jobs",
     icon: Briefcase,
     accent: "from-amber-500/15 to-orange-500/10 text-amber-700",
   },
@@ -121,7 +130,7 @@ export function QuickActionTiles() {
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {TILES.map((tile) => {
           const reason = limitReason(limits, tile.id);
           const disabled = reason !== null;
@@ -155,7 +164,7 @@ export function QuickActionTiles() {
               </span>
               <span className="min-w-0 flex-1">
                 <span className="flex items-center justify-between gap-2">
-                  <span className="truncate text-sm font-semibold">
+                  <span className="text-sm font-semibold leading-snug">
                     {tile.label}
                   </span>
                   <ArrowUpRight className="h-3.5 w-3.5 text-violet-400 opacity-0 transition group-hover:opacity-100" />

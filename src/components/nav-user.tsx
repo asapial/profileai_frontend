@@ -60,7 +60,7 @@ function ThemeControl() {
     <div className="px-2 py-2">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-xs font-semibold">Appearance</span>
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        <span className="text-xs uppercase tracking-wider text-muted-foreground">
           {selected}
         </span>
       </div>
@@ -80,7 +80,7 @@ function ThemeControl() {
               setTheme(option.value)
             }}
             className={cn(
-              "flex min-h-9 items-center justify-center gap-1 rounded-lg px-2 text-[11px] font-medium transition",
+              "flex min-h-9 items-center justify-center gap-1 rounded-lg px-2 text-xs font-medium transition",
               selected === option.value
                 ? "bg-background text-foreground shadow-sm ring-1 ring-border/70"
                 : "text-muted-foreground hover:bg-background/60 hover:text-foreground",
@@ -137,7 +137,7 @@ export function NavUser({
             <SidebarMenuButton
               size="lg"
               aria-label="Open profile and appearance menu"
-              className="h-auto min-h-14 rounded-xl border border-white/35 bg-background/40 px-2.5 py-2 shadow-sm backdrop-blur-xl transition hover:bg-sidebar-accent/80 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground dark:border-white/8 dark:bg-white/4"
+              className="group/user h-auto min-h-14 rounded-xl border border-white/35 bg-background/40 px-2.5 py-2 shadow-sm backdrop-blur-xl transition hover:bg-sidebar-accent/80 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground dark:border-white/8 dark:bg-white/4"
             >
               <span className="relative">
                 <Avatar className="size-9 rounded-xl ring-2 ring-background">
@@ -150,11 +150,11 @@ export function NavUser({
               </span>
               <span className="grid min-w-0 flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{displayName}</span>
-                <span className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                <span className="mt-0.5 truncate text-xs text-muted-foreground">
                   {role === "ADMIN" ? "Administrator" : "Profile & preferences"}
                 </span>
               </span>
-              <IconChevronRight className="ml-auto size-4 text-muted-foreground transition-transform data-[state=open]:rotate-90" />
+              <IconChevronRight className="ml-auto size-4 text-muted-foreground transition-transform group-data-[state=open]/user:rotate-90" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
 
@@ -175,7 +175,7 @@ export function NavUser({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="truncate text-sm font-semibold">{displayName}</span>
-                    <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary">
+                    <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-bold uppercase tracking-wider text-primary">
                       {role}
                     </span>
                   </div>

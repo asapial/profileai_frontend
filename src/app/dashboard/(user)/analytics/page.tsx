@@ -1,7 +1,8 @@
 "use client";
 import { PageFeedback } from "@/components/dashboard/PageFeedback";
 
-import { BarChart3, Briefcase, FileText, Gauge } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, BarChart3, Briefcase, FileText, Gauge } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDashboardSummary } from "@/lib/hooks/useDashboardSummary";
 import { useApplications } from "@/lib/hooks/useApplications";
@@ -48,11 +49,16 @@ export default function UserAnalyticsPage() {
   ];
   return (
     <div className="space-y-6 px-4 lg:px-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Analytics</h1>
-        <p className="text-sm text-muted-foreground">
-          Live performance indicators from your resumes and application tracker.
-        </p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Analytics</h1>
+          <p className="text-sm text-muted-foreground">
+            Live performance indicators from your resumes and application tracker.
+          </p>
+        </div>
+        <Link href="/dashboard/career?tab=Insights" className="inline-flex items-center gap-2 text-sm font-medium text-violet-600 hover:underline">
+          Open Career Insights <ArrowRight className="size-4" />
+        </Link>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map(({ label, value, icon: Icon }) => (

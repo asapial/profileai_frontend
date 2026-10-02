@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   IconBell,
   IconChartBar,
@@ -38,6 +39,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarRail,
 } from "@/components/ui/sidebar";
 import type { Role } from "@/types";
 
@@ -63,13 +65,8 @@ const USER_CONFIG: SidebarConfig = {
   navMain: [
     { title: "Overview", url: "/dashboard", icon: IconDashboard },
     { title: "Job workspace", url: "/dashboard/jobs", icon: IconSearch },
-    { title: "Career studio", url: "/dashboard/career", icon: IconFileDescription },
+    { title: "Career Studio", url: "/dashboard/career", icon: IconFileDescription },
     { title: "Resumes", url: "/dashboard/resumes", icon: IconListDetails },
-    {
-      title: "Applications",
-      url: "/dashboard/applications",
-      icon: IconListDetails,
-    },
     {
       title: "Templates",
       url: "/dashboard/templates",
@@ -78,7 +75,7 @@ const USER_CONFIG: SidebarConfig = {
   ],
   toolsLabel: "Career tools",
   tools: [
-    { title: "Role insights", url: "/dashboard/ats", icon: IconSearch },
+    { title: "Role insights / ATS", url: "/dashboard/ats", icon: IconSearch },
     {
       title: "Cover Letters",
       url: "/dashboard/cover-letters",
@@ -114,6 +111,7 @@ const ADMIN_CONFIG: SidebarConfig = {
   tools: [
     { title: "Tickets", url: "/admin/tickets", icon: IconTicket },
     { title: "Analytics", url: "/admin/analytics", icon: IconChartBar },
+    { title: "User subscriptions", url: "/admin/subscriptions", icon: IconCreditCard },
     { title: "Reports", url: "/admin/reports", icon: IconReport },
     { title: "Moderation", url: "/admin/moderation", icon: IconShield },
     {
@@ -154,45 +152,45 @@ export function AppSidebar({
   const navUser = { ...config.user, ...user };
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader className="p-3 pb-1">
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader className="px-3 pb-2 pt-3">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="h-12 rounded-xl px-2">
-              <a href={config.brand.href}>
+            <SidebarMenuButton
+              asChild
+              tooltip={config.brand.name}
+              className="sidebar-brand h-14 rounded-2xl border border-white/35 bg-background/35 px-2.5 shadow-sm backdrop-blur-xl dark:border-white/8 dark:bg-white/4"
+            >
+              <Link href={config.brand.href}>
                 <Image
                   src="/brand/profileai-mark.svg"
                   alt=""
                   width={48}
                   height={48}
-                  className="size-9 shrink-0 drop-shadow-lg"
+                  className="size-9 shrink-0 drop-shadow-[0_8px_16px_rgba(104,48,139,.24)] group-data-[collapsible=icon]:size-4"
                 />
-                <span className="min-w-0">
+                <span className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
                   <span className="block truncate text-sm font-semibold tracking-tight">
                     {config.brand.name}
                   </span>
-                  <span className="block text-[10px] uppercase tracking-[0.16em] text-sidebar-foreground/55">
-                    {role === "ADMIN" ? "Control center" : "Career studio"}
+                  <span className="mt-0.5 block text-xs font-semibold uppercase tracking-[0.18em] text-sidebar-foreground/50">
+                    {role === "ADMIN" ? "Control center" : "Career Studio"}
                   </span>
                 </span>
-              </a>
+                <span className="size-2 rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,.12)] group-data-[collapsible=icon]:hidden" aria-hidden="true" />
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent className="px-1">
+      <SidebarContent className="sidebar-navigation px-2 pb-2">
         <NavMain
           items={config.navMain}
           quickCreate={config.quickCreate}
           label={config.navMainLabel}
         />
-        <details className="studio-tools">
-          <summary className="cursor-pointer px-4 py-3 text-xs font-medium text-sidebar-foreground">
-            {config.toolsLabel}
-          </summary>
-          <NavDocuments items={config.tools} label={config.toolsLabel} />
-        </details>
+        <NavDocuments items={config.tools} label={config.toolsLabel} />
         <NavSecondary
           items={config.navSecondary}
           label={config.navSecondaryLabel}
@@ -200,9 +198,10 @@ export function AppSidebar({
         />
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border/60 p-3">
+      <SidebarFooter className="border-t border-sidebar-border/60 p-3 pt-2">
         <NavUser user={navUser} role={role ?? "USER"} />
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   );
 }

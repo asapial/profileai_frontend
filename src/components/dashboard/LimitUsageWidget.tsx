@@ -89,7 +89,7 @@ export function LimitUsageWidget() {
                 {limits?.resumeUsed ?? 0} of {limits?.resumeLimit ?? 0} resumes
                 used
               </span>{" "}
-              / {limits?.resumeLimit ?? 0}
+              of {limits?.resumeLimit ?? 0} used
             </span>
           </div>
           <Progress value={resumePercent} tone={resumeTone} />
@@ -104,7 +104,7 @@ export function LimitUsageWidget() {
                 {limits?.apiUsed ?? 0} of {limits?.apiLimit ?? 0} AI credits
                 used
               </span>{" "}
-              / {limits?.apiLimit ?? 0}
+              of {limits?.apiLimit ?? 0} used
             </span>
           </div>
           <Progress value={apiPercent} tone={apiTone} />

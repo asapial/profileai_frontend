@@ -57,7 +57,7 @@ function UserAvatar({ name, avatarUrl }: { name: string; avatarUrl?: string | nu
     .toUpperCase();
 
   return (
-    <span className="relative inline-flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-500 text-xs font-semibold text-white shadow-md shadow-violet-500/30 ring-2 ring-violet-400/40 transition hover:ring-violet-400/70">
+    <span className="relative inline-flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-primary text-xs font-semibold text-primary-foreground ring-1 ring-border transition hover:ring-primary/40">
       {avatarUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img

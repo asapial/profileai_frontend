@@ -185,7 +185,7 @@ function SessionsSection() {
                   </p>
                 </div>
                 {s.isCurrent ? (
-                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-emerald-700">
+                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold uppercase text-emerald-700">
                     Current
                   </span>
                 ) : (

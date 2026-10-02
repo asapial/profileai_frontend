@@ -110,6 +110,11 @@ export default function ResumesListPage() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button asChild variant="outline" size="sm" className="gap-1">
+            <Link href="/dashboard/career?tab=Alignment">
+              <Sparkles className="h-4 w-4" /> Analyze for a job
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm" className="gap-1">
             <Link href="/templates">
               <FileText className="h-4 w-4" /> Browse templates
             </Link>
@@ -358,7 +363,7 @@ function ResumeCard({
           <div className="transition duration-300 group-hover:scale-[1.01]">
             <ResumeDocumentThumbnail resume={resume} />
           </div>
-          <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/50 to-transparent px-3 pb-2 pt-8 text-right text-[11px] font-medium text-white opacity-0 transition group-hover:opacity-100">
+          <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/50 to-transparent px-3 pb-2 pt-8 text-right text-xs font-medium text-white opacity-0 transition group-hover:opacity-100">
             Open editor →
           </span>
         </Link>
@@ -429,22 +434,22 @@ function ResumeCard({
         <CardContent className="mt-auto space-y-3">
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <span
-            className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
+            className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
               STATUS_TONE[resume.status]
             }`}
           >
             {STATUS_LABEL[resume.status]}
           </span>
-          <span className="rounded-md bg-muted px-2 py-0.5 text-[10px] font-medium uppercase text-muted-foreground">
+          <span className="rounded-md bg-muted px-2 py-0.5 text-xs font-medium uppercase text-muted-foreground">
             {resume.type}
           </span>
           {resume.template?.name ? (
-            <span className="rounded-md bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-700">
+            <span className="rounded-md bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-700">
               {resume.template.name}
             </span>
           ) : null}
           {resume.atsScore != null ? (
-            <span className="ml-auto rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+            <span className="ml-auto rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
               ATS {resume.atsScore}
             </span>
           ) : null}

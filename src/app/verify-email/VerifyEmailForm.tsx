@@ -75,7 +75,14 @@ export function VerifyEmailForm() {
       setOtpValue("");
       return;
     }
-    router.push("/login?verified=1");
+    const loginParams = new URLSearchParams({ verified: "1" });
+    const selectedPlan = params.get("plan");
+    const selectedBilling = params.get("billing");
+    if ((selectedPlan === "pro" || selectedPlan === "business") &&
+        (selectedBilling === "monthly" || selectedBilling === "yearly")) {
+      loginParams.set("redirect", `/dashboard/billing?plan=${selectedPlan}&billing=${selectedBilling}`);
+    }
+    router.push(`/login?${loginParams.toString()}`);
   };
 
   const onResend = async () => {

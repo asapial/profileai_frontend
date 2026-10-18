@@ -130,6 +130,10 @@ export function RegisterForm() {
     }
 
     const params = new URLSearchParams({ email: result.email });
+    const selectedPlan = searchParams.get("plan");
+    const selectedBilling = searchParams.get("billing");
+    if (selectedPlan === "pro" || selectedPlan === "business") params.set("plan", selectedPlan);
+    if (selectedBilling === "monthly" || selectedBilling === "yearly") params.set("billing", selectedBilling);
     router.push(`/verify-email?${params.toString()}`);
   };
 

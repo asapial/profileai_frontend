@@ -20,7 +20,6 @@ import {
   useShareResume,
   useUpdateResume,
   useUpdateResumeTemplate,
-  type AtsResult,
   type ResumeContentData,
   type ResumeEducation,
   type ResumeExperience,
@@ -64,7 +63,10 @@ export default function EditResumePage() {
   );
 
   const [historyOpen, setHistoryOpen] = useState(false);
-  const [atsData, setAtsData] = useState<AtsResult | null>(null);
+  const [exportFeedback, setExportFeedback] = useState<string | null>(null);
+  const [atsBusy, setAtsBusy] = useState(false);
+  const atsBusyRef = useRef(false);
+  const pendingSaveRef = useRef<Promise<boolean> | null>(null);
   const [draft, setDraft] = useState<ResumeContentData>({});
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -81,6 +83,7 @@ export default function EditResumePage() {
 
   useEffect(() => {
     if (!resume) return;
+    if (atsBusyRef.current || pendingSaveRef.current) return;
 
     const normalized = normalizeContentData(resume.contentData);
     const incomingSignature = contentSignature(normalized);
@@ -98,6 +101,12 @@ export default function EditResumePage() {
 
     if (incomingSignature === lastSavedRef.current) return;
 
+    if (incomingSignature === draftSignature) {
+      lastSavedRef.current = incomingSignature;
+      setHasConflict(false);
+      return;
+    }
+
     if (draftSignature !== lastSavedRef.current) {
       setHasConflict(true);
       return;
@@ -107,37 +116,47 @@ export default function EditResumePage() {
     lastSavedRef.current = incomingSignature;
     setDraft(normalized);
     setSaveError(null);
-  }, [resume]);
+  }, [resume, atsBusy, saving]);
 
   const flushSave = useCallback(
     async (next: ResumeContentData): Promise<boolean> => {
       if (!id) return false;
 
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      while (pendingSaveRef.current) await pendingSaveRef.current;
       const signature = contentSignature(next);
       if (signature === lastSavedRef.current) return true;
 
-      setSaving(true);
+      const operation = (async () => {
+        setSaving(true);
+        try {
+          const saved = await updateMutation.mutateAsync({
+            contentData: sanitizeForApi(normalizeContentData(next)),
+          });
+          lastSavedRef.current = contentSignature(saved.contentData);
+          setSaveError(null);
+          return true;
+        } catch (cause) {
+          setSaveError(
+            cause instanceof Error ? cause.message : "Failed to save changes."
+          );
+          return false;
+        } finally {
+          setSaving(false);
+        }
+      })();
+      pendingSaveRef.current = operation;
       try {
-        const saved = await updateMutation.mutateAsync({
-          contentData: sanitizeForApi(normalizeContentData(next)),
-        });
-        lastSavedRef.current = contentSignature(saved.contentData);
-        setSaveError(null);
-        return true;
-      } catch (cause) {
-        setSaveError(
-          cause instanceof Error ? cause.message : "Failed to save changes."
-        );
-        return false;
+        return await operation;
       } finally {
-        setSaving(false);
+        if (pendingSaveRef.current === operation) pendingSaveRef.current = null;
       }
     },
     [id, updateMutation]
   );
 
   useEffect(() => {
-    if (!id || !resume || saving || saveError || hasConflict) return;
+    if (!id || !resume || saving || saveError || hasConflict || atsBusy) return;
     if (contentSignature(draft) === lastSavedRef.current) return;
 
     saveTimerRef.current = setTimeout(() => {
@@ -147,7 +166,7 @@ export default function EditResumePage() {
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
-  }, [draft, flushSave, hasConflict, id, resume, saveError, saving]);
+  }, [draft, flushSave, hasConflict, id, resume, saveError, saving, atsBusy]);
 
   useEffect(() => {
     return () => {
@@ -206,6 +225,7 @@ export default function EditResumePage() {
       toast.error("Reload the latest version before continuing.");
       return false;
     }
+    while (pendingSaveRef.current) await pendingSaveRef.current;
     return flushSave(draftRef.current);
   }
 
@@ -276,35 +296,59 @@ export default function EditResumePage() {
   }
 
   async function handleRunAts() {
-    if (!id) return;
+    if (!id || atsBusyRef.current) return;
     if (!resume?.jobDescription) {
       toast.error("Add a job description on the resume to run ATS.");
       return;
     }
+    atsBusyRef.current = true;
+    setAtsBusy(true);
     try {
-      const data = await atsMutation.mutateAsync({
+      if (!(await ensureDraftSaved())) return;
+      await atsMutation.mutateAsync({
         jobDescription: resume.jobDescription,
       });
-      setAtsData(data.atsData);
       toast.success("ATS check complete.");
     } catch (cause) {
       toast.error(cause instanceof Error ? cause.message : "ATS check failed.");
+    } finally {
+      atsBusyRef.current = false;
+      setAtsBusy(false);
     }
   }
 
   async function handleOptimizeAts() {
-    if (!id || !(await ensureDraftSaved())) return;
+    if (!id || atsBusyRef.current) return;
+    atsBusyRef.current = true;
+    setAtsBusy(true);
     try {
+      if (!(await ensureDraftSaved())) return;
+      const optimizedSourceSignature = contentSignature(draftRef.current);
       const result = await atsOptimizeMutation.mutateAsync();
       const normalized = normalizeContentData(result.resume.contentData);
-      draftRef.current = normalized;
+      const editedDuringOptimization = contentSignature(draftRef.current) !== optimizedSourceSignature
+        && contentSignature(draftRef.current) !== contentSignature(normalized);
       lastSavedRef.current = contentSignature(normalized);
-      setDraft(normalized);
-      setAtsData(result.atsData);
+      if (editedDuringOptimization) {
+        setHasConflict(true);
+      } else {
+        draftRef.current = normalized;
+        setDraft(normalized);
+        setHasConflict(false);
+      }
       const scoreChange = result.beforeScore === null ? `Score ${result.afterScore}` : `${result.beforeScore} → ${result.afterScore}`;
-      toast.success(`ATS optimization complete · ${scoreChange}`);
+      if (result.outcome === "AI_UNAVAILABLE") {
+        toast.error("AI rewriting was unavailable. Your original wording was kept; see the ATS panel for details.", { duration: 8000 });
+      } else if (result.beforeScore === result.afterScore) {
+        toast(`ATS reviewed · ${scoreChange}. ${result.outcome === "REWRITTEN" ? "Wording improved; alignment score unchanged." : "No score-changing improvement was found."}`, { duration: 7000 });
+      } else {
+        toast.success(`ATS optimization complete · ${scoreChange}`);
+      }
     } catch (cause) {
       toast.error(cause instanceof Error ? cause.message : "ATS optimization failed.");
+    } finally {
+      atsBusyRef.current = false;
+      setAtsBusy(false);
     }
   }
 
@@ -312,13 +356,18 @@ export default function EditResumePage() {
     if (!id || !(await ensureDraftSaved())) return;
     try {
       const result = await exportMutation.mutateAsync({ id, fileType });
+      setExportFeedback(result.parsingCheck?.message ?? null);
       if (
         downloadResumeExport(
           result,
           `${resume?.title ?? "resume"}.${fileType.toLowerCase()}`
         )
       ) {
-        toast.success(`${fileType} export ready.`);
+        if (result.parsingCheck && result.parsingCheck.status !== "PASS") {
+          toast(result.parsingCheck.message, { duration: 8000, icon: "⚠️" });
+        } else {
+          toast.success(`${fileType} export ready.${result.parsingCheck ? " Text extraction verified." : ""}`);
+        }
         return;
       }
       if (result.jobId) {
@@ -416,10 +465,10 @@ export default function EditResumePage() {
     setHasConflict(false);
   }
 
-  const currentAtsData = atsData ?? resume?.aiSuggestions ?? null;
   const hasUnsavedChanges = Boolean(
-    resume && contentSignature(draft) !== lastSavedRef.current
+    resume && contentSignature(draft) !== contentSignature(resume.contentData)
   );
+  const currentAtsData = hasUnsavedChanges ? null : resume?.aiSuggestions ?? null;
 
   useEffect(() => {
     if (!hasUnsavedChanges) return;
@@ -494,6 +543,7 @@ export default function EditResumePage() {
         </div>
       ) : null}
 
+      {exportFeedback ? <div role="status" className="mx-3 rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm sm:mx-4 lg:mx-6">{exportFeedback}</div> : null}
       <WordStyleEditor
         key={resume.id}
         resume={resume}
@@ -508,7 +558,7 @@ export default function EditResumePage() {
         duplicatePending={duplicateMutation.isPending}
         deletePending={deleteMutation.isPending}
         atsData={currentAtsData}
-        atsLoading={atsMutation.isPending}
+        atsLoading={atsBusy || atsMutation.isPending}
         atsOptimizing={atsOptimizeMutation.isPending}
         aiWriting={aiMutation.isPending}
         historyOpen={historyOpen}

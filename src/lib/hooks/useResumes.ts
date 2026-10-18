@@ -122,11 +122,26 @@ export type AtsResult = {
   methodologyVersion?: string;
   analysisMode?: "FULL_HYBRID" | "DETERMINISTIC_FALLBACK";
   sourceHash?: string;
+  notice?: string;
+  weights?: Record<string, number>;
+  optimization?: {
+    outcome?: "AI_UNAVAILABLE" | "IMPROVED" | "REWRITTEN" | "UNCHANGED";
+    diagnostics?: { proposed: number; eligible: number; applied: number; verificationAvailable: boolean; conservativeCorrections?: number };
+    beforeScore: number;
+    afterScore: number;
+    changes: string[];
+    warnings: string[];
+    patches: Array<{ path: string; before: string; after: string }>;
+    beforeBreakdown: Record<string, number>;
+    afterBreakdown: Record<string, number>;
+    comparedWithSameRequirements: boolean;
+    unchanged: boolean;
+  };
   breakdown?: {
     requirementCoverage: number;
     evidenceStrength: number;
-    semanticRelevance: number;
-    experienceAlignment: number;
+    semanticRelevance?: number;
+    experienceAlignment?: number;
     contentQuality: number;
     parsingSafety: number;
     completeness: number;
@@ -141,6 +156,7 @@ export type AtsResult = {
     evidenceStrength: number;
     evidenceSection: string | null;
     evidence: string | null;
+    sourceQuote?: string;
   }>;
   matchedKeywords: string[];
   missingKeywords: string[];
@@ -297,6 +313,7 @@ export function useUpdateResume(
     onSuccess: (...args) => {
       const [data] = args as unknown as [ResumeDetail, UpdateResumePayload];
       qc.setQueryData(detailKey(id), data);
+      qc.invalidateQueries({ queryKey: ["dashboard-summary"] });
       qc.invalidateQueries({ queryKey: ["resumes", "list"] });
       qc.invalidateQueries({ queryKey: historyKey(id) });
       (options?.onSuccess as ((...a: typeof args) => void) | undefined)?.(
@@ -313,6 +330,7 @@ export function useUpdateResumeTemplate(id: string) {
       api.put<ResumeDetail>(`/resumes/${id}/template`, { templateId }),
     onSuccess: (data) => {
       qc.setQueryData(detailKey(id), data);
+      qc.invalidateQueries({ queryKey: ["dashboard-summary"] });
       qc.invalidateQueries({ queryKey: ["resumes", "list"] });
     },
   });
@@ -371,6 +389,8 @@ export function useAtsCheck(
         AtsCheckPayload
       ];
       qc.setQueryData(detailKey(id), data.resume);
+      qc.invalidateQueries({ queryKey: ["resumes", "list"] });
+      qc.invalidateQueries({ queryKey: ["dashboard-summary"] });
       (options?.onSuccess as ((...a: typeof args) => void) | undefined)?.(
         ...args
       );
@@ -379,11 +399,21 @@ export function useAtsCheck(
 }
 
 export type AtsOptimizeResult = {
+  outcome?: "AI_UNAVAILABLE" | "IMPROVED" | "REWRITTEN" | "UNCHANGED";
   resume: ResumeDetail;
   atsData: AtsResult;
   changes: string[];
   beforeScore: number | null;
   afterScore: number;
+  warnings?: string[];
+};
+
+export type ExportParsingCheck = {
+  status: "PASS" | "WARNING" | "UNAVAILABLE";
+  format: "PDF" | "DOCX";
+  textCoverage: number | null;
+  missingSections: string[];
+  message: string;
 };
 
 export function useOptimizeResumeForAts(id: string) {
@@ -392,6 +422,7 @@ export function useOptimizeResumeForAts(id: string) {
     mutationFn: () => api.post<AtsOptimizeResult>(`/resumes/${id}/ats-optimize`, {}),
     onSuccess: (data) => {
       qc.setQueryData(detailKey(id), data.resume);
+      qc.invalidateQueries({ queryKey: ["dashboard-summary"] });
       qc.invalidateQueries({ queryKey: historyKey(id) });
       qc.invalidateQueries({ queryKey: ["resumes", "list"] });
     },
@@ -410,6 +441,8 @@ export function useAiModify(
     onSuccess: (...args) => {
       const [data] = args as unknown as [ResumeDetail, AiModifyPayload];
       qc.setQueryData(detailKey(id), data);
+      qc.invalidateQueries({ queryKey: ["resumes", "list"] });
+      qc.invalidateQueries({ queryKey: ["dashboard-summary"] });
       (options?.onSuccess as ((...a: typeof args) => void) | undefined)?.(
         ...args
       );
@@ -424,6 +457,8 @@ export function useRestoreVersion(id: string) {
       api.post<ResumeDetail>(`/resumes/${id}/restore/${version}`, {}),
     onSuccess: (data) => {
       qc.setQueryData(detailKey(id), data);
+      qc.invalidateQueries({ queryKey: ["resumes", "list"] });
+      qc.invalidateQueries({ queryKey: ["dashboard-summary"] });
       qc.invalidateQueries({ queryKey: historyKey(id) });
     },
   });
@@ -438,6 +473,7 @@ export function useExportResume(
       fileName?: string;
       contentType?: string;
       format?: "PDF" | "DOCX";
+      parsingCheck?: ExportParsingCheck;
     },
     ApiError,
     { id: string; fileType?: "PDF" | "DOCX"; pageSize?: "A4" | "Letter" }
@@ -452,6 +488,7 @@ export function useExportResume(
         fileName?: string;
         contentType?: string;
         format?: "PDF" | "DOCX";
+        parsingCheck?: ExportParsingCheck;
       }>(`/resumes/${id}/export`, {
         fileType: fileType ?? "PDF",
         pageSize: pageSize ?? "A4",

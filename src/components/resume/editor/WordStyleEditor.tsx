@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { setAiChatPageContext } from "@/lib/aiChatContextBridge";
 import Link from "next/link";
+import styles from "./DocumentStudio.module.css";
 import {
   ArrowLeft,
   Briefcase,
@@ -251,8 +252,6 @@ export function WordStyleEditor({
   const [mobilePane, setMobilePane] = useState<"preview" | "edit">("edit");
   const [focusPreview, setFocusPreview] = useState(false);
 
-  useEffect(() => setTitleDraft(resume.title), [resume.title]);
-
   useEffect(() => {
     setAiChatPageContext({ selectedSection: section });
     return () => setAiChatPageContext({});
@@ -265,7 +264,11 @@ export function WordStyleEditor({
   useEffect(() => {
     if (zoomMode !== "fit" || !previewHostRef.current) return;
     const host = previewHostRef.current;
-    const fit = () => setZoom(Math.max(ZOOM_MIN, Math.min(1, (host.clientWidth - 48) / 794)));
+    const fit = () => {
+      const computed = getComputedStyle(host);
+      const available = host.clientWidth - parseFloat(computed.paddingLeft) - parseFloat(computed.paddingRight);
+      setZoom(Math.max(ZOOM_MIN, Math.min(1, (available - 2) / 794)));
+    };
     fit();
     const observer = new ResizeObserver(fit);
     observer.observe(host);
@@ -431,10 +434,10 @@ export function WordStyleEditor({
 
   return (
     <div
-      className="flex w-full min-h-[calc(100dvh-5rem)] min-w-0 max-w-full flex-col overflow-hidden border-y border-violet-200/70 bg-violet-50/40 shadow-[var(--shadow-3)] sm:mx-3 sm:w-[calc(100%-1.5rem)] sm:rounded-2xl sm:border xl:h-[calc(100dvh-7rem)] xl:min-h-[40rem] dark:border-violet-300/15 dark:bg-[#1a1724]"
+      className={`${styles.studio} flex w-full min-h-[calc(100dvh-5rem)] min-w-0 max-w-full flex-col overflow-hidden border-y border-violet-200/70 bg-violet-50/40 shadow-[var(--shadow-3)] sm:mx-3 sm:w-[calc(100%-1.5rem)] sm:rounded-2xl sm:border xl:h-[calc(100dvh-7rem)] xl:min-h-[40rem] dark:border-violet-300/15 dark:bg-[#1a1724]`}
     >
       {/* File bar */}
-      <div className="relative z-40 flex flex-wrap items-center justify-between gap-2 border-b border-white/10 bg-[linear-gradient(110deg,#2e1065,#4c1d95_55%,#312e81)] px-2.5 py-2.5 text-white sm:px-4 sm:py-3 dark:bg-[linear-gradient(110deg,#1d1026,#321340_55%,#20204a)]">
+      <div className={`${styles.filebar} relative z-40 flex flex-wrap items-center justify-between gap-2 border-b border-white/10 bg-[linear-gradient(110deg,#2e1065,#4c1d95_55%,#312e81)] px-2.5 py-2.5 text-white sm:px-4 sm:py-3 dark:bg-[linear-gradient(110deg,#1d1026,#321340_55%,#20204a)]`}>
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <Button
             asChild
@@ -454,7 +457,7 @@ export function WordStyleEditor({
             <span className="block truncate">{resume.title}</span>
             {currentTemplate ? (
               <span className="hidden text-[10px] font-medium uppercase tracking-widest text-violet-200/75 sm:block">
-                Career Canvas · {currentTemplate.name} · {resume.type === "CV" ? "Curriculum Vitae" : "Professional Résumé"}
+                DOCUMENT STUDIO / {currentTemplate.name}
               </span>
             ) : null}
           </span>
@@ -471,12 +474,7 @@ export function WordStyleEditor({
           ) : null}
         </div>
         <div className="relative flex shrink-0 items-center justify-end gap-1 overflow-visible">
-          <div className="mr-1 hidden items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-2.5 py-1.5 md:flex" title={`${completionPercentage}% complete`}>
-            <div className="relative grid h-7 w-7 place-items-center rounded-full" style={{ background: `conic-gradient(#a78bfa ${completionPercentage}%, rgba(255,255,255,.12) 0)` }}>
-              <div className="grid h-5 w-5 place-items-center rounded-full bg-violet-950 text-xs font-bold">{completionPercentage}</div>
-            </div>
-            <span className="text-xs font-semibold uppercase tracking-widest text-slate-300">Profile strength</span>
-          </div>
+          <span className={styles.completion} title={`${completionPercentage}% complete`}>{completionPercentage}% complete</span>
           <Button
             variant="ghost"
             size="sm"
@@ -516,7 +514,7 @@ export function WordStyleEditor({
           <Button
             variant="ghost"
             size="sm"
-            className="hidden gap-1 text-white hover:bg-white/15 hover:text-white xl:inline-flex"
+            className="hidden"
             onClick={handleDuplicate}
             disabled={duplicatePending}
           >
@@ -536,7 +534,7 @@ export function WordStyleEditor({
             <Eye className="h-3.5 w-3.5" />
             {focusPreview ? "Show editor" : "Focus preview"}
           </Button>
-          <div className="flex items-stretch rounded-xl bg-white text-slate-950 shadow-lg shadow-black/10">
+          <div className={`${styles.exportButton} flex items-stretch rounded-lg`}>
             <Button
               variant="ghost"
               size="sm"
@@ -709,7 +707,7 @@ export function WordStyleEditor({
       </div>
 
       {/* Ribbon: tabs */}
-      <div className="flex shrink-0 items-end gap-1 overflow-x-auto border-b border-border bg-card/95 px-2 pt-2 backdrop-blur-xl sm:px-3">
+      <div className={`${styles.tabs} flex shrink-0 items-end gap-1 overflow-x-auto border-b border-border bg-card/95 px-2 pt-2 backdrop-blur-xl sm:px-3`}>
         {(
           [
             { id: "home", label: "Content", Icon: User, IconClass: "h-3.5 w-3.5" },
@@ -735,6 +733,7 @@ export function WordStyleEditor({
         ).map(({ id, label, Icon, IconClass }) => (
           <button
             key={id}
+            aria-pressed={ribbon === id}
             type="button"
             onClick={() => {
               if (id === "home") goToRibbon("home", "personal");
@@ -759,7 +758,7 @@ export function WordStyleEditor({
       </div>
 
       {/* Ribbon: contextual groups */}
-      <div className="flex min-h-12 shrink-0 items-center gap-3 overflow-x-auto border-b border-border bg-background/95 px-2 py-2 text-xs shadow-sm backdrop-blur-xl sm:px-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className={`${styles.tools} flex min-h-12 shrink-0 items-center gap-3 overflow-x-auto border-b border-border bg-background/95 px-2 py-2 text-xs shadow-sm backdrop-blur-xl sm:px-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}>
         {ribbon === "home" && (
           <>
             <RibbonGroup label="Your story">
@@ -782,6 +781,7 @@ export function WordStyleEditor({
                   <button
                     key={id}
                     type="button"
+                    aria-pressed={section === id}
                     onClick={() => setSection(id)}
                     className={`group flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 font-medium transition ${
                       section === id
@@ -912,6 +912,7 @@ export function WordStyleEditor({
               <button
                 type="button"
                 onClick={() => void handleRunAts()}
+                disabled={atsLoading || atsOptimizing}
                 className="flex items-center gap-1 rounded-md border border-violet-300 px-2.5 py-1 font-medium text-violet-700 hover:bg-violet-50"
               >
                 <Sparkles className="h-3 w-3" /> Run ATS check
@@ -954,7 +955,7 @@ export function WordStyleEditor({
       {/* Workspace */}
       <div className="flex min-h-0 min-w-0 max-w-full flex-1 overflow-hidden bg-slate-200/55 dark:bg-slate-950/40">
         {/* Page column */}
-        <div ref={previewHostRef} className={`${mobilePane === "preview" ? "flex" : "hidden"} relative min-h-[32rem] min-w-0 flex-1 items-start overflow-auto bg-[radial-gradient(circle_at_50%_0%,rgba(139,92,246,.16),transparent_48%)] p-3 sm:p-6 xl:flex xl:min-h-0 dark:bg-[radial-gradient(circle_at_50%_0%,rgba(139,92,246,.12),transparent_48%)]`}>
+        <div ref={previewHostRef} className={`${styles.canvas} ${mobilePane === "preview" ? "flex" : "hidden"} relative min-h-[32rem] min-w-0 flex-1 items-start overflow-auto bg-[radial-gradient(circle_at_50%_0%,rgba(139,92,246,.16),transparent_48%)] p-3 sm:p-6 xl:flex xl:min-h-0 dark:bg-[radial-gradient(circle_at_50%_0%,rgba(139,92,246,.12),transparent_48%)]`}>
           <div className="theme-paper relative mx-auto shrink-0 bg-white text-[#111] shadow-[0_24px_80px_-24px_rgba(15,23,42,.35)] ring-1 ring-black/5 [color-scheme:light]">
             <TemplateRenderedPreview
               resume={previewResume}
@@ -966,10 +967,10 @@ export function WordStyleEditor({
         </div>
 
         {/* Side panel: editable fields */}
-        <aside className={`${mobilePane === "edit" ? "flex" : "hidden"} min-h-[32rem] min-w-0 w-full shrink-0 flex-col gap-3 border-l border-border bg-card/95 p-3 backdrop-blur-xl sm:p-4 xl:min-h-0 ${focusPreview ? "xl:hidden" : "xl:flex xl:max-w-[460px]"}`}>
+        <aside className={`${styles.inspector} ${mobilePane === "edit" ? "flex" : "hidden"} min-h-[32rem] min-w-0 w-full shrink-0 flex-col gap-3 border-l border-border bg-card/95 p-3 backdrop-blur-xl sm:p-4 xl:min-h-0 ${focusPreview ? "xl:hidden" : "xl:flex xl:max-w-[460px]"}`}>
           <header className="flex items-center justify-between rounded-xl border border-violet-500/15 bg-violet-500/[0.06] px-3 py-2.5 dark:bg-violet-400/[0.06]">
             <div className="flex items-center gap-2">
-              <Hash className="h-4 w-4 text-violet-500" />
+              <Hash className="h-4 w-4 text-muted-foreground" />
               <h3 className="text-sm font-semibold">
                 Edit {sectionLabel(section)}
               </h3>
@@ -980,7 +981,7 @@ export function WordStyleEditor({
             </span>
           </header>
 
-          <div className="min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-gutter:stable]">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1 pb-4 [scrollbar-gutter:stable]">
             <div className="space-y-5">
               {section === "personal" && (
                 <PersonalInfoSection
@@ -1049,22 +1050,22 @@ export function WordStyleEditor({
                 />
               )}
             </div>
-          </div>
 
-          <div className="border-t border-border pt-3">
-            <AtsPanel
-              atsData={atsData}
-              loading={atsLoading}
-              onRun={handleRunAts}
-              onOptimize={handleOptimizeAts}
-              optimizing={atsOptimizing}
-            />
+            {ribbon === "review" ? <div className="mt-5 border-t border-border pt-4">
+              <AtsPanel
+                atsData={atsData}
+                loading={atsLoading}
+                onRun={handleRunAts}
+                onOptimize={handleOptimizeAts}
+                optimizing={atsOptimizing}
+              />
+            </div> : <button type="button" className={styles.atsLink} onClick={() => goToRibbon("review")}><Sparkles className="h-4 w-4" /><span>Review your job alignment</span><span className="ml-auto">{atsData ? `${atsData.atsScore}/100` : "Explore →"}</span></button>}
           </div>
         </aside>
       </div>
 
       {/* Status bar */}
-      <div className="grid min-h-11 shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-t border-violet-300/15 bg-violet-950 px-3 py-1.5 text-xs text-violet-100 sm:flex sm:flex-wrap sm:justify-between dark:bg-[#24132f]">
+      <div className={`${styles.status} grid min-h-11 shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-t border-violet-300/15 bg-violet-950 px-3 py-1.5 text-xs text-violet-100 sm:flex sm:flex-wrap sm:justify-between dark:bg-[#24132f]`}>
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1">
             {saving ? <Cloud className="h-3 w-3" /> : hasUnsavedChanges ? <CloudOff className="h-3 w-3 text-amber-300" /> : <Check className="h-3 w-3 text-emerald-300" />}

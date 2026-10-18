@@ -8,7 +8,9 @@
   html {
     background: var(--background);
     color-scheme: light;
-    scroll-behavior: smooth;
+    /* Raw, 1:1 user scrolling; smooth only where code asks for it (the story's
+       jumpTo). The smooth animation was making the page feel laggy. */
+    scroll-behavior: auto;
     scroll-padding-top: 6rem;
   }
 

@@ -37,7 +37,19 @@ export type AnalyticsEventName =
   | "hero_cta_get_started"
   | "hero_cta_view_templates"
   | "ai_chat_opened"
-  | "ai_chat_help_article_opened";
+  | "ai_chat_help_article_opened"
+  // Career story (home cinema): scene-driven funnel signals.
+  | "career_story_scene_view"
+  | "career_story_template_select"
+  | "career_story_review_decision"
+  | "career_story_cta_click"
+  | "career_story_download"
+  | "career_story_share"
+  | "career_story_demo"
+  | "career_story_motion"
+  | "career_story_quality"
+  | "career_story_locale"
+  | "career_story_skip";
 
 export type AnalyticsEvent = {
   name: AnalyticsEventName;

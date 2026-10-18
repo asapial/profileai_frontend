@@ -59,6 +59,9 @@ const ENABLE_DEBUG =
 const nextConfig: NextConfig = {
   reactCompiler: true,
 
+  // The dev badge sits on top of the story navbar's CTA in captures.
+  devIndicators: false,
+
   // ─── Public env (inlined into the browser bundle) ──────
   // Centralizing these here means `process.env.NEXT_PUBLIC_*` reads anywhere
   // else in the app pick up consistent values, and build-time checks fail

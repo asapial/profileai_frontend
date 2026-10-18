@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useMemo, useRef } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
 import { safeInterpolate } from "@/lib/resume/interpolate";
 
 const A4_PREVIEW_WIDTH = 794;
@@ -69,13 +69,19 @@ export function TemplateDesignPreview({
   template,
   className = "",
   priority = false,
+  as = "div",
 }: {
   template: RenderableTemplate;
   className?: string;
   priority?: boolean;
+  /** "span" keeps button/list-item markup valid when a preview sits inside one. */
+  as?: "div" | "span";
 }) {
-  const hostRef = useRef<HTMLDivElement>(null);
+  const hostRef = useRef<HTMLElement | null>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
+  const attachHost = useCallback((node: HTMLElement | null) => {
+    hostRef.current = node;
+  }, []);
   const rendered = useMemo(
     () => safeInterpolate(template.htmlLayout, TEMPLATE_SAMPLE_DATA),
     [template.htmlLayout],
@@ -133,17 +139,8 @@ export function TemplateDesignPreview({
     return () => observer.disconnect();
   }, []);
 
-  return (
-    <div
-      ref={hostRef}
-      className={`relative aspect-[210/297] w-full overflow-hidden bg-white ${className}`}
-      role="img"
-      aria-label={`${template.name} template preview`}
-      data-priority-preview={priority || undefined}
-      style={
-        { "--template-preview-scale": "0.4" } as React.CSSProperties
-      }
-    >
+  const preview = (
+    <>
       <iframe
         ref={frameRef}
         title={`${template.name} template document`}
@@ -160,6 +157,28 @@ export function TemplateDesignPreview({
           transformOrigin: "top left",
         }}
       />
+    </>
+  );
+
+  const hostProps = {
+    className: `relative block aspect-[210/297] w-full overflow-hidden bg-white ${className}`,
+    role: "img" as const,
+    "aria-label": `${template.name} template preview`,
+    "data-priority-preview": priority || undefined,
+    style: { "--template-preview-scale": "0.4" } as React.CSSProperties,
+  };
+
+  if (as === "span") {
+    return (
+      <span ref={attachHost} {...hostProps}>
+        {preview}
+      </span>
+    );
+  }
+
+  return (
+    <div ref={attachHost} {...hostProps}>
+      {preview}
     </div>
   );
 }

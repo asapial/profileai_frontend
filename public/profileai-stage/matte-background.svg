@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Matte indigo purple empty showroom backdrop">
+<defs>
+ <linearGradient id="back" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b0913"/><stop offset="0.5" stop-color="#15101f"/><stop offset="1" stop-color="#0d0b17"/></linearGradient>
+ <radialGradient id="diffuse"><stop stop-color="#4b3764" stop-opacity=".45"/><stop offset=".48" stop-color="#2b2140" stop-opacity=".18"/><stop offset="1" stop-color="#140f1d" stop-opacity="0"/></radialGradient>
+ <radialGradient id="warm"><stop stop-color="#a88c8f" stop-opacity=".14"/><stop offset="1" stop-color="#a88c8f" stop-opacity="0"/></radialGradient>
+ <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#171321"/><stop offset="1" stop-color="#0a0911"/></linearGradient>
+ <linearGradient id="sidefade" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#75648f" stop-opacity=".10"/><stop offset=".6" stop-color="#493958" stop-opacity=".045"/><stop offset="1" stop-color="#14101d" stop-opacity="0"/></linearGradient>
+ <linearGradient id="rim" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#5e4d7a" stop-opacity="0"/><stop offset=".5" stop-color="#685678" stop-opacity=".22"/><stop offset="1" stop-color="#5e4d7a" stop-opacity="0"/></linearGradient>
+ <radialGradient id="vignette"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".48"/></radialGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#back)"/>
+<ellipse cx="800" cy="425" rx="860" ry="570" fill="url(#diffuse)"/>
+<ellipse cx="1250" cy="390" rx="310" ry="380" fill="url(#warm)"/>
+<!-- Architectural fins --><g opacity=".65">
+<rect x="18" y="0" width="12" height="600" rx="5" fill="url(#sidefade)"/>
+<path d="M55 0V600 M78 0V590 M101 0V580" fill="none" stroke="#756387" stroke-width="3" opacity=".12"/>
+<path d="M1545 0V600 M1522 0V590 M1499 0V580" fill="none" stroke="#756387" stroke-width="3" opacity=".12"/>
+<path d="M160 583Q210 310 405 410" stroke="#6c577f" stroke-width="1.5" opacity=".22" fill="none"/>
+<path d="M1440 583Q1390 310 1195 410" stroke="#6c577f" stroke-width="1.5" opacity=".22" fill="none"/>
+</g>
+<!-- Wall-floor horizon -->
+<path d="M0 595Q800 571 1600 595V900H0Z" fill="url(#floor)"/>
+<path d="M0 595Q800 570 1600 595" fill="none" stroke="url(#rim)" stroke-width="2"/>
+<path d="M0 740Q800 685 1600 740M0 850Q800 755 1600 850" fill="none" stroke="#a49bb1" stroke-width="1" opacity=".035"/>
+<path d="M410 595L180 900M1190 595L1420 900" stroke="#b0a4bb" stroke-width="1" opacity=".045"/>
+<ellipse cx="800" cy="630" rx="670" ry="170" fill="url(#diffuse)" opacity=".18"/>
+<rect width="1600" height="900" fill="url(#vignette)" opacity=".4"/>
+</svg>

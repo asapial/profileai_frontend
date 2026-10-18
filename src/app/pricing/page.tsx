@@ -7,11 +7,11 @@ import { PricingClient } from "./PricingClient";
 export const metadata: Metadata = {
   title: "Pricing — ProfileAI",
   description:
-    "Choose the plan that fits your job search. Start free, upgrade for unlimited AI, cover letters, and the application tracker. No surprises.",
+    "Bangladesh-friendly career plans in Taka. Start free, then upgrade for tailored resumes, application drafts, interview preparation, and career analytics.",
   openGraph: {
     title: "Pricing — ProfileAI",
     description:
-      "Simple, transparent pricing. Free, Pro, and Business plans built for job seekers and teams.",
+      "Simple pricing in Bangladeshi Taka. Free, Job Seeker, and Career Pro plans built for your next career move.",
     type: "website",
   },
 };

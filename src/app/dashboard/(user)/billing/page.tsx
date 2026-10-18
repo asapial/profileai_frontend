@@ -1,6 +1,8 @@
 "use client";
 import { PageFeedback } from "@/components/dashboard/PageFeedback";
 
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Check, CreditCard, ExternalLink } from "lucide-react";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -15,11 +17,22 @@ import {
 } from "@/lib/hooks/useBilling";
 
 export default function BillingPage() {
+  const searchParams = useSearchParams();
+  const [billing, setBilling] = useState<"monthly" | "yearly">(
+    searchParams.get("billing") === "yearly" ? "yearly" : "monthly",
+  );
   const plans = usePlans();
   const current = useCurrentSubscription();
   const invoices = useInvoices();
   const checkout = useCheckout();
   const portal = useBillingPortal();
+
+  useEffect(() => {
+    const result = searchParams.get("payment");
+    if (result === "success") toast.success("bKash payment successful. Your plan is active.");
+    if (result === "cancel") toast("bKash payment was canceled.");
+    if (result === "failure") toast.error("The bKash payment could not be verified.");
+  }, [searchParams]);
 
   if (plans.isLoading || current.isLoading || invoices.isLoading)
     return (
@@ -60,7 +73,7 @@ export default function BillingPage() {
             Your plan, payment details and invoice history.
           </p>
         </div>
-        {current.data?.subscription && (
+        {current.data?.subscription && current.data.paymentProvider === "stripe" && (
           <Button
             variant="outline"
             disabled={portal.isPending}
@@ -71,9 +84,29 @@ export default function BillingPage() {
           </Button>
         )}
       </div>
+      <div className="flex w-fit rounded-full border bg-card p-1">
+        <Button
+          size="sm"
+          variant={billing === "monthly" ? "default" : "ghost"}
+          className="rounded-full"
+          onClick={() => setBilling("monthly")}
+        >
+          Monthly
+        </Button>
+        <Button
+          size="sm"
+          variant={billing === "yearly" ? "default" : "ghost"}
+          className="rounded-full"
+          onClick={() => setBilling("yearly")}
+        >
+          Yearly · save 2 months
+        </Button>
+      </div>
       <div className="grid gap-4 lg:grid-cols-3">
         {(plans.data ?? []).map((plan) => {
           const active = current.data?.plan?.slug === plan.slug;
+          const annualAmount = plan.slug === "pro" ? 299000 : plan.slug === "business" ? 599000 : 0;
+          const displayAmount = billing === "yearly" && annualAmount ? annualAmount : plan.amount;
           return (
             <Card key={plan.id} className={active ? "border-violet-500" : ""}>
               <CardHeader>
@@ -82,10 +115,17 @@ export default function BillingPage() {
                   {active && <Badge>Current</Badge>}
                 </div>
                 <p className="text-3xl font-semibold">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-BD", {
                     style: "currency",
-                    currency: plan.currency,
-                  }).format(plan.amount / 100)}
+                    currency: plan.currency.toUpperCase(),
+                    currencyDisplay: "narrowSymbol",
+                    maximumFractionDigits: 0,
+                  }).format(displayAmount / 100)}
+                  {plan.amount > 0 && (
+                    <span className="ml-1 text-sm font-normal text-muted-foreground">
+                      / {billing === "yearly" ? "year" : "month"}
+                    </span>
+                  )}
                 </p>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -113,7 +153,7 @@ export default function BillingPage() {
                     className="w-full"
                     disabled={checkout.isPending}
                     onClick={() =>
-                      open(() => checkout.mutateAsync({ planSlug: plan.slug }))
+                      open(() => checkout.mutateAsync({ planSlug: plan.slug, billing }))
                     }
                   >
                     Choose {plan.name}

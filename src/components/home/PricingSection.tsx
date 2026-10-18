@@ -18,47 +18,48 @@ type Plan = {
 const PLANS: Plan[] = [
   {
     name: "Free",
-    price: "$0",
+    price: "৳0",
     cadence: "forever",
     description: "Try ProfileAI and build your first resume — no card needed.",
     features: [
-      "1 resume",
-      "3 AI generations / month",
-      "Basic ATS score",
-      "PDF export",
+      "2 resumes",
+      "2 alignment analyses / month",
+      "1 tailored resume / month",
+      "3 application drafts / month",
     ],
     cta: { label: "Get started", href: "/register" },
   },
   {
-    name: "Pro",
-    price: "$12",
+    name: "Job Seeker",
+    price: "৳299",
     cadence: "per month",
     description: "For active job seekers who want maximum callbacks.",
     features: [
-      "Unlimited resumes",
-      "Unlimited AI generations",
-      "Full ATS scoring & suggestions",
-      "Cover letter generator",
-      "Application tracker",
-      "PDF + DOCX export",
+      "10 resume versions",
+      "25 alignment analyses / month",
+      "15 tailored resumes / month",
+      "30 application drafts / month",
+      "Unlimited application tracking",
+      "Premium templates and clean exports",
     ],
-    cta: { label: "Start Pro free trial", href: "/register?plan=pro" },
+    cta: { label: "Choose Job Seeker", href: "/register?plan=pro&billing=monthly" },
     highlighted: true,
     badge: "Most popular",
   },
   {
-    name: "Business",
-    price: "$29",
+    name: "Career Pro",
+    price: "৳599",
     cadence: "per month",
-    description: "For teams, career coaches, and recruiting agencies.",
+    description: "For serious job seekers making a focused career move.",
     features: [
-      "Everything in Pro",
-      "Team workspace (5 seats)",
-      "Bulk resume tailoring",
-      "Custom branding",
-      "Priority support",
+      "Unlimited resume versions",
+      "75 alignment analyses / month",
+      "50 tailored resumes / month",
+      "100 application drafts / month",
+      "Advanced interview preparation",
+      "STAR Story Builder and analytics",
     ],
-    cta: { label: "Contact sales", href: "/contact" },
+    cta: { label: "Choose Career Pro", href: "/register?plan=business&billing=monthly" },
   },
 ];
 
@@ -82,9 +83,9 @@ export function PricingSection({
   })) ?? PLANS;
   const displayPlans = plans.map(plan => {
     const tier = plan.name.toLowerCase();
-    if (tier === "free") return { ...plan, description: "Start building a grounded application.", features: ["15 saved applications", "3 alignment analyses / month", "2 tailored summaries / month", "5 application drafts / month", "Private Evidence Bank"] };
-    if (tier === "pro") return { ...plan, description: "Room for an active job search.", features: ["Unlimited saved applications", "50 alignment analyses / month", "20 tailored summaries / month", "50 application drafts / month", "Resume version history"], cta: { label: "Explore Pro", href: "/register?plan=pro" } };
-    if (tier === "business" || tier === "career plus") return { ...plan, name: "Career Plus", description: "Higher allowances for a focused career move.", features: ["Unlimited saved applications", "150 alignment analyses / month", "60 tailored summaries / month", "150 application drafts / month", "Resume version history"], cta: { label: "Explore Career Plus", href: "/register?plan=business" } };
+    if (tier === "free") return { ...plan, price: "৳0", description: "Start building a grounded application.", features: ["2 resumes", "2 alignment analyses / month", "1 tailored resume / month", "3 application drafts / month", "10 saved applications"] };
+    if (tier === "pro" || tier === "job seeker") return { ...plan, name: "Job Seeker", price: "৳299", description: "Room for an active job search.", features: ["10 resume versions", "25 alignment analyses / month", "15 tailored resumes / month", "30 application drafts / month", "Unlimited application tracking"], cta: { label: "Choose Job Seeker", href: "/register?plan=pro&billing=monthly" } };
+    if (tier === "business" || tier === "career plus" || tier === "career pro") return { ...plan, name: "Career Pro", price: "৳599", description: "Higher allowances for a focused career move.", features: ["Unlimited resume versions", "75 alignment analyses / month", "50 tailored resumes / month", "100 application drafts / month", "Advanced interview preparation"], cta: { label: "Choose Career Pro", href: "/register?plan=business&billing=monthly" } };
     return plan;
   });
   return (

@@ -28,8 +28,8 @@ type StaticPlan = {
   name: string;
   tagline: string;
   description: string;
-  monthlyPrice: number; // USD
-  yearlyPrice: number; // USD per month when billed yearly
+  monthlyPrice: number; // BDT
+  yearlyPrice: number; // BDT billed once per year
   features: PlanFeature[];
   cta: { label: string };
   highlighted?: boolean;
@@ -48,91 +48,93 @@ const PLANS: StaticPlan[] = [
     monthlyPrice: 0,
     yearlyPrice: 0,
     features: [
-      { label: "1 resume" },
-      { label: "3 AI generations / month" },
-      { label: "Basic ATS score" },
-      { label: "PDF export" },
-      { label: "Access to free templates" },
+      { label: "Up to 2 resumes" },
+      { label: "2 alignment analyses / month" },
+      { label: "1 tailored resume / month" },
+      { label: "3 application drafts / month" },
+      { label: "10 saved jobs and applications" },
+      { label: "Basic templates and PDF export" },
     ],
     cta: { label: "Get started" },
     selfServe: true,
   },
   {
     id: "pro",
-    name: "Pro",
+    name: "Job Seeker",
     tagline: "For active job seekers",
     description:
       "More room to draft, tailor and prepare for your next application.",
-    monthlyPrice: 12,
-    yearlyPrice: 9,
+    monthlyPrice: 299,
+    yearlyPrice: 2990,
     features: [
-      { label: "Unlimited resumes" },
-      { label: "Unlimited AI generations" },
-      { label: "Full ATS scoring & suggestions" },
-      { label: "Cover letter generator" },
-      { label: "Application tracker" },
-      { label: "PDF + DOCX export" },
-      { label: "Priority email support" },
+      { label: "Up to 10 resume versions" },
+      { label: "25 alignment analyses / month" },
+      { label: "15 tailored resumes / month" },
+      { label: "30 cover letters and emails / month" },
+      { label: "Unlimited application tracking" },
+      { label: "Premium templates and clean exports" },
+      { label: "Smart reminders and interview preparation" },
     ],
-    cta: { label: "Choose Pro" },
+    cta: { label: "Choose Job Seeker" },
     highlighted: true,
     badge: "Most popular",
     selfServe: true,
   },
   {
     id: "business",
-    name: "Business",
-    tagline: "For teams and coaches",
+    name: "Career Pro",
+    tagline: "For a focused career move",
     description:
-      "Team workspace, bulk tailoring, and custom branding for agencies.",
-    monthlyPrice: 29,
-    yearlyPrice: 23,
+      "Higher allowances and advanced preparation for serious job seekers.",
+    monthlyPrice: 599,
+    yearlyPrice: 5990,
     features: [
-      { label: "Everything in Pro" },
-      { label: "Team workspace (5 seats)" },
-      { label: "Bulk resume tailoring" },
-      { label: "Custom branding" },
-      { label: "Priority support with SLA" },
-      { label: "API access (coming soon)", comingSoon: true },
+      { label: "Unlimited resume versions" },
+      { label: "75 alignment analyses / month" },
+      { label: "50 tailored resumes / month" },
+      { label: "100 cover letters and emails / month" },
+      { label: "Advanced interview preparation" },
+      { label: "STAR Story Builder and Evidence Bank" },
+      { label: "Career analytics and priority support" },
     ],
-    cta: { label: "Contact sales" },
-    selfServe: false,
+    cta: { label: "Choose Career Pro" },
+    selfServe: true,
   },
 ];
 
 // Reusable comparison rows shown below the cards.
 const COMPARISON = [
-  { row: "Resumes", free: "1", pro: "Unlimited", business: "Unlimited" },
-  { row: "AI generations / month", free: "3", pro: "Unlimited", business: "Unlimited" },
-  { row: "ATS scoring", free: "Basic", pro: "Full + suggestions", business: "Full + suggestions" },
-  { row: "Cover letter generator", free: false, pro: true, business: true },
-  { row: "Application tracker", free: false, pro: true, business: true },
-  { row: "Export formats", free: "PDF", pro: "PDF + DOCX", business: "PDF + DOCX" },
-  { row: "Team workspace", free: false, pro: false, business: "5 seats" },
-  { row: "Custom branding", free: false, pro: false, business: true },
-  { row: "API access", free: false, pro: false, business: "Coming soon" },
+  { row: "Resume versions", free: "2", pro: "10", business: "Unlimited" },
+  { row: "Alignment analyses / month", free: "2", pro: "25", business: "75" },
+  { row: "Tailored resumes / month", free: "1", pro: "15", business: "50" },
+  { row: "Application drafts / month", free: "3", pro: "30", business: "100" },
+  { row: "Saved applications", free: "10", pro: "Unlimited", business: "Unlimited" },
+  { row: "Clean PDF export", free: false, pro: true, business: true },
+  { row: "Interview preparation", free: false, pro: "Basic", business: "Advanced" },
+  { row: "STAR Story Builder", free: false, pro: false, business: true },
+  { row: "Career analytics", free: false, pro: "Basic", business: "Advanced" },
 ];
 
 const FAQS = [
   {
     q: "Can I switch plans later?",
-    a: "Yes — upgrade, downgrade, or cancel at any time from your billing settings. Pro-rated changes apply immediately.",
+    a: "Yes. You can change or cancel your plan from billing settings. Your current access remains available until the paid period ends.",
   },
   {
     q: "Do you offer refunds?",
-    a: "We offer a 14-day money-back guarantee on Pro and Business plans. Email support@profileai.app to request a refund.",
+    a: "If you have not used paid AI credits, you may request a refund within 24 hours of payment. Contact support@profileai.app for review.",
   },
   {
     q: "What happens when my AI limit runs out?",
-    a: "On the Free plan, AI generation is paused until the next month. You can keep editing existing resumes and exporting PDFs.",
+    a: "AI actions pause until the next monthly reset. You can still edit existing work, upgrade your plan, or buy an extra credit pack when available.",
   },
   {
     q: "Is annual billing cheaper?",
-    a: "Yes. Pro is $9/mo billed yearly (save 25%) and Business is $23/mo billed yearly.",
+    a: "Yes. Job Seeker is ৳2,990/year and Career Pro is ৳5,990/year—about two months less than paying monthly.",
   },
   {
-    q: "Do I need a credit card to start?",
-    a: "No. The Free plan works without a card. Add one only when you upgrade.",
+    q: "How can I pay from Bangladesh?",
+    a: "The Free plan needs no payment method. Paid access is priced in Bangladeshi Taka, with bKash checkout being prepared for launch.",
   },
 ];
 
@@ -179,16 +181,16 @@ export function PricingClient() {
               >
                 Yearly
                 <span className="ml-2 inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
-                  −25%
+                  Save 2 months
                 </span>
               </ToggleButton>
             </div>
           </div>
 
           <ul className="mx-auto mt-8 grid max-w-3xl gap-3 text-sm text-muted-foreground sm:grid-cols-3">
-            <PricingPromise icon={CreditCard} label="No card to start" />
+            <PricingPromise icon={CreditCard} label="No payment to start" />
             <PricingPromise icon={RefreshCcw} label="Change plans anytime" />
-            <PricingPromise icon={ShieldCheck} label="14-day money-back promise" />
+            <PricingPromise icon={ShieldCheck} label="Secure bKash checkout coming" />
           </ul>
         </div>
       </section>
@@ -262,7 +264,7 @@ export function PricingClient() {
           </ul>
 
           <p className="mt-8 text-center text-xs text-muted-foreground">
-            Prices in USD. Taxes calculated at checkout.
+            All prices are in Bangladeshi Taka. No hidden payment surcharge.
           </p>
         </div>
       </section>
@@ -273,18 +275,18 @@ export function PricingClient() {
           <SectionHeader
             eyebrow="Compare"
             title={<>Every plan, side by side</>}
-            description="A quick look at the limits and features included in Free, Pro, and Business."
+            description="A quick look at the limits and features included in Free, Job Seeker, and Career Pro."
           />
 
           <div className="mt-12 overflow-x-auto rounded-[1.5rem] border border-border bg-card shadow-sm">
             <table className="w-full min-w-[640px] text-left text-sm">
-              <caption className="sr-only">Feature comparison for Free, Pro, and Business plans</caption>
+              <caption className="sr-only">Feature comparison for Free, Job Seeker, and Career Pro plans</caption>
               <thead>
                 <tr className="border-b border-border bg-muted/40 text-xs uppercase tracking-wider text-muted-foreground">
                   <th scope="col" className="px-5 py-4 font-semibold">Feature</th>
                   <th scope="col" className="px-5 py-4 font-semibold">Free</th>
-                  <th scope="col" className="px-5 py-4 font-semibold">Pro</th>
-                  <th scope="col" className="px-5 py-4 font-semibold">Business</th>
+                  <th scope="col" className="px-5 py-4 font-semibold">Job Seeker</th>
+                  <th scope="col" className="px-5 py-4 font-semibold">Career Pro</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -300,6 +302,19 @@ export function PricingClient() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          <div className="mt-8 grid gap-4 rounded-[1.5rem] border border-violet-500/25 bg-violet-500/5 p-5 sm:grid-cols-[1fr_auto] sm:items-center sm:p-6">
+            <div>
+              <p className="font-semibold text-foreground">Need it for one urgent application?</p>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                The 7-day Sprint Pass includes 5 alignment analyses, 3 tailored resumes, 10 application drafts, premium templates, and clean PDF export.
+              </p>
+            </div>
+            <div className="sm:text-right">
+              <p className="text-2xl font-bold text-foreground">৳149</p>
+              <p className="text-xs text-muted-foreground">one-time · no auto-renewal</p>
+            </div>
           </div>
         </div>
       </section>
@@ -399,15 +414,15 @@ function PriceBlock({
     <div className="mt-4" aria-live="polite">
       <div className="flex items-baseline gap-1">
         <span className="text-4xl font-bold tracking-tight text-foreground">
-          {isFree ? "$0" : `$${price}`}
+          {isFree ? "৳0" : `৳${price.toLocaleString("en-BD")}`}
         </span>
         <span className="text-sm text-muted-foreground">
-          {isFree ? "forever" : "/ month"}
+          {isFree ? "forever" : billing === "monthly" ? "/ month" : "/ year"}
         </span>
       </div>
       {!isFree && billing === "yearly" && (
         <p className="mt-1 text-xs font-medium text-emerald-600">
-          ${price * 12} billed once per year
+          Billed once per year · save about 2 months
         </p>
       )}
     </div>

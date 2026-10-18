@@ -14,7 +14,7 @@ export type Plan = {
   description: string | null;
   stripePriceId: string | null;
   stripeProductId: string | null;
-  /** Amount in the smallest currency unit (cents for USD). */
+  /** Amount in the smallest currency unit (poisha for BDT). */
   amount: number;
   currency: string;
   interval: BillingInterval;
@@ -43,6 +43,7 @@ export type Subscription = {
 export type CurrentSubscription = {
   plan: Plan;
   subscription: Subscription;
+  paymentProvider: "bkash" | "stripe" | null;
 };
 
 export type Invoice = {
@@ -65,9 +66,9 @@ export type CouponPreview = {
   amountOff: number | null;
   currency: string;
   duration: string | null;
-  /** Plan amount before the coupon, in cents. */
+  /** Plan amount before the coupon, in the smallest currency unit. */
   baseAmount: number;
-  /** Plan amount after the coupon, in cents. */
+  /** Plan amount after the coupon, in the smallest currency unit. */
   finalAmount: number;
   currencyCode: string;
 };
@@ -94,7 +95,7 @@ export function useCheckout() {
   return useMutation<
     { url: string },
     ApiError,
-    { planSlug: string; couponCode?: string }
+    { planSlug: string; billing?: "monthly" | "yearly"; couponCode?: string }
   >({
     mutationFn: (body) => api.post<{ url: string }>("/billing/checkout", body),
     onSuccess: () => {

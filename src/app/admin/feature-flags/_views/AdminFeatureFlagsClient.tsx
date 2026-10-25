@@ -257,24 +257,27 @@ export function AdminFeatureFlagsClient() {
         </h2>
         <div className="grid gap-3 md:grid-cols-2">
           <div className="flex flex-col gap-2">
-            <Label>Key</Label>
+            <Label htmlFor="flag-key">Key</Label>
             <Input
+              id="flag-key"
               value={draft.key}
               onChange={(e) => setDraft((d) => ({ ...d, key: e.target.value }))}
               placeholder="new_ats_v2"
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Name</Label>
+            <Label htmlFor="flag-name">Name</Label>
             <Input
+              id="flag-name"
               value={draft.name}
               onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
               placeholder="ATS scoring v2"
             />
           </div>
           <div className="flex flex-col gap-2 md:col-span-2">
-            <Label>Description</Label>
+            <Label htmlFor="flag-description">Description</Label>
             <Input
+              id="flag-description"
               value={draft.description}
               onChange={(e) =>
                 setDraft((d) => ({ ...d, description: e.target.value }))
@@ -282,14 +285,16 @@ export function AdminFeatureFlagsClient() {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Environment</Label>
-            <div className="inline-flex overflow-hidden rounded-md border">
+            <Label id="flag-environment-label">Environment</Label>
+            <div className="inline-flex overflow-hidden rounded-md border" role="radiogroup" aria-labelledby="flag-environment-label">
               {(["DEV", "STAGING", "PRODUCTION"] as FlagEnvironment[]).map((e, i) => (
                 <button
                   key={e}
                   type="button"
+                  role="radio"
+                  aria-checked={draft.environment === e}
                   onClick={() => setDraft((d) => ({ ...d, environment: e }))}
-                  className={`px-3 py-1.5 text-sm ${
+                  className={`min-h-11 px-3 py-1.5 text-sm ${
                     draft.environment === e ? "bg-muted font-medium" : ""
                   } ${i > 0 ? "border-l" : ""}`}
                 >
@@ -299,8 +304,9 @@ export function AdminFeatureFlagsClient() {
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Rollout %</Label>
+            <Label htmlFor="flag-rollout">Rollout %</Label>
             <Input
+              id="flag-rollout"
               type="number"
               value={draft.rolloutPercent}
               onChange={(e) =>
@@ -315,29 +321,33 @@ export function AdminFeatureFlagsClient() {
           </div>
           <div className="flex items-center gap-2 md:col-span-2">
             <Switch
+              id="flag-enabled"
               checked={draft.enabled}
               onCheckedChange={(v) => setDraft((d) => ({ ...d, enabled: v }))}
             />
-            <Label>Enabled globally</Label>
+            <Label htmlFor="flag-enabled">Enabled globally</Label>
           </div>
           <div className="flex flex-col gap-2 md:col-span-2">
-            <Label>Target plan IDs (comma separated)</Label>
+            <Label htmlFor="flag-plan-ids">Target plan IDs (comma separated)</Label>
             <Input
+              id="flag-plan-ids"
               value={draft.planIds}
               onChange={(e) => setDraft((d) => ({ ...d, planIds: e.target.value }))}
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Target regions</Label>
+            <Label htmlFor="flag-regions">Target regions</Label>
             <Input
+              id="flag-regions"
               value={draft.regions}
               onChange={(e) => setDraft((d) => ({ ...d, regions: e.target.value }))}
               placeholder="US, EU"
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Override for user IDs</Label>
+            <Label htmlFor="flag-user-ids">Override for user IDs</Label>
             <Input
+              id="flag-user-ids"
               value={draft.userIds}
               onChange={(e) => setDraft((d) => ({ ...d, userIds: e.target.value }))}
             />

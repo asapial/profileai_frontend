@@ -459,7 +459,7 @@ function PreviewPane({ layoutConfig }: { layoutConfig: TemplateLayoutConfig }) {
     spacing === "compact" ? "py-1" : spacing === "airy" ? "py-4" : "py-2";
   return (
     <div
-      className="rounded-md border border-border/60 bg-white p-5 text-xs leading-relaxed text-zinc-800"
+      className="admin-resume-paper theme-paper rounded-md border border-border/60 bg-white p-5 text-xs leading-relaxed text-zinc-800"
       style={{ fontFamily }}
     >
       <div className="border-b border-zinc-200 pb-2">

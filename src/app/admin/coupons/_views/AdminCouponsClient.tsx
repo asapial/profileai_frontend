@@ -93,12 +93,11 @@ export function AdminCouponsClient() {
   const coupons = useMemo(() => data ?? [], [data]);
 
   const create = useCreateCoupon();
-  const update = useUpdateCoupon("");
-  const deactivate = useDeactivateCoupon("");
-
   const [editing, setEditing] = useState<Coupon | null>(null);
   const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
   const [confirmDeactivate, setConfirmDeactivate] = useState<Coupon | null>(null);
+  const update = useUpdateCoupon(editing?.id ?? "");
+  const deactivate = useDeactivateCoupon(confirmDeactivate?.id ?? "");
 
   function populateDraft(d: Draft) {
     setDraft(d);
@@ -166,12 +165,17 @@ export function AdminCouponsClient() {
         </div>
       </div>
 
-      <div className="inline-flex overflow-hidden rounded-md border">
+      <div
+        className="inline-flex overflow-hidden rounded-md border"
+        role="group"
+        aria-label="Filter coupons by status"
+      >
         {STATUS_TABS.map((s, i) => (
           <button
             key={s.key}
             type="button"
             onClick={() => setStatus(s.key ?? "all")}
+            aria-pressed={status === s.key}
             className={`px-4 py-2 text-sm ${
               status === s.key ? "bg-muted font-medium" : "bg-background"
             } ${i > 0 ? "border-l" : ""}`}
@@ -183,7 +187,11 @@ export function AdminCouponsClient() {
 
       <div className="relative max-w-sm">
         <IconSearch className="text-muted-foreground absolute left-3 top-1/2 size-4 -translate-y-1/2" />
+        <Label htmlFor="coupon-search" className="sr-only">
+          Search coupons
+        </Label>
         <Input
+          id="coupon-search"
           className="pl-9"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -293,6 +301,7 @@ export function AdminCouponsClient() {
                           variant="ghost"
                           disabled={!c.isActive}
                           onClick={() => setConfirmDeactivate(c)}
+                          aria-label={`Deactivate ${c.code}`}
                         >
                           <IconArchive className="size-4" />
                         </Button>
@@ -312,8 +321,9 @@ export function AdminCouponsClient() {
         </h2>
         <div className="mt-4 grid gap-3 md:grid-cols-2">
           <div className="flex flex-col gap-2">
-            <Label>Code</Label>
+            <Label htmlFor="coupon-code">Code</Label>
             <Input
+              id="coupon-code"
               value={draft.code}
               onChange={(e) =>
                 setDraft((d) => ({ ...d, code: e.target.value.toUpperCase() }))
@@ -322,13 +332,18 @@ export function AdminCouponsClient() {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Discount type</Label>
-            <div className="inline-flex overflow-hidden rounded-md border">
+            <Label id="coupon-discount-type-label">Discount type</Label>
+            <div
+              className="inline-flex overflow-hidden rounded-md border"
+              role="group"
+              aria-labelledby="coupon-discount-type-label"
+            >
               {(["PERCENT", "FIXED"] as CouponDiscountType[]).map((t, i) => (
                 <button
                   key={t}
                   type="button"
                   onClick={() => setDraft((d) => ({ ...d, discountType: t }))}
+                  aria-pressed={draft.discountType === t}
                   className={`px-4 py-2 text-sm ${
                     draft.discountType === t ? "bg-muted font-medium" : ""
                   } ${i > 0 ? "border-l" : ""}`}
@@ -340,8 +355,9 @@ export function AdminCouponsClient() {
           </div>
           {draft.discountType === "PERCENT" ? (
             <div className="flex flex-col gap-2">
-              <Label>Percent off</Label>
+              <Label htmlFor="coupon-percent-off">Percent off</Label>
               <Input
+                id="coupon-percent-off"
                 type="number"
                 value={draft.percentOff}
                 onChange={(e) =>
@@ -351,8 +367,9 @@ export function AdminCouponsClient() {
             </div>
           ) : (
             <div className="flex flex-col gap-2">
-              <Label>Amount off (cents)</Label>
+              <Label htmlFor="coupon-amount-off">Amount off (cents)</Label>
               <Input
+                id="coupon-amount-off"
                 type="number"
                 value={draft.amountOff}
                 onChange={(e) =>
@@ -362,31 +379,37 @@ export function AdminCouponsClient() {
             </div>
           )}
           <div className="flex flex-col gap-2">
-            <Label>Currency</Label>
+            <Label htmlFor="coupon-currency">Currency</Label>
             <Input
+              id="coupon-currency"
               value={draft.currency}
               onChange={(e) => setDraft((d) => ({ ...d, currency: e.target.value }))}
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Starts at</Label>
+            <Label htmlFor="coupon-starts-at">Starts at</Label>
             <Input
+              id="coupon-starts-at"
               type="datetime-local"
               value={draft.startsAt}
               onChange={(e) => setDraft((d) => ({ ...d, startsAt: e.target.value }))}
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Expires at</Label>
+            <Label htmlFor="coupon-expires-at">Expires at</Label>
             <Input
+              id="coupon-expires-at"
               type="datetime-local"
               value={draft.expiresAt}
               onChange={(e) => setDraft((d) => ({ ...d, expiresAt: e.target.value }))}
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Max redemptions (0 = unlimited)</Label>
+            <Label htmlFor="coupon-max-redemptions">
+              Max redemptions (0 = unlimited)
+            </Label>
             <Input
+              id="coupon-max-redemptions"
               type="number"
               value={draft.maxRedemptions}
               onChange={(e) =>
@@ -395,16 +418,20 @@ export function AdminCouponsClient() {
             />
           </div>
           <div className="flex flex-col gap-2 md:col-span-2">
-            <Label>Apply to plan IDs (comma-separated, empty = all)</Label>
+            <Label htmlFor="coupon-plan-ids">
+              Apply to plan IDs (comma-separated, empty = all)
+            </Label>
             <Input
+              id="coupon-plan-ids"
               value={draft.planIds}
               onChange={(e) => setDraft((d) => ({ ...d, planIds: e.target.value }))}
               placeholder="plan_pro, plan_team"
             />
           </div>
           <div className="flex flex-col gap-2 md:col-span-2">
-            <Label>Description (internal)</Label>
+            <Label htmlFor="coupon-description">Description (internal)</Label>
             <Input
+              id="coupon-description"
               value={draft.description}
               onChange={(e) =>
                 setDraft((d) => ({ ...d, description: e.target.value }))

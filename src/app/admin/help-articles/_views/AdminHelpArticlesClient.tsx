@@ -52,6 +52,7 @@ import {
   useAdminHelpArticles,
   useAdminHelpCategories,
   useCreateHelpArticle,
+  useDeleteHelpArticle,
   useTransitionHelpArticle,
   useUpdateHelpArticle,
   type ArticleStatus,
@@ -74,13 +75,15 @@ export function AdminHelpArticlesClient() {
     body: string;
     category: string;
     slug: string;
+    status: ArticleStatus;
   }>({
     id: null,
     title: "",
     excerpt: "",
     body: "",
-    category: "",
+    category: "general",
     slug: "",
+    status: "DRAFT",
   });
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
@@ -89,6 +92,7 @@ export function AdminHelpArticlesClient() {
 
   const { data: categories } = useAdminHelpCategories();
   const create = useCreateHelpArticle();
+  const remove = useDeleteHelpArticle();
 
   const update = useUpdateHelpArticle(editing.id ?? "");
   const transition = useTransitionHelpArticle(editing.id ?? "");
@@ -101,6 +105,7 @@ export function AdminHelpArticlesClient() {
       body: "",
       category: categories?.[0]?.slug ?? "general",
       slug: "",
+      status: "DRAFT",
     });
   }
 
@@ -120,13 +125,14 @@ export function AdminHelpArticlesClient() {
         });
         toast.success("Article saved.");
       } else {
-        await create.mutateAsync({
+        const created = await create.mutateAsync({
           title: editing.title,
           excerpt: editing.excerpt,
           body: editing.body,
           category: editing.category,
           slug: editing.slug || slugify(editing.title),
         });
+        setEditing({ ...created });
         toast.success("Draft created.");
       }
     } catch (err: unknown) {
@@ -138,6 +144,7 @@ export function AdminHelpArticlesClient() {
     if (!editing.id) return;
     try {
       await transition.mutateAsync(next);
+      setEditing((current) => ({ ...current, status: next }));
       toast.success(`Status set to ${next.toLowerCase()}.`);
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed.");
@@ -260,9 +267,10 @@ export function AdminHelpArticlesClient() {
                                   id: a.id,
                                   title: a.title,
                                   excerpt: a.excerpt,
-                                  body: "",
+                                  body: a.body,
                                   category: a.category,
                                   slug: a.slug,
+                                  status: a.status,
                                 })
                               }
                             >
@@ -291,9 +299,8 @@ export function AdminHelpArticlesClient() {
                 </h2>
                 {editing.id ? (
                   <Select
-                    value={
-                      items.find((i) => i.id === editing.id)?.status ?? "DRAFT"
-                    }
+                    value={editing.status}
+                    disabled={transition.isPending}
                     onValueChange={(v) => changeStatus(v as ArticleStatus)}
                   >
                     <SelectTrigger className="w-[140px]">
@@ -335,23 +342,20 @@ export function AdminHelpArticlesClient() {
                   </div>
                   <div className="flex flex-col gap-2">
                     <Label htmlFor="art-cat">Category</Label>
-                    <Select
+                    <Input
+                      id="art-cat"
                       value={editing.category}
-                      onValueChange={(v) =>
-                        setEditing((p) => ({ ...p, category: v }))
+                      onChange={(event) =>
+                        setEditing((p) => ({ ...p, category: event.target.value }))
                       }
-                    >
-                      <SelectTrigger id="art-cat">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {(categories ?? []).map((c) => (
-                          <SelectItem key={c.slug} value={c.slug}>
-                            {c.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      list="help-category-options"
+                      placeholder="general"
+                    />
+                    <datalist id="help-category-options">
+                      {(categories ?? []).map((c) => (
+                        <option key={c.slug} value={c.slug}>{c.name}</option>
+                      ))}
+                    </datalist>
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
@@ -380,7 +384,7 @@ export function AdminHelpArticlesClient() {
                 <div className="flex items-center justify-end gap-2">
                   <Button
                     variant="outline"
-                    onClick={() => setEditing({ ...editing, id: null })}
+                    onClick={newArticle}
                   >
                     New
                   </Button>
@@ -446,9 +450,17 @@ export function AdminHelpArticlesClient() {
         description="This permanently removes the article and unlinks it from any in-app tooltips."
         confirmLabel="Delete"
         variant="destructive"
-        onConfirm={() => {
-          toast("Delete request queued.");
-          setConfirmDelete(null);
+        onConfirm={async () => {
+          if (!confirmDelete) return;
+          try {
+            await remove.mutateAsync(confirmDelete);
+            if (editing.id === confirmDelete) newArticle();
+            toast.success("Article deleted.");
+            setConfirmDelete(null);
+          } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Delete failed.");
+            throw error;
+          }
         }}
       />
     </div>

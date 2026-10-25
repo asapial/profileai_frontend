@@ -219,12 +219,17 @@ export function AdminAnnouncementsClient() {
         </Button>
       </div>
 
-      <div className="inline-flex overflow-hidden rounded-md border">
+      <div
+        className="inline-flex overflow-hidden rounded-md border"
+        role="group"
+        aria-label="Filter announcements by status"
+      >
         {STATUS_TABS.map((t, i) => (
           <button
             key={t.key}
             type="button"
             onClick={() => setStatusFilter(t.key)}
+            aria-pressed={statusFilter === t.key}
             className={`px-4 py-2 text-sm ${
               statusFilter === t.key ? "bg-muted font-medium" : ""
             } ${i > 0 ? "border-l" : ""}`}
@@ -308,6 +313,7 @@ export function AdminAnnouncementsClient() {
                             signupAgeMax: "",
                           })
                         }
+                        aria-label={`Preview ${a.title}`}
                       >
                         <IconEye className="size-4" />
                       </Button>
@@ -315,6 +321,7 @@ export function AdminAnnouncementsClient() {
                         size="sm"
                         variant="ghost"
                         onClick={() => populateDraft(a)}
+                        aria-label={`Edit ${a.title}`}
                       >
                         <IconPencil className="size-4" />
                       </Button>
@@ -338,15 +345,17 @@ export function AdminAnnouncementsClient() {
         </h2>
         <div className="grid gap-3 md:grid-cols-2">
           <div className="flex flex-col gap-2 md:col-span-2">
-            <Label>Title</Label>
+            <Label htmlFor="announcement-title">Title</Label>
             <Input
+              id="announcement-title"
               value={draft.title}
               onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
             />
           </div>
           <div className="flex flex-col gap-2 md:col-span-2">
-            <Label>Body</Label>
+            <Label htmlFor="announcement-body">Body</Label>
             <textarea
+              id="announcement-body"
               value={draft.body}
               onChange={(e) => setDraft((d) => ({ ...d, body: e.target.value }))}
               rows={4}
@@ -354,8 +363,12 @@ export function AdminAnnouncementsClient() {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Severity</Label>
-            <div className="inline-flex overflow-hidden rounded-md border">
+            <Label id="announcement-severity-label">Severity</Label>
+            <div
+              className="inline-flex overflow-hidden rounded-md border"
+              role="group"
+              aria-labelledby="announcement-severity-label"
+            >
               {(
                 ["INFO", "SUCCESS", "WARNING", "DANGER"] as AnnouncementSeverity[]
               ).map((s, i) => (
@@ -363,6 +376,7 @@ export function AdminAnnouncementsClient() {
                   key={s}
                   type="button"
                   onClick={() => setDraft((d) => ({ ...d, severity: s }))}
+                  aria-pressed={draft.severity === s}
                   className={`px-3 py-1.5 text-sm ${
                     draft.severity === s ? "bg-muted font-medium" : ""
                   } ${i > 0 ? "border-l" : ""}`}
@@ -373,8 +387,9 @@ export function AdminAnnouncementsClient() {
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <Label>CTA label</Label>
+            <Label htmlFor="announcement-cta-label">CTA label</Label>
             <Input
+              id="announcement-cta-label"
               value={draft.ctaLabel}
               onChange={(e) =>
                 setDraft((d) => ({ ...d, ctaLabel: e.target.value }))
@@ -383,47 +398,55 @@ export function AdminAnnouncementsClient() {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>CTA URL</Label>
+            <Label htmlFor="announcement-cta-url">CTA URL</Label>
             <Input
+              id="announcement-cta-url"
               value={draft.ctaUrl}
               onChange={(e) => setDraft((d) => ({ ...d, ctaUrl: e.target.value }))}
               placeholder="/upgrade"
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Publish at</Label>
+            <Label htmlFor="announcement-publish-at">Publish at</Label>
             <Input
+              id="announcement-publish-at"
               type="datetime-local"
               value={draft.publishAt}
               onChange={(e) => setDraft((d) => ({ ...d, publishAt: e.target.value }))}
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Expires at</Label>
+            <Label htmlFor="announcement-expires-at">Expires at</Label>
             <Input
+              id="announcement-expires-at"
               type="datetime-local"
               value={draft.expiresAt}
               onChange={(e) => setDraft((d) => ({ ...d, expiresAt: e.target.value }))}
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Audience plan IDs</Label>
+            <Label htmlFor="announcement-plan-ids">Audience plan IDs</Label>
             <Input
+              id="announcement-plan-ids"
               value={draft.planIds}
               onChange={(e) => setDraft((d) => ({ ...d, planIds: e.target.value }))}
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Audience regions</Label>
+            <Label htmlFor="announcement-regions">Audience regions</Label>
             <Input
+              id="announcement-regions"
               value={draft.regions}
               onChange={(e) => setDraft((d) => ({ ...d, regions: e.target.value }))}
               placeholder="US, EU"
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>New-user min age (days)</Label>
+            <Label htmlFor="announcement-signup-age-min">
+              New-user min age (days)
+            </Label>
             <Input
+              id="announcement-signup-age-min"
               type="number"
               value={draft.signupAgeMin}
               onChange={(e) =>
@@ -432,8 +455,11 @@ export function AdminAnnouncementsClient() {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>New-user max age (days)</Label>
+            <Label htmlFor="announcement-signup-age-max">
+              New-user max age (days)
+            </Label>
             <Input
+              id="announcement-signup-age-max"
               type="number"
               value={draft.signupAgeMax}
               onChange={(e) =>
@@ -514,7 +540,12 @@ function AnnouncementActions({
     }
   }
   return (
-    <Button size="sm" variant="ghost" onClick={run}>
+    <Button
+      size="sm"
+      variant="ghost"
+      onClick={run}
+      aria-label={`${live ? "Retire" : "Publish"} ${announcement.title}`}
+    >
       <IconPower className="size-4" />
     </Button>
   );

@@ -68,21 +68,21 @@ export function AdminInvoicesClient() {
   const invoices = useMemo(() => data ?? [], [data]);
 
   const exportCsv = useExportInvoices();
-  const refund = useRefundInvoice("");
   const [refundTarget, setRefundTarget] = useState<AdminInvoice | null>(null);
   const [refundAmount, setRefundAmount] = useState<string>("");
+  const refund = useRefundInvoice(refundTarget?.id ?? "");
 
   async function doRefund() {
     if (!refundTarget) return;
     const amount =
       refundAmount.trim() === "" ? undefined : Number(refundAmount);
-    if (amount !== undefined && Number.isNaN(amount)) {
-      toast.error("Invalid amount.");
+    if (amount !== undefined && (!Number.isFinite(amount) || amount <= 0 || amount > refundTarget.amount)) {
+      toast.error("Amount must be positive and cannot exceed the invoice total.");
       return;
     }
     try {
       await refund.mutateAsync(amount);
-      toast.success("Refund issued.");
+      toast.success("Refund recorded.");
       setRefundTarget(null);
       setRefundAmount("");
     } catch (err: unknown) {
@@ -228,7 +228,7 @@ export function AdminInvoicesClient() {
                           setRefundAmount("");
                         }}
                       >
-                        Refund
+                        Record refund
                       </Button>
                     </div>
                   </TableCell>
@@ -247,13 +247,13 @@ export function AdminInvoicesClient() {
             setRefundAmount("");
           }
         }}
-        title={`Refund ${refundTarget?.number ?? ""}`}
+        title={`Record refund for ${refundTarget?.number ?? ""}`}
         description={
           refundTarget
-            ? `Issue a refund to ${refundTarget.userEmail}. Leave the amount blank to refund the full ${refundTarget.amount.toFixed(2)} ${refundTarget.currency}.`
+            ? `Record a refund already completed with the payment provider for ${refundTarget.userEmail}. This does not transfer money. Leave the amount blank to record the full ${refundTarget.amount.toFixed(2)} ${refundTarget.currency}.`
             : ""
         }
-        confirmLabel="Issue refund"
+        confirmLabel="Record refund"
         variant="destructive"
         onConfirm={doRefund}
       >

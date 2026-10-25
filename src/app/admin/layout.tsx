@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/sidebar";
 import { getRoleFromCookies } from "@/lib/role";
 
+import "./admin.css";
+
 export default async function AdminLayout({
   children,
 }: {
@@ -32,27 +34,33 @@ export default async function AdminLayout({
 
   return (
     <SidebarProvider
-      className="premium-dashboard bg-transparent"
+      className="admin-console premium-dashboard bg-transparent"
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
+          "--sidebar-width": "calc(var(--spacing) * 64)",
+          "--header-height": "calc(var(--spacing) * 14)",
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="inset" role="ADMIN" />
-      <SidebarInset className="border border-white/40 dark:border-white/8">
+      <a
+        href="#main"
+        className="fixed left-3 top-3 z-[100] -translate-y-24 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-lg transition-transform focus:translate-y-0"
+      >
+        Skip to main content
+      </a>
+      <AppSidebar role="ADMIN" />
+      <SidebarInset>
         <SiteHeader
           role="ADMIN"
           cta={{ label: "New template", href: "/admin/templates/create" }}
         />
-        <div className="flex min-w-0 flex-1 flex-col">
+        <main id="main" tabIndex={-1} className="flex min-w-0 flex-1 flex-col outline-none">
           <div className="@container/main flex min-w-0 flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+            <div className="app-workspace-content flex min-w-0 max-w-full flex-col gap-5 overflow-x-clip py-5 md:gap-8 md:py-8">
               {children}
             </div>
           </div>
-        </div>
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );

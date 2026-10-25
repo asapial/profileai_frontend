@@ -247,24 +247,27 @@ export function AdminPlansClient() {
         <Separator className="my-4" />
         <div className="grid gap-3 md:grid-cols-2">
           <div className="flex flex-col gap-2">
-            <Label>Slug</Label>
+            <Label htmlFor="plan-slug">Slug</Label>
             <Input
+              id="plan-slug"
               value={draft.slug ?? ""}
               onChange={(e) => setDraft((d) => ({ ...d, slug: e.target.value }))}
               placeholder="pro"
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Name</Label>
+            <Label htmlFor="plan-name">Name</Label>
             <Input
+              id="plan-name"
               value={draft.name ?? ""}
               onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
               placeholder="Pro"
             />
           </div>
           <div className="flex flex-col gap-2 md:col-span-2">
-            <Label>Description</Label>
+            <Label htmlFor="plan-description">Description</Label>
             <Input
+              id="plan-description"
               value={draft.description ?? ""}
               onChange={(e) =>
                 setDraft((d) => ({ ...d, description: e.target.value }))
@@ -272,8 +275,9 @@ export function AdminPlansClient() {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Monthly ($)</Label>
+            <Label htmlFor="plan-monthly">Monthly ($)</Label>
             <Input
+              id="plan-monthly"
               type="number"
               value={draft.priceMonthly ?? 0}
               onChange={(e) =>
@@ -285,8 +289,9 @@ export function AdminPlansClient() {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Yearly ($)</Label>
+            <Label htmlFor="plan-yearly">Yearly ($)</Label>
             <Input
+              id="plan-yearly"
               type="number"
               value={draft.priceYearly ?? 0}
               onChange={(e) =>
@@ -298,8 +303,9 @@ export function AdminPlansClient() {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Trial (days)</Label>
+            <Label htmlFor="plan-trial">Trial (days)</Label>
             <Input
+              id="plan-trial"
               type="number"
               value={draft.trialDays ?? 0}
               onChange={(e) =>
@@ -341,6 +347,7 @@ export function AdminPlansClient() {
                   <TableCell>
                     <input
                       type="checkbox"
+                      aria-label={`Include ${f.label}`}
                       checked={f.included}
                       onChange={(e) =>
                         setDraft((d) => {
@@ -354,6 +361,7 @@ export function AdminPlansClient() {
                   </TableCell>
                   <TableCell>
                     <Input
+                      aria-label={`${f.label} limit`}
                       type="number"
                       value={f.limit ?? 0}
                       onChange={(e) =>

@@ -507,15 +507,16 @@ function ToggleRow({
       </div>
       <button
         type="button"
+        aria-label={label}
         aria-pressed={value}
         onClick={() => onChange(!value)}
-        className={`relative h-6 w-11 shrink-0 rounded-full transition ${
-          value ? "bg-primary" : "bg-muted"
+        className={`relative h-11 w-12 shrink-0 rounded-full bg-transparent transition after:absolute after:left-0.5 after:top-2.5 after:h-6 after:w-11 after:rounded-full ${
+          value ? "after:bg-primary" : "after:bg-muted"
         }`}
       >
         <span
-          className={`absolute top-0.5 size-5 rounded-full bg-white transition ${
-            value ? "left-5" : "left-0.5"
+          className={`absolute top-3 z-10 size-5 rounded-full bg-white shadow transition ${
+            value ? "left-5" : "left-1"
           }`}
         />
       </button>

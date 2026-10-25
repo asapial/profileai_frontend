@@ -106,14 +106,14 @@ export function SkillsTab() {
             {items.map((s) => (
               <span
                 key={s.id}
-                className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-3 py-1 text-xs font-medium text-violet-700"
+                className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
               >
                 {s.name}
                 <button
                   type="button"
                   onClick={() => remove(s.id)}
                   aria-label={`Remove ${s.name}`}
-                  className="rounded-full p-0.5 hover:bg-violet-200"
+                  className="rounded-full p-0.5 hover:bg-primary/15"
                 >
                   <X className="h-3 w-3" />
                 </button>

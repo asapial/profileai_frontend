@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 
 export type Application = {
@@ -62,6 +62,20 @@ export function useApplication(id: string | null) {
   });
 }
 
+export function useApplicationPages(status?: string) {
+  return useInfiniteQuery({
+    queryKey: ["applications", "pages", status ?? ""],
+    initialPageParam: "",
+    queryFn: ({ pageParam }) => {
+      const search = new URLSearchParams({ limit: "20" });
+      if (status) search.set("status", status);
+      if (pageParam) search.set("cursor", pageParam);
+      return api.get<ApplicationsList>(`/applications?${search}`);
+    },
+    getNextPageParam: (page) => page.nextCursor ?? undefined,
+  });
+}
+
 export function useCreateApplication() {
   const qc = useQueryClient();
   return useMutation({
@@ -69,6 +83,9 @@ export function useCreateApplication() {
       api.post<Application>("/applications", body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["applications"] });
+      qc.invalidateQueries({ queryKey: ["jobs"] });
+      qc.invalidateQueries({ queryKey: ["career"] });
+      qc.invalidateQueries({ queryKey: ["harness"] });
       qc.invalidateQueries({ queryKey: ["dashboard-summary"] });
     },
   });
@@ -86,6 +103,9 @@ export function useUpdateApplication() {
     }) => api.put<Application>(`/applications/${id}`, body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["applications"] });
+      qc.invalidateQueries({ queryKey: ["jobs"] });
+      qc.invalidateQueries({ queryKey: ["career"] });
+      qc.invalidateQueries({ queryKey: ["harness"] });
       qc.invalidateQueries({ queryKey: ["dashboard-summary"] });
     },
   });
@@ -97,6 +117,9 @@ export function useDeleteApplication() {
     mutationFn: (id: string) => api.delete<{ id: string }>(`/applications/${id}`),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["applications"] });
+      qc.invalidateQueries({ queryKey: ["jobs"] });
+      qc.invalidateQueries({ queryKey: ["career"] });
+      qc.invalidateQueries({ queryKey: ["harness"] });
       qc.invalidateQueries({ queryKey: ["dashboard-summary"] });
     },
   });

@@ -139,7 +139,7 @@ function Section({
 }) {
   return (
     <div className="space-y-3">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <p className="text-sm font-semibold text-foreground">
         {title}
       </p>
       <div className="space-y-2">{children}</div>
@@ -168,16 +168,17 @@ function Switch({
       <button
         type="button"
         role="switch"
+        aria-label={label}
         aria-checked={checked}
         onClick={onChange}
         disabled={disabled}
-        className={`relative h-5 w-9 rounded-full transition ${
-          checked ? "bg-violet-600" : "bg-muted"
+        className={`relative h-11 w-12 rounded-full bg-transparent transition after:absolute after:left-1.5 after:top-3 after:h-5 after:w-9 after:rounded-full ${
+          checked ? "after:bg-primary" : "after:bg-muted"
         }`}
       >
         <span
-          className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition ${
-            checked ? "left-4" : "left-0.5"
+          className={`absolute top-3.5 z-10 h-4 w-4 rounded-full bg-white shadow transition ${
+            checked ? "left-6" : "left-2"
           }`}
         />
       </button>

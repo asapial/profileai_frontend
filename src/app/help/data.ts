@@ -64,7 +64,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
 
 **Step 4 — Let AI draft your bullets.** Click the sparkle icon next to any experience or project. Give the AI the role title and a few rough notes; it returns three to five quantified bullet points you can edit.
 
-**Step 5 — Run the ATS check.** Once your draft is solid, run an ATS scan against a target job description. Aim for a score of 80 or above before exporting.
+**Step 5 — Run the ATS check.** Once your draft is solid, run an ATS scan against the full target job description. Review required-evidence gaps and parsing warnings; there is no universal pass score across employers.
 
 **Step 6 — Export.** Click "Download PDF" or "Download DOCX" (Pro and Business only) and apply.`,
   },
@@ -95,23 +95,27 @@ export const HELP_ARTICLES: HelpArticle[] = [
     slug: "ats-score-explained",
     title: "Understanding your ATS score",
     excerpt:
-      "What the 0-100 score actually measures, why it fluctuates, and how to push it above 80.",
+      "What the 0-100 alignment estimate measures and how to improve it without inventing evidence.",
     category: "ats",
     readTime: 6,
-    updatedAt: "2026-06-01",
+    updatedAt: "2026-10-23",
     tags: ["score", "optimization"],
-    body: `Your ATS score is an estimate of how well a typical applicant tracking system will parse and rank your resume against a target job description.
+    body: `Your ATS score is a job-alignment and parsing estimate. It is not hiring probability and cannot reproduce every employer's ATS rules.
 
-**The score is composed of four parts.**
+**The score uses six checks.**
 
-- **Keyword match (40%).** Hard skills, tools, and certifications from the JD that appear in your resume.
-- **Section completeness (20%).** Whether you have summary, experience, education, and skills sections.
-- **Formatting safety (20%).** Tables, columns, headers, and icons that confuse parsers.
-- **Quantification (20%).** Whether bullets include numbers, percentages, or scope.
+- **Requirement coverage (35%).** Weighted coverage of required, responsibility, and preferred JD requirements.
+- **Evidence strength (25%).** Strong experience or project evidence scores above a skills-list mention.
+- **Experience alignment (15%).** Required work supported by experience, projects, education, or certifications. Roles with clear title, employer, and dates provide stronger context.
+- **Content quality (10%).** Clear action-led bullets, readable length, scope, and supported outcomes.
+- **Parsing safety (10%).** Single-column text is safer than tables, floats, columns, or absolute positioning.
+- **Completeness (5%).** Contact details and core resume sections.
 
-**Why the score moves.** Even a one-word change to your summary can shift the score by 2-4 points. The score updates every time you save; you don't need to re-run the scan.
+AI extraction is merged with deterministic requirement checks so missed required terms are less likely. A short or partial job description lowers analysis confidence.
 
-**How to push above 80.** Mirror the JD's exact phrasing in your skills section. Add a metric to every experience bullet. Remove tables and two-column layouts.`,
+Duplicate skills and unnatural keyword repetition receive a penalty. Missing contact details, real evidence sections, required evidence, or a parseable layout can cap the score.
+
+**How to improve it.** Use only skills you possess. Connect important requirements to truthful work or project examples. Add metrics only when known. Use a simple ATS template. Re-run the check after editing. Review the ranked actions and evidence map before optimizing.`,
   },
   {
     slug: "compare-plans",
@@ -249,7 +253,7 @@ Public links to your resumes will start returning a 404 immediately. We don't re
 2. In ProfileAI, open your base resume and click "Tailor to JD". Paste the description.
 3. Review the suggested changes: reordered skills, a tighter summary, bullets reworded to mirror the JD's phrasing.
 4. Accept the changes you like; revert the ones you don't.
-5. Run an ATS scan to confirm the score is above 80.
+5. Run an ATS scan, then resolve truthful high-impact evidence gaps and parsing warnings.
 6. Export.
 
 Don't tailor for every single role — focus on roles where you genuinely want to be considered.`,

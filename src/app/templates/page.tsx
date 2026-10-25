@@ -25,7 +25,7 @@ export default async function TemplatesPage({
     /* Gallery has an explicit unavailable state. */
   }
   return (
-    <div className="template-showcase-page">
+    <div className="studio-public-page template-showcase-page">
       <Navbar1 />
       <main id="main">
         <TemplateGallerySection templates={templates} full />

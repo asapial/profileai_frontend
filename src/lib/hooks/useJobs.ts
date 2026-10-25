@@ -20,6 +20,7 @@ export type Job = {
   sourceName: string;
   sourceType: string;
   lifecycle: "ACTIVE" | "POSSIBLY_EXPIRED" | "EXPIRED" | "REMOVED" | "UNKNOWN";
+  disposition: "NEW" | "SHORTLISTED" | "DISMISSED";
   publishedAt: string | null;
   expiresAt: string | null;
   lastVerifiedAt: string | null;
@@ -35,13 +36,13 @@ export type CreateJob = Pick<Job, "title" | "company" | "description"> &
 
 export function useJobs(query = "") {
   return useQuery({
-    queryKey: ["jobs", query],
+    queryKey: ["jobs", "list", query],
     queryFn: () => api.get<Job[]>(`/jobs${query ? `?query=${encodeURIComponent(query)}` : ""}`),
   });
 }
 
 export function useJob(id: string) {
-  return useQuery({ queryKey: ["jobs", id], queryFn: () => api.get<Job>(`/jobs/${id}`), enabled: Boolean(id) });
+  return useQuery({ queryKey: ["jobs", "detail", id], queryFn: () => api.get<Job>(`/jobs/${id}`), enabled: Boolean(id) });
 }
 
 export function useCreateJob() {
@@ -60,7 +61,18 @@ export function useCreateApplicationFromJob() {
     onSuccess: () => {
       client.invalidateQueries({ queryKey: ["jobs"] });
       client.invalidateQueries({ queryKey: ["applications"] });
+      client.invalidateQueries({ queryKey: ["career"] });
+      client.invalidateQueries({ queryKey: ["harness"] });
       client.invalidateQueries({ queryKey: ["dashboard-summary"] });
     },
+  });
+}
+
+export function useSetJobDisposition() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, disposition }: { id: string; disposition: Job["disposition"] }) =>
+      api.patch<Job>(`/jobs/${id}/disposition`, { disposition }),
+    onSuccess: () => client.invalidateQueries({ queryKey: ["jobs"] }),
   });
 }

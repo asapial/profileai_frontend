@@ -3,12 +3,13 @@
 import { FormEvent, useDeferredValue, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, BriefcaseBusiness, MapPin, Plus, Search, ShieldCheck, Sparkles, X } from "lucide-react";
+import { ArrowUpRight, BriefcaseBusiness, Check, EyeOff, MapPin, Plus, Search, ShieldCheck, Sparkles, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useCreateJob, useJobs, type CreateJob } from "@/lib/hooks/useJobs";
+import { useCreateJob, useJobs, useSetJobDisposition, type CreateJob } from "@/lib/hooks/useJobs";
+import { HybridJobSearch } from "./HybridJobSearch";
 
 const EMPTY: CreateJob = { title: "", company: "", description: "", location: "", canonicalUrl: "", workplaceType: "UNSPECIFIED", sourceName: "Manual import" };
 
@@ -16,6 +17,7 @@ export default function JobsPage() {
   const [search, setSearch] = useState("");
   const query = useJobs(useDeferredValue(search));
   const create = useCreateJob();
+  const disposition = useSetJobDisposition();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<CreateJob>(EMPTY);
 
@@ -50,6 +52,8 @@ export default function JobsPage() {
         </div>
       </section>
 
+      <HybridJobSearch />
+
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-xl font-semibold tracking-tight">Saved opportunities</h2>
@@ -64,7 +68,7 @@ export default function JobsPage() {
       {query.isLoading ? <p className="text-sm text-muted-foreground">Loading your opportunities…</p> : query.data?.length ? (
         <motion.div layout className="grid gap-4 lg:grid-cols-2">
           {query.data.map((job, index) => (
-            <motion.article key={job.id} layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(index * .04, .24) }}>
+            <motion.article key={job.id} layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: job.disposition === "DISMISSED" ? .58 : 1, y: 0 }} transition={{ delay: Math.min(index * .04, .24) }}>
               <Card className="group h-full overflow-hidden border-violet-500/15 bg-gradient-to-br from-card via-card to-violet-500/[.045] transition hover:-translate-y-0.5 hover:border-violet-500/30 hover:shadow-xl hover:shadow-violet-950/10">
                 <CardContent className="p-5">
                   <div className="flex items-start gap-4">
@@ -74,6 +78,7 @@ export default function JobsPage() {
                         <div><h3 className="font-semibold leading-5">{job.title}</h3><p className="mt-1 text-sm text-muted-foreground">{job.company}</p></div>
                         <div className="flex flex-wrap justify-end gap-1.5">
                           {Boolean(job._count?.applications) && <span className="rounded-full bg-violet-500/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-300">Application tracked</span>}
+                          {job.disposition !== "NEW" && <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{job.disposition}</span>}
                           <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-300">{job.lifecycle.replaceAll("_", " ")}</span>
                         </div>
                       </div>
@@ -82,7 +87,11 @@ export default function JobsPage() {
                         <span className="rounded-full bg-muted px-2.5 py-1">{job.workplaceType.replaceAll("_", " ")}</span>
                         <span className="rounded-full bg-muted px-2.5 py-1">{job.sourceName}</span>
                       </div>
-                      <Link href={`/dashboard/jobs/${job.id}`} className="mt-5 inline-flex items-center text-sm font-medium text-violet-600 hover:text-violet-700 dark:text-violet-300">Open workspace <ArrowUpRight className="ml-1 size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></Link>
+                      <div className="mt-5 flex flex-wrap items-center gap-2">
+                        <Button size="sm" variant={job.disposition === "SHORTLISTED" ? "default" : "outline"} disabled={disposition.isPending} onClick={() => disposition.mutate({ id: job.id, disposition: job.disposition === "SHORTLISTED" ? "NEW" : "SHORTLISTED" })}><Check className="mr-1.5 size-3.5" />Shortlist</Button>
+                        <Button size="sm" variant="ghost" disabled={disposition.isPending} onClick={() => disposition.mutate({ id: job.id, disposition: job.disposition === "DISMISSED" ? "NEW" : "DISMISSED" })}><EyeOff className="mr-1.5 size-3.5" />{job.disposition === "DISMISSED" ? "Restore" : "Skip"}</Button>
+                        <Link href={`/dashboard/jobs/${job.id}`} className="ml-auto inline-flex items-center text-sm font-medium text-violet-600 hover:text-violet-700 dark:text-violet-300">Open workspace <ArrowUpRight className="ml-1 size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></Link>
+                      </div>
                     </div>
                   </div>
                 </CardContent>

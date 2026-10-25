@@ -12,6 +12,7 @@ export type HelpArticle = {
   slug: string;
   title: string;
   excerpt: string;
+  body: string;
   category: string;
   status: ArticleStatus;
   authorName: string;
@@ -106,7 +107,10 @@ export function useCreateHelpArticle() {
       body: string;
       category: string;
     }) => api.post<HelpArticle>("/admin/help-articles", input),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ADMIN_HELP_QUERY_KEY }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ADMIN_HELP_QUERY_KEY });
+      qc.invalidateQueries({ queryKey: ["admin-help-categories"] });
+    },
   });
 }
 
@@ -118,6 +122,7 @@ export function useUpdateHelpArticle(id: string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-help-article", id] });
       qc.invalidateQueries({ queryKey: ADMIN_HELP_QUERY_KEY });
+      qc.invalidateQueries({ queryKey: ["admin-help-categories"] });
     },
   });
 }
@@ -128,5 +133,16 @@ export function useTransitionHelpArticle(id: string) {
     mutationFn: (next: ArticleStatus) =>
       api.patch<HelpArticle>(`/admin/help-articles/${id}`, { status: next }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ADMIN_HELP_QUERY_KEY }),
+  });
+}
+
+export function useDeleteHelpArticle() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/admin/help-articles/${id}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ADMIN_HELP_QUERY_KEY });
+      qc.invalidateQueries({ queryKey: ["admin-help-categories"] });
+    },
   });
 }

@@ -66,12 +66,15 @@ export default function CreateResumePage() {
   useEffect(() => {
     const job = selectedJob.data;
     if (!job || state.jobId !== job.id || state.jobDescription) return;
-    setState((current) => ({
-      ...current,
-      title: current.title || `${job.title} — ${job.company}`.slice(0, 100),
-      targetJobTitle: job.title.slice(0, 100),
-      jobDescription: job.description.slice(0, 5000),
-    }));
+    const update = window.setTimeout(() => {
+      setState((current) => ({
+        ...current,
+        title: current.title || `${job.title} — ${job.company}`.slice(0, 100),
+        targetJobTitle: job.title.slice(0, 100),
+        jobDescription: job.description.slice(0, 5000),
+      }));
+    }, 0);
+    return () => window.clearTimeout(update);
   }, [selectedJob.data, state.jobDescription, state.jobId]);
 
   const generateMutation = useGenerateResume({
@@ -304,12 +307,12 @@ function EmptyPreviewStep({
     <div className="relative overflow-hidden rounded-3xl border border-violet-500/20 bg-[radial-gradient(circle_at_50%_0%,rgba(139,92,246,.18),transparent_46%),linear-gradient(145deg,rgba(255,255,255,.78),rgba(245,243,255,.58))] px-4 py-9 text-center shadow-[0_30px_90px_-45px_rgba(76,29,149,.5)] backdrop-blur-2xl dark:bg-[radial-gradient(circle_at_50%_0%,rgba(139,92,246,.22),transparent_46%),linear-gradient(145deg,rgba(24,17,32,.8),rgba(15,10,23,.65))] sm:px-6 sm:py-16">
       <div className="pointer-events-none absolute -left-12 bottom-0 size-40 rounded-full bg-cyan-400/10 blur-3xl" />
       <span className="relative mx-auto grid size-16 place-items-center rounded-2xl bg-gradient-to-br from-violet-600 via-fuchsia-500 to-cyan-500 text-white shadow-xl shadow-violet-500/25"><Sparkles className="size-7" /></span>
-      <p className="relative mt-5 text-xs font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-300">Final step</p>
+      <p className="relative mt-5 text-xs font-bold text-primary">Final step</p>
       <h2 className="relative mt-2 text-2xl font-semibold tracking-tight">Ready to create your document?</h2>
       <p className="relative mx-auto mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
         AI will structure your verified profile content for the selected role and template. You can review every field before exporting.
       </p>
-      <div className="relative mx-auto mt-6 grid max-w-xl gap-2 text-left sm:grid-cols-3"><div className="rounded-xl border border-white/60 bg-white/55 p-3 backdrop-blur dark:border-white/10 dark:bg-white/5"><p className="text-xs font-semibold">Grounded content</p><p className="mt-1 text-[11px] text-muted-foreground">Built from your profile</p></div><div className="rounded-xl border border-white/60 bg-white/55 p-3 backdrop-blur dark:border-white/10 dark:bg-white/5"><p className="text-xs font-semibold">Selected design</p><p className="mt-1 text-[11px] text-muted-foreground">One consistent template</p></div><div className="rounded-xl border border-white/60 bg-white/55 p-3 backdrop-blur dark:border-white/10 dark:bg-white/5"><p className="text-xs font-semibold">Editable result</p><p className="mt-1 text-[11px] text-muted-foreground">Refine before export</p></div></div>
+      <div className="relative mx-auto mt-6 grid max-w-xl gap-2 text-left sm:grid-cols-3"><div className="rounded-xl border border-white/60 bg-white/55 p-3 backdrop-blur dark:border-white/10 dark:bg-white/5"><p className="text-xs font-semibold">Grounded content</p><p className="mt-1 text-xs text-muted-foreground">Built from your profile</p></div><div className="rounded-xl border border-white/60 bg-white/55 p-3 backdrop-blur dark:border-white/10 dark:bg-white/5"><p className="text-xs font-semibold">Selected design</p><p className="mt-1 text-xs text-muted-foreground">One consistent template</p></div><div className="rounded-xl border border-white/60 bg-white/55 p-3 backdrop-blur dark:border-white/10 dark:bg-white/5"><p className="text-xs font-semibold">Editable result</p><p className="mt-1 text-xs text-muted-foreground">Refine before export</p></div></div>
       {blocked ? (
         <p className="relative mx-auto mt-5 max-w-md rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-xs text-rose-700 dark:text-rose-300">
           Document or AI credit limit reached. Upgrade your plan to continue.

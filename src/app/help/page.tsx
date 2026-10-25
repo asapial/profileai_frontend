@@ -20,7 +20,7 @@ export default function HelpPage() {
   return (
     <>
       <Navbar1 />
-      <main id="main">
+      <main id="main" className="studio-public-page">
         <HelpCenter articles={HELP_ARTICLES} categories={HELP_CATEGORIES} />
       </main>
       <Footer />

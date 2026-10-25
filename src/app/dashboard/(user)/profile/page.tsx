@@ -40,13 +40,13 @@ export default function ProfilePage() {
 
         <div className="relative z-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-2xl">
-          <div className="studio-eyebrow mb-4 text-primary">
-            <Sparkles className="h-3.5 w-3.5" /> Your professional identity
-          </div>
-          <h1 className="font-serif text-4xl font-normal tracking-tight sm:text-5xl">The story so far.</h1>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
-            Keep your career story current and turn it into stronger resumes, cover letters, and recommendations.
-          </p>
+            <div className="studio-eyebrow mb-3 text-primary">
+              <Sparkles className="h-3.5 w-3.5" /> Your professional identity
+            </div>
+            <h1 className="text-3xl font-semibold leading-tight tracking-[-0.035em] sm:text-4xl">The story so far.</h1>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
+              Keep your career story current and turn it into stronger resumes, cover letters, and recommendations.
+            </p>
           </div>
           <Link
             href="/dashboard/career?tab=Career%20story"

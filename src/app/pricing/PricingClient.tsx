@@ -2,15 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import {
-  ArrowRight,
-  Check,
-  CreditCard,
-  HelpCircle,
-  RefreshCcw,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+import { Check, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SectionHeader } from "@/components/home/SectionHeader";
 import { track } from "@/lib/analytics";
@@ -153,12 +145,11 @@ export function PricingClient() {
     <>
       {/* Hero / toggle */}
       <section className="relative isolate overflow-hidden px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
-        <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-gradient-to-b from-violet-500/10 to-transparent" aria-hidden="true" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-primary/5" aria-hidden="true" />
         <div className="glass-panel premium-ring mx-auto max-w-7xl overflow-hidden rounded-[2rem] px-5 py-10 sm:px-10 sm:py-14 lg:px-14">
           <SectionHeader
             headingTag="h1"
-            eyebrow="Simple, transparent pricing"
-            title={<>Make your next move without hidden costs.</>}
+            title={<>Plans without hidden costs.</>}
             description="Start free. Upgrade when you need more drafts, deeper feedback, or a shared workspace. No credit card is required to begin."
           />
 
@@ -167,7 +158,7 @@ export function PricingClient() {
             <div
               role="tablist"
               aria-label="Billing interval"
-              className="inline-flex items-center gap-1 rounded-full border border-border bg-card p-1 shadow-sm"
+              className="inline-flex items-center gap-1 bg-card p-1"
             >
               <ToggleButton
                 active={billing === "monthly"}
@@ -187,10 +178,11 @@ export function PricingClient() {
             </div>
           </div>
 
-          <ul className="mx-auto mt-8 grid max-w-3xl gap-3 text-sm text-muted-foreground sm:grid-cols-3">
-            <PricingPromise icon={CreditCard} label="No payment to start" />
-            <PricingPromise icon={RefreshCcw} label="Change plans anytime" />
-            <PricingPromise icon={ShieldCheck} label="Secure bKash checkout coming" />
+          <ul className="mx-auto mt-10 grid max-w-5xl gap-3 text-base sm:grid-cols-2">
+            <ProductFragment title="Resume workspace" value="3 tailored versions" detail="Each draft stays editable and tied to your evidence." />
+            <ProductFragment title="Role alignment" value="82% match" detail="Skills, gaps, and verified claims remain visible." />
+            <ProductFragment title="Application tracker" value="7 active roles" detail="Status, notes, and next actions stay together." />
+            <ProductFragment title="Agent review" value="2 items need you" detail="Sensitive actions always pause for your approval." />
           </ul>
         </div>
       </section>
@@ -198,50 +190,46 @@ export function PricingClient() {
       {/* Plan cards */}
       <section className="pb-16 pt-6 sm:pb-20 sm:pt-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <ul className="grid gap-6 lg:grid-cols-3">
+          <ul className="grid gap-24 lg:grid-cols-3 lg:gap-6">
             {cards.map((plan) => (
               <li
                 key={plan.id}
                 className={cn(
-                  "relative flex flex-col rounded-[1.75rem] border bg-card p-6 transition duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-7",
+                  "relative flex flex-col bg-card p-6 transition duration-300 sm:p-7",
                   plan.highlighted
-                    ? "border-violet-500 shadow-xl shadow-violet-500/15"
-                    : "border-border hover:border-primary/30",
+                    ? "bg-primary/10"
+                    : "hover:bg-muted",
                 )}
               >
                 {plan.badge && (
-                  <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-500 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white shadow">
-                    <Sparkles className="h-3 w-3" />
+                  <span className="mb-4 inline-flex w-fit bg-primary px-2.5 py-1 text-sm font-semibold text-primary-foreground">
                     {plan.badge}
                   </span>
                 )}
 
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                    {plan.name}
-                  </p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {plan.tagline}
-                  </p>
+                  <div className="flex items-end justify-between gap-4">
+                    <p className="pb-1 text-lg font-semibold text-foreground">{plan.name}</p>
+                    <PriceBlock plan={plan} billing={billing} />
+                  </div>
 
-                  <PriceBlock plan={plan} billing={billing} />
-
-                  <p className="mt-3 min-h-12 text-sm leading-6 text-muted-foreground">
-                    {plan.description}
+                  <p className="mt-3 min-h-12 text-base leading-7 text-muted-foreground">
+                    {plan.tagline}. {plan.description}
                   </p>
                 </div>
 
-                <ul className="mt-6 space-y-2.5 text-sm">
+                <ul className="mt-6 space-y-2.5 text-base">
                   {plan.features.map((f) => (
                     <li key={f.label} className="flex items-start gap-2.5">
-                      <Check
+                      <span
+                        aria-hidden="true"
                         className={cn(
-                          "mt-0.5 h-4 w-4 shrink-0",
+                          "mt-2 h-1.5 w-1.5 shrink-0",
                           f.comingSoon
-                            ? "text-muted-foreground/50"
+                            ? "bg-muted-foreground/50"
                             : plan.highlighted
-                              ? "text-violet-600"
-                              : "text-emerald-600",
+                              ? "bg-primary"
+                              : "bg-foreground/70",
                         )}
                       />
                       <span
@@ -273,13 +261,17 @@ export function PricingClient() {
       <section className="bg-muted/30 py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
-            eyebrow="Compare"
             title={<>Every plan, side by side</>}
             description="A quick look at the limits and features included in Free, Job Seeker, and Career Pro."
           />
 
-          <div className="mt-12 overflow-x-auto rounded-[1.5rem] border border-border bg-card shadow-sm">
-            <table className="w-full min-w-[640px] text-left text-sm">
+          <div
+            className="mt-12 overflow-x-auto rounded-[var(--radius-lg)] border border-border bg-card shadow-[var(--shadow-1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            role="region"
+            aria-label="Pricing plan comparison"
+            tabIndex={0}
+          >
+            <table className="min-w-[44rem] w-full text-left text-sm">
               <caption className="sr-only">Feature comparison for Free, Job Seeker, and Career Pro plans</caption>
               <thead>
                 <tr className="border-b border-border bg-muted/40 text-xs uppercase tracking-wider text-muted-foreground">
@@ -289,7 +281,7 @@ export function PricingClient() {
                   <th scope="col" className="px-5 py-4 font-semibold">Career Pro</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
+              <tbody>
                 {COMPARISON.map((row) => (
                   <tr key={row.row}>
                     <th scope="row" className="px-5 py-3 text-left font-medium text-foreground">
@@ -323,12 +315,11 @@ export function PricingClient() {
       <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
-            eyebrow="Pricing FAQ"
             title={<>Questions about plans and billing</>}
           />
-          <ul className="mt-10 divide-y divide-border rounded-[1.5rem] border border-border bg-card shadow-sm">
+          <ul className="mt-10 space-y-2 bg-card p-2">
             {FAQS.map((item) => (
-              <li key={item.q} className="px-5 py-4">
+              <li key={item.q} className="bg-muted/40 px-5 py-4">
                 <details className="group">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-foreground sm:text-base">
                     <span className="flex items-center gap-2">
@@ -340,7 +331,7 @@ export function PricingClient() {
                       <span className="text-lg leading-none hidden group-open:inline">−</span>
                     </span>
                   </summary>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  <p className="mt-3 text-base leading-relaxed text-muted-foreground">
                     {item.a}
                   </p>
                 </details>
@@ -391,7 +382,7 @@ function ToggleButton({
       className={cn(
         "inline-flex items-center justify-center rounded-full px-5 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         active
-          ? "bg-foreground text-background shadow"
+          ? "bg-foreground text-background"
           : "text-muted-foreground hover:text-foreground",
       )}
     >
@@ -411,7 +402,7 @@ function PriceBlock({
   const price = billing === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
 
   return (
-    <div className="mt-4" aria-live="polite">
+    <div aria-live="polite">
       <div className="flex items-baseline gap-1">
         <span className="text-4xl font-bold tracking-tight text-foreground">
           {isFree ? "৳0" : `৳${price.toLocaleString("en-BD")}`}
@@ -445,29 +436,25 @@ function PlanCta({ plan, billing }: { plan: StaticPlan; billing: Billing }) {
         })
       }
       className={cn(
-        "group inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "group inline-flex w-full items-center justify-center gap-2 px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         plan.highlighted
-          ? "bg-foreground text-background shadow-lg shadow-violet-500/20 hover:opacity-90"
-          : "border border-border bg-background text-foreground hover:bg-muted",
+          ? "bg-foreground text-background hover:opacity-90"
+          : "bg-muted text-foreground hover:bg-secondary",
       )}
     >
       {plan.cta.label}
-      <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" aria-hidden="true" />
     </Link>
   );
 }
 
-function PricingPromise({
-  icon: Icon,
-  label,
-}: {
-  icon: typeof CreditCard;
-  label: string;
-}) {
+function ProductFragment({ title, value, detail }: { title: string; value: string; detail: string }) {
   return (
-    <li className="flex items-center justify-center gap-2 rounded-xl border border-border/70 bg-background/60 px-3 py-2.5">
-      <Icon className="h-4 w-4 text-primary" aria-hidden="true" />
-      <span>{label}</span>
+    <li className="flex min-h-[200px] min-w-0 flex-col justify-between bg-background/70 p-6 text-left" data-ui>
+      <div>
+        <p className="text-sm font-semibold text-muted-foreground">{title}</p>
+        <p className="mt-3 text-2xl font-semibold tracking-tight text-foreground">{value}</p>
+      </div>
+      <p className="max-w-sm text-sm leading-6 text-muted-foreground">{detail}</p>
     </li>
   );
 }

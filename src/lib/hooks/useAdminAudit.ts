@@ -100,6 +100,7 @@ export function useExportAuditLog() {
       if (filters.action) qs.set("action", filters.action);
       if (filters.from) qs.set("from", filters.from);
       if (filters.to) qs.set("to", filters.to);
+      if (filters.search) qs.set("search", filters.search);
       const path = qs.toString()
         ? `/admin/audit-log/export?${qs.toString()}`
         : "/admin/audit-log/export";

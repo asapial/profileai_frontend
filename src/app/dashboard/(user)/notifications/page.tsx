@@ -25,11 +25,11 @@ import {
 } from "@/lib/hooks/useNotifications";
 
 const TYPE_TONE: Record<string, string> = {
-  SYSTEM: "bg-slate-100 text-slate-700",
-  RESUME: "bg-violet-100 text-violet-700",
-  APPLICATION: "bg-emerald-100 text-emerald-700",
-  BILLING: "bg-amber-100 text-amber-700",
-  SECURITY: "bg-rose-100 text-rose-700",
+  SYSTEM: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200",
+  RESUME: "bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-200",
+  APPLICATION: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/55 dark:text-emerald-200",
+  BILLING: "bg-amber-100 text-amber-700 dark:bg-amber-950/55 dark:text-amber-200",
+  SECURITY: "bg-rose-100 text-rose-700 dark:bg-rose-950/55 dark:text-rose-200",
 };
 
 const TYPE_LABEL: Record<string, string> = {
@@ -211,7 +211,7 @@ export default function NotificationsPage() {
                     >
                       <span
                         className={`mt-0.5 inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
-                          TYPE_TONE[n.type] ?? "bg-slate-100 text-slate-700"
+                          TYPE_TONE[n.type] ?? "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200"
                         }`}
                       >
                         {TYPE_LABEL[n.type] ?? n.type}
@@ -238,14 +238,14 @@ export default function NotificationsPage() {
                         </span>
                       </span>
                     </button>
-                    <div className="flex shrink-0 items-center gap-1 opacity-0 transition group-hover:opacity-100">
+                    <div className="flex shrink-0 items-center gap-1 opacity-100 transition md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 [@media(hover:none)]:opacity-100">
                       {!n.read ? (
                         <button
                           type="button"
                           aria-label="Mark as read"
                           onClick={() => markRead.mutate(n.id)}
                           disabled={markRead.isPending}
-                          className="rounded-md p-1.5 text-muted-foreground hover:bg-muted disabled:opacity-50"
+                          className="grid size-11 place-items-center rounded-md text-muted-foreground hover:bg-muted disabled:opacity-50"
                         >
                           <Check className="h-3.5 w-3.5" />
                         </button>
@@ -255,7 +255,7 @@ export default function NotificationsPage() {
                         aria-label="Delete notification"
                         onClick={() => handleDelete(n.id)}
                         disabled={pendingDeleteId === n.id && remove.isPending}
-                        className="rounded-md p-1.5 text-rose-600 hover:bg-rose-50 disabled:opacity-50"
+                        className="grid size-11 place-items-center rounded-md text-rose-600 hover:bg-rose-50 disabled:opacity-50"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>

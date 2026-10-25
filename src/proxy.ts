@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { safeRedirectPath } from "./lib/auth-redirect";
 
 /* ──────────────────────────────────────────────────────────────────────────
  * Edge proxy (Next.js 16 `proxy.ts` — replaces `middleware.ts`).
@@ -139,14 +140,7 @@ function matchesPrefix(pathname: string, prefix: string): boolean {
  *   • Must NOT start with `//` (protocol-relative)
  *   • Must NOT contain CR/LF (header injection)
  */
-export function safeRedirectPath(raw: string | null | undefined): string | null {
-  if (!raw) return null;
-  if (raw.length > 512) return null;
-  if (!raw.startsWith("/")) return null;
-  if (raw.startsWith("//")) return null;
-  if (/[\r\n\0]/.test(raw)) return null;
-  return raw;
-}
+export { safeRedirectPath };
 
 /**
  * Build a redirect URL that preserves the incoming search + hash, so

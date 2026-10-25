@@ -33,7 +33,7 @@ const providerMeta: Record<
   GITHUB: {
     icon: <Globe className="h-4 w-4" />,
     label: "GitHub",
-    tone: "bg-slate-100 text-slate-700",
+    tone: "bg-muted text-muted-foreground",
   },
   LINKEDIN: {
     icon: <Globe className="h-4 w-4" />,
@@ -43,7 +43,7 @@ const providerMeta: Record<
   GOOGLE: {
     icon: <Link2 className="h-4 w-4" />,
     label: "Google",
-    tone: "bg-emerald-100 text-emerald-700",
+    tone: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
   },
   OTHER: {
     icon: <Link2 className="h-4 w-4" />,

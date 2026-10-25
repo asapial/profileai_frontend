@@ -521,7 +521,7 @@ export default function EditResumePage() {
   }
 
   return (
-    <div className="w-full min-w-0 max-w-full space-y-3 overflow-x-clip">
+    <div data-full-bleed className="w-full min-w-0 max-w-full space-y-3 overflow-x-clip">
       {hasConflict ? (
         <div className="mx-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950 sm:mx-4 lg:mx-6">
           <span>

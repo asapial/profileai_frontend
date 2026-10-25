@@ -202,7 +202,6 @@ function SignalField() {
     });
     return values;
   }, [field.edges]);
-  const threadPositions = useMemo(() => new Float32Array(THREAD_COUNT * THREAD_SEGMENTS * 6), []);
   const nodeGeometry = useMemo(() => new THREE.IcosahedronGeometry(0.092, 1), []);
 
   useFrame((state, delta) => {
@@ -299,6 +298,8 @@ function SignalField() {
 
     const threadOpacity = atomIn * (1 - workspace) * 0.46;
     if (threadOpacity > 0.005) {
+      const threadAttribute = threads.current.geometry.getAttribute("position") as THREE.BufferAttribute;
+      const threadPositions = threadAttribute.array as Float32Array;
       let writeIndex = 0;
       for (let thread = 0; thread < THREAD_COUNT; thread += 1) {
         const threadOffset = Math.sin(thread * 2.1) * 0.035;
@@ -318,7 +319,6 @@ function SignalField() {
           writeIndex += 6;
         }
       }
-      const threadAttribute = threads.current.geometry.getAttribute("position") as THREE.BufferAttribute;
       threadAttribute.needsUpdate = true;
     }
     threadMaterial.current.opacity = threadOpacity;
@@ -361,7 +361,7 @@ function SignalField() {
       </instancedMesh>
       <lineSegments ref={threads} frustumCulled={false}>
         <bufferGeometry>
-          <bufferAttribute attach="attributes-position" args={[threadPositions, 3]} />
+          <bufferAttribute attach="attributes-position" args={[new Float32Array(THREAD_COUNT * THREAD_SEGMENTS * 6), 3]} />
         </bufferGeometry>
         <lineBasicMaterial ref={threadMaterial} color="#8b5cf6" transparent opacity={0} depthWrite={false} />
       </lineSegments>

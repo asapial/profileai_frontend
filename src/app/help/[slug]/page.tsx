@@ -51,7 +51,7 @@ export default async function HelpArticlePage({
   return (
     <>
       <Navbar />
-      <main id="main" className="pt-24">
+      <main id="main" className="studio-public-page pt-24">
         <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
           <Link
             href="/help"

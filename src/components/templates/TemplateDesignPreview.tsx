@@ -26,6 +26,7 @@ export const TEMPLATE_SAMPLE_DATA: Record<string, unknown> = {
   website: "alexmorgan.design",
   linkedIn: "linkedin.com/in/alexmorgan",
   headline: "Senior Product & Technology Leader",
+  summary: "Outcome-focused leader with eight years of experience building useful digital products, developing high-performing teams, and turning complex customer needs into measurable growth.",
   bio: "Outcome-focused leader with eight years of experience building useful digital products, developing high-performing teams, and turning complex customer needs into measurable growth.",
   skills: ["Product strategy", "Team leadership", "Analytics", "Research", "TypeScript", "AI systems"],
   languages: ["English", "Spanish"],

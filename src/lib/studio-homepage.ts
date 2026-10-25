@@ -23,7 +23,7 @@ const LEGACY: Record<
       ],
       [
         "Premium templates",
-        "Choose from 30 résumé and 30 CV designs, each editable and recruiter-friendly.",
+        "Choose from 50 résumé and 50 CV designs, including 40 new layouts with distinct structures and palettes.",
       ],
       [
         "One-click export",
@@ -71,10 +71,22 @@ export function studioSection(
 ): ManagedHomepageSection {
   const legacy = LEGACY[section.id];
   if (!legacy) return section;
+  const items = section.items?.map((item) =>
+    item.title === "Premium templates" &&
+    item.description ===
+      "Choose from 30 résumé and 30 CV designs, each editable and recruiter-friendly."
+      ? {
+          ...item,
+          description:
+            "Choose from 50 résumé and 50 CV designs, including 40 new layouts with distinct structures and palettes.",
+          ...(item.label === "60 designs" ? { label: "100 designs" } : {}),
+        }
+      : item,
+  );
   const hasDefaultItems =
     legacy.items &&
-    section.items?.length === legacy.items.length &&
-    section.items.every(
+    items?.length === legacy.items.length &&
+    items.every(
       (item, index) =>
         item.title === legacy.items![index][0] &&
         item.description === legacy.items![index][1],
@@ -87,7 +99,7 @@ export function studioSection(
     title: section.title === legacy.title ? "" : section.title,
     description:
       section.description === legacy.description ? "" : section.description,
-    items: hasDefaultItems ? undefined : section.items,
+    items: hasDefaultItems ? undefined : items,
     primaryCta: hasDefaultCta ? undefined : section.primaryCta,
   };
 }

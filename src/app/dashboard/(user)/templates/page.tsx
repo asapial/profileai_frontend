@@ -114,7 +114,7 @@ export default function TemplatesPage() {
           <div className="max-w-2xl">
             <p className="premium-kicker w-fit"><Sparkles className="h-3.5 w-3.5" />Template studio</p>
             <h1 className="mt-4 text-3xl font-bold tracking-[-.035em] sm:text-4xl">Original templates, made uniquely yours.</h1>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">Choose from 30 résumé and 30 CV designs, edit visual details, save private editions, and submit your best work to the community gallery.</p>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">Choose from 50 résumé and 50 CV designs, including 40 layouts with distinct structures and palettes. Edit visual details, save private editions, and submit your best work to the community gallery.</p>
           </div>
           <div className="grid grid-cols-3 gap-2 sm:min-w-[390px]">
             <Stat value="30" label="résumés" icon={FileText} />

@@ -16,8 +16,7 @@ const easeEmphasized = [0.16, 1, 0.3, 1] as const;
 
 export function useMotionPreference() {
   const reduced = useReducedMotion();
-  const [touch, setTouch] = useState(true);
-  useEffect(() => setTouch(window.matchMedia("(pointer: coarse)").matches), []);
+  const [touch] = useState(() => typeof window === "undefined" || window.matchMedia("(pointer: coarse)").matches);
   return { reduced: Boolean(reduced), touch, allowTilt: !reduced && !touch };
 }
 

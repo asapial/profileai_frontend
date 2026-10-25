@@ -124,6 +124,27 @@ export type AtsResult = {
   sourceHash?: string;
   notice?: string;
   weights?: Record<string, number>;
+  scoreCeiling?: number;
+  penalties?: { keywordStuffing: number };
+  criticalIssues?: Array<{ code: string; severity: "HIGH" | "MEDIUM"; message: string }>;
+  topActions?: Array<{
+    section: string;
+    impact: "HIGH" | "MEDIUM" | "LOW";
+    issue: string;
+    action: string;
+    potentialGain: number;
+  }>;
+  qualitySignals?: {
+    bullets: number;
+    actionLed: number;
+    quantified: number;
+    outcomeLed: number;
+    duplicateSkills: number;
+    repeatedTerms: Array<{ label: string; count: number }>;
+    experienceEntries?: number;
+    structuredExperience?: number;
+  };
+  analysisQuality?: { jobDescriptionWords: number; requirementCount: number; thinJobDescription: boolean };
   optimization?: {
     outcome?: "AI_UNAVAILABLE" | "IMPROVED" | "REWRITTEN" | "UNCHANGED";
     diagnostics?: { proposed: number; eligible: number; applied: number; verificationAvailable: boolean; conservativeCorrections?: number };

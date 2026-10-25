@@ -236,7 +236,7 @@ export default function CareerPage() {
   const claimsSelector = (
     <fieldset className="space-y-3 rounded-2xl border border-border/70 bg-muted/10 p-4">
       <div className="flex items-center justify-between">
-        <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <legend className="text-xs font-semibold text-muted-foreground">
           Confirmed Achievements to Include
         </legend>
         <span className="text-xs text-muted-foreground">
@@ -347,7 +347,7 @@ export default function CareerPage() {
       </nav>
 
       {/* Tab Content Panels */}
-      <main className="w-full min-w-0 min-h-[550px]">
+      <div className="w-full min-w-0 min-h-[550px]">
         {tab === "Career story" && (
           <div className="space-y-4">
             <PathwayLinks
@@ -455,7 +455,7 @@ export default function CareerPage() {
                   {/* Score banner */}
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/60 pb-5">
                     <div>
-                      <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      <span className="text-xs font-semibold text-muted-foreground">
                         Evidence Coverage Score
                       </span>
                       <div className="mt-1 flex items-baseline gap-2">
@@ -480,7 +480,7 @@ export default function CareerPage() {
                   {/* Risks */}
                   {analysis.result.risks.length > 0 && (
                     <div className="space-y-2">
-                      <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                      <h4 className="text-xs font-semibold text-amber-600 dark:text-amber-400">
                         Identified Risks & Missing Signals
                       </h4>
                       {analysis.result.risks.map((r) => (
@@ -499,7 +499,7 @@ export default function CareerPage() {
                   <div className="grid gap-3 sm:grid-cols-3">
                     {Object.entries(analysis.result.breakdown).map(([k, v]) => (
                       <div key={k} className="rounded-xl border border-border/60 bg-muted/20 p-3.5">
-                        <dt className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                        <dt className="text-xs font-medium text-muted-foreground">
                           {k.replace(/([A-Z])/g, " $1")}
                         </dt>
                         <dd className="mt-1 text-sm font-semibold text-foreground">
@@ -511,7 +511,7 @@ export default function CareerPage() {
 
                   {/* Requirement Details */}
                   <div className="space-y-3 pt-2">
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    <h4 className="text-xs font-semibold text-muted-foreground">
                       Detailed Requirement Alignment
                     </h4>
                     {analysis.result.requirements.map((r, i) => (
@@ -522,7 +522,7 @@ export default function CareerPage() {
                         <div className="flex flex-wrap items-center gap-2">
                           <span
                             className={cn(
-                              "rounded-full px-2 py-0.5 text-xs font-bold uppercase tracking-wider",
+                              "rounded-full px-2 py-0.5 text-xs font-bold",
                               r.status === "strong"
                                 ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
                                 : r.status === "partial"
@@ -533,13 +533,13 @@ export default function CareerPage() {
                             {r.status}
                           </span>
                           <span className="text-xs font-semibold text-foreground">{r.coverage}% coverage</span>
-                          <span className="rounded-full border border-border/70 bg-muted/40 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                          <span className="rounded-full border border-border/70 bg-muted/40 px-2 py-0.5 text-xs text-muted-foreground">
                             {r.importance} · {r.confidence} confidence
                           </span>
                         </div>
                         <p className="mt-2 text-xs font-medium text-foreground">{r.requirement}</p>
                         {r.components && (
-                          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
+                          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                             <span>Lexical {r.components.lexical}%</span>
                             <span>Semantic {r.components.semantic}%</span>
                             <span>Evidence quality {r.components.evidenceQuality}%</span>
@@ -594,7 +594,7 @@ export default function CareerPage() {
                   <div className="mt-4 space-y-4 rounded-2xl border border-border/70 bg-card p-5">
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div className="rounded-xl border border-border/60 bg-muted/20 p-4">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        <span className="text-xs font-semibold text-muted-foreground">
                           Current Summary
                         </span>
                         <p className="mt-2 text-xs leading-relaxed text-foreground/80">
@@ -603,7 +603,7 @@ export default function CareerPage() {
                       </div>
 
                       <div className="rounded-xl border border-violet-500/30 bg-violet-500/5 p-4">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-violet-600 dark:text-violet-400">
+                        <span className="text-xs font-semibold text-violet-600 dark:text-violet-400">
                           Tailored Summary
                         </span>
                         <p className="mt-2 text-xs leading-relaxed text-foreground font-medium">
@@ -795,7 +795,7 @@ export default function CareerPage() {
 
                   {/* Saved Drafts List */}
                   <div className="pt-3 border-t border-border/60">
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                    <h4 className="mb-2 text-xs font-semibold text-muted-foreground">
                       Saved Drafts ({data.documents.filter((d) => d.kind !== "INTERVIEW_STORY").length})
                     </h4>
                     <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
@@ -869,7 +869,7 @@ export default function CareerPage() {
 
                     {draft.subjects && draft.subjects.length > 0 && (
                       <div className="space-y-1.5">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        <span className="text-xs font-semibold text-muted-foreground">
                           Suggested Subject Lines
                         </span>
                         <div className="flex flex-wrap gap-2">
@@ -1054,7 +1054,7 @@ export default function CareerPage() {
                     className="rounded-2xl border border-border/70 bg-card p-5 transition hover:shadow-xs"
                   >
                     <p className="text-3xl font-bold tracking-tight text-foreground">{count}</p>
-                    <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    <p className="mt-1 text-xs font-semibold text-muted-foreground">
                       {status.replaceAll("_", " ")}
                     </p>
                   </div>
@@ -1100,14 +1100,14 @@ export default function CareerPage() {
             </div>
           </Panel>
         )}
-      </main>
+      </div>
     </div>
   );
 }
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <label className="block space-y-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+    <label className="block space-y-1.5 text-xs font-semibold text-muted-foreground">
       <span>{label}</span>
       {children}
     </label>
@@ -1287,7 +1287,7 @@ function Connections({ run, busy }: Actions) {
         >
           <div className="flex items-center gap-2">
             <Calendar className="size-4 text-violet-500" />
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <h3 className="text-xs font-semibold text-muted-foreground">
               Schedule or Review a Calendar Event
             </h3>
           </div>
@@ -1324,7 +1324,7 @@ function Connections({ run, busy }: Actions) {
 
         {/* Delivery Audit Log */}
         <div className="space-y-3">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <h4 className="text-xs font-semibold text-muted-foreground">
             Delivery Status Log
           </h4>
           {q.data?.deliveries.length === 0 ? (

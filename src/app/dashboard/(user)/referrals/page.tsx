@@ -35,10 +35,10 @@ import {
 } from "@/lib/hooks/useReferrals";
 
 const STATUS_TONE: Record<ReferralStatus, string> = {
-  PENDING: "bg-amber-100 text-amber-700",
-  REWARDED: "bg-emerald-100 text-emerald-700",
-  EXPIRED: "bg-slate-100 text-slate-700",
-  REJECTED: "bg-rose-100 text-rose-700",
+  PENDING: "bg-amber-100 text-amber-700 dark:bg-amber-950/55 dark:text-amber-200",
+  REWARDED: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/55 dark:text-emerald-200",
+  EXPIRED: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200",
+  REJECTED: "bg-rose-100 text-rose-700 dark:bg-rose-950/55 dark:text-rose-200",
 };
 
 const STATUS_LABEL: Record<ReferralStatus, string> = {
@@ -505,7 +505,7 @@ function Leaderboard({
                       e.rank === 1
                         ? "bg-amber-400 text-amber-900"
                         : e.rank === 2
-                          ? "bg-slate-300 text-slate-800"
+                          ? "bg-slate-300 text-slate-800 dark:bg-slate-700 dark:text-slate-100"
                           : e.rank === 3
                             ? "bg-orange-300 text-orange-900"
                             : "bg-muted text-muted-foreground"
@@ -516,7 +516,7 @@ function Leaderboard({
                   <span className="font-medium">
                     {e.name}
                     {e.isYou ? (
-                      <span className="ml-2 text-xs uppercase tracking-wide text-violet-700">
+                      <span className="ml-2 text-xs uppercase tracking-wide text-violet-700 dark:text-violet-300">
                         you
                       </span>
                     ) : null}

@@ -139,7 +139,7 @@ function Row({
   return (
     <label className="flex cursor-pointer items-start justify-between gap-4 rounded-xl border border-border p-3 hover:border-violet-300">
       <div className="flex items-start gap-3">
-        <span className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
+        <span className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
           {icon}
         </span>
         <div>

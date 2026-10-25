@@ -4,6 +4,8 @@ import "./globals.css";
 import "../styles/surfaces.css";
 import "../styles/tokens.css";
 import "../styles/base.css";
+import "../styles/auth-studio.css";
+import "../styles/premium-refresh.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Providers } from "@/components/providers";

@@ -150,7 +150,7 @@ function ExperienceRow({
         <button
           type="button"
           onClick={onRemove}
-          className="rounded-md p-1 text-muted-foreground hover:bg-rose-50 hover:text-rose-600"
+          className="rounded-md p-1 text-muted-foreground hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-300"
           aria-label="Remove"
         >
           <Trash2 className="h-3.5 w-3.5" />
@@ -276,7 +276,7 @@ function EducationSection() {
                 <button
                   type="button"
                   onClick={() => remove(it.id)}
-                  className="rounded-md p-1 text-muted-foreground hover:bg-rose-50 hover:text-rose-600"
+                  className="rounded-md p-1 text-muted-foreground hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-300"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -427,7 +427,7 @@ function ProjectsSection() {
                       {p.techStack.map((t) => (
                         <span
                           key={t}
-                          className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700"
+                          className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
                         >
                           {t}
                         </span>

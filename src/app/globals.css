@@ -654,9 +654,11 @@
   padding-bottom: 28px;
 }
 .studio-dashboard-intro h1 {
-  font:
-    400 clamp(30px, 4vw, 44px)/1.15 Georgia,
-    serif;
+  font-family: var(--font-ui), system-ui, sans-serif;
+  font-size: clamp(1.875rem, 3vw, 2.25rem);
+  font-weight: 650;
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--tracking-heading);
 }
 .studio-dashboard-grid {
   display: grid;
@@ -843,8 +845,8 @@
 .studio-ui [class*="shadow-violet-"] {
   --tw-shadow-color: transparent;
 }
-.studio-ui main > div > div > h1 {
-  font-family: Georgia, serif;
+.studio-ui [data-typography="editorial"] {
+  font-family: var(--font-display), Georgia, serif;
   font-weight: 400;
 }
 .studio-ui .premium-dashboard main {
@@ -905,7 +907,7 @@
 }
 
 .studio-public-page h1,
-.studio-public-page h2 {
+.studio-public-page :is(.font-serif, .font-display, [data-typography="editorial"]) {
   font-family: Georgia, "Times New Roman", serif;
   font-weight: 400;
   letter-spacing: -0.035em;
@@ -1010,7 +1012,8 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: 80px 0 96px;
+  /* Clear the absolute premium navbar so the eyebrow never hides under it. */
+  padding: 112px 0 96px;
   background:
     radial-gradient(80% 34% at 50% 20%, rgb(92 49 170 / .14), transparent 72%),
     #0b0813;
@@ -1756,7 +1759,7 @@ html:not(.dark) .template-showcase .template-showcase__empty button { color: #74
 }
 @media (max-width: 900px) {
   .template-showcase {
-    padding-top: 78px;
+    padding-top: 96px;
     background:
       radial-gradient(80% 42% at 50% 24%, rgb(92 49 170 / .2), transparent 74%),
       #0b0813;
@@ -1806,7 +1809,7 @@ html:not(.dark) .template-showcase .template-showcase__empty button { color: #74
   .template-showcase__grid[data-view="list"] .template-showcase__card-stage { width: 132px; min-height: 168px; }
 }
 @media (max-width: 620px) {
-  .template-showcase { padding: 76px 0 68px; }
+  .template-showcase { padding: 88px 0 68px; }
   .template-showcase__shell { width: min(100% - 28px, 620px); }
   .template-showcase__intro { padding-inline: 2px; }
   .template-showcase__intro h1 {

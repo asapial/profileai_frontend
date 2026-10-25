@@ -31,8 +31,8 @@ export function RouteVisuals() {
   const pathname = usePathname() || "/";
   const decorative =
     pathname === "/" ||
-    matches(pathname, "/dashboard/career") ||
-    matches(pathname, "/dashboard/documents") ||
+    matches(pathname, "/dashboard") ||
+    matches(pathname, "/admin") ||
     AUTH_PREFIXES.some((prefix) => matches(pathname, prefix)) ||
     PUBLIC_PREFIXES.some((prefix) => matches(pathname, prefix));
 

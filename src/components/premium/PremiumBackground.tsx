@@ -20,6 +20,7 @@ export function PremiumBackground() {
   const [variant, setVariant] = useState(0);
   const [period, setPeriod] = useState("day");
   const pathname = usePathname();
+  const calmSurface = pathname.startsWith("/dashboard") || pathname.startsWith("/admin");
 
   useEffect(() => {
     let interval = 0;
@@ -41,7 +42,7 @@ export function PremiumBackground() {
       });
     };
     update();
-    window.addEventListener("pointermove", move, { passive: true });
+    if (!calmSurface) window.addEventListener("pointermove", move, { passive: true });
     document.addEventListener("visibilitychange", update);
 
     const untilNextHour = 3_600_000 - (Date.now() % 3_600_000) + 100;
@@ -59,7 +60,7 @@ export function PremiumBackground() {
       root.style.removeProperty("--studio-pointer-x");
       root.style.removeProperty("--studio-pointer-y");
     };
-  }, []);
+  }, [calmSurface]);
 
   const surface = pathname.startsWith("/dashboard/career")
     ? "career"

@@ -60,7 +60,7 @@ function ThemeControl() {
     <div className="px-2 py-2">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-xs font-semibold">Appearance</span>
-        <span className="text-xs uppercase tracking-wider text-muted-foreground">
+        <span className="text-xs text-muted-foreground">
           {selected}
         </span>
       </div>
@@ -80,7 +80,7 @@ function ThemeControl() {
               setTheme(option.value)
             }}
             className={cn(
-              "flex min-h-9 items-center justify-center gap-1 rounded-lg px-2 text-xs font-medium transition",
+              "flex min-h-11 items-center justify-center gap-1 rounded-lg px-2 text-xs font-medium transition-colors",
               selected === option.value
                 ? "bg-background text-foreground shadow-sm ring-1 ring-border/70"
                 : "text-muted-foreground hover:bg-background/60 hover:text-foreground",
@@ -137,12 +137,12 @@ export function NavUser({
             <SidebarMenuButton
               size="lg"
               aria-label="Open profile and appearance menu"
-              className="group/user h-auto min-h-14 rounded-xl border border-white/35 bg-background/40 px-2.5 py-2 shadow-sm backdrop-blur-xl transition hover:bg-sidebar-accent/80 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground dark:border-white/8 dark:bg-white/4"
+              className="group/user h-auto min-h-14 rounded-xl border border-sidebar-border bg-sidebar px-2.5 py-2 transition-colors hover:bg-sidebar-accent/80 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <span className="relative">
                 <Avatar className="size-9 rounded-xl ring-2 ring-background">
                   {avatar ? <AvatarImage src={avatar} alt={displayName} /> : null}
-                  <AvatarFallback className="rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-xs font-semibold text-white">
+                  <AvatarFallback className="rounded-xl bg-primary text-xs font-semibold text-primary-foreground">
                     {initials(displayName)}
                   </AvatarFallback>
                 </Avatar>
@@ -165,10 +165,10 @@ export function NavUser({
             sideOffset={10}
           >
             <DropdownMenuLabel className="p-2 font-normal">
-              <div className="flex items-center gap-3 rounded-xl bg-gradient-to-br from-violet-500/10 to-fuchsia-500/8 p-3 ring-1 ring-primary/10">
+              <div className="flex items-center gap-3 rounded-xl bg-muted/70 p-3 ring-1 ring-border">
                 <Avatar className="size-10 rounded-xl">
                   {avatar ? <AvatarImage src={avatar} alt={displayName} /> : null}
-                  <AvatarFallback className="rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-sm font-semibold text-white">
+                  <AvatarFallback className="rounded-xl bg-primary text-sm font-semibold text-primary-foreground">
                     {initials(displayName)}
                   </AvatarFallback>
                 </Avatar>

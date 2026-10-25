@@ -22,7 +22,7 @@ export function Footer({ content }: { content?: HomepageConfig["site"] }) {
             </p>
           </div>
           <nav aria-label="Product">
-            <p className="studio-eyebrow mb-5">THE STUDIO</p>
+            <p className="studio-eyebrow mb-5">The studio</p>
             <div className="flex flex-col items-start gap-3 text-sm">
               {[
                 ["Templates", "/templates"],
@@ -36,7 +36,7 @@ export function Footer({ content }: { content?: HomepageConfig["site"] }) {
             </div>
           </nav>
           <nav aria-label="Support and legal">
-            <p className="studio-eyebrow mb-5">THE DETAILS</p>
+            <p className="studio-eyebrow mb-5">The details</p>
             <div className="flex flex-col items-start gap-3 text-sm">
               {[
                 ["Help center", "/help"],

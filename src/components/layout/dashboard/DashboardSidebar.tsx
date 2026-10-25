@@ -13,6 +13,7 @@ import {
   BarChart3,
   LifeBuoy,
   Compass,
+  Laptop,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +22,7 @@ const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/documents", label: "Documents", icon: FileText },
   { href: "/dashboard/jobs", label: "Job workspace", icon: Compass },
+  { href: "/dashboard/worker", label: "Local worker", icon: Laptop },
   { href: "/templates", label: "Templates", icon: LayoutTemplate },
   { href: "/dashboard/cover-letters", label: "Cover Letters", icon: ScrollText },
   { href: "/dashboard/ats", label: "JD Analyzer", icon: BarChart3 },

@@ -32,7 +32,7 @@ export function NavDocuments({
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel className="sidebar-section-label px-2 text-xs font-bold uppercase tracking-[0.18em]">
+      <SidebarGroupLabel className="sidebar-section-label px-2 text-xs font-medium">
         {label}
       </SidebarGroupLabel>
       <SidebarGroupContent>
@@ -43,7 +43,7 @@ export function NavDocuments({
                 asChild
                 tooltip={item.title}
                 isActive={isCurrent(pathname, item.url)}
-                className="sidebar-nav-button h-10 rounded-xl px-2.5"
+                className="sidebar-nav-button h-11 rounded-xl px-2.5"
               >
                 <Link
                   href={item.url}

@@ -45,7 +45,7 @@ export function NavMain({
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel className="sidebar-section-label px-2 text-xs font-bold uppercase tracking-[0.18em]">
+      <SidebarGroupLabel className="sidebar-section-label px-2 text-xs font-medium">
         {label}
       </SidebarGroupLabel>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -54,14 +54,14 @@ export function NavMain({
             <SidebarMenuButton
               tooltip={quickCreate?.label ?? "Quick Create"}
               asChild={Boolean(quickCreate?.href)}
-              className="sidebar-quick-create h-12 min-w-8 rounded-xl bg-primary px-2.5 text-primary-foreground shadow-lg shadow-primary/15 hover:bg-primary/90 hover:text-primary-foreground"
+              className="sidebar-quick-create h-12 min-w-8 rounded-xl bg-primary px-2.5 text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
             >
               {quickCreate?.href ? (
                 <Link href={quickCreate.href} onClick={closeMobileNavigation}>
                   <IconCirclePlusFilled />
                   <span className="grid min-w-0 leading-tight group-data-[collapsible=icon]:hidden">
                     <span className="truncate font-semibold">{quickCreate.label}</span>
-                    <span className="truncate text-xs font-medium text-primary-foreground/65">Create something new</span>
+                    <span className="truncate text-xs font-medium text-primary-foreground/70">Start a focused draft</span>
                   </span>
                 </Link>
               ) : (
@@ -80,7 +80,7 @@ export function NavMain({
                 asChild
                 tooltip={item.title}
                 isActive={isCurrent(item.url)}
-                className="sidebar-nav-button h-10 rounded-xl px-2.5"
+                className="sidebar-nav-button h-11 rounded-xl px-2.5"
               >
                 <Link
                   href={item.url}

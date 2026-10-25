@@ -34,7 +34,7 @@ export function NavSecondary({
   }
   return (
     <SidebarGroup {...props}>
-      <SidebarGroupLabel className="sidebar-section-label px-2 text-xs font-bold uppercase tracking-[0.18em]">
+      <SidebarGroupLabel className="sidebar-section-label px-2 text-xs font-medium">
         {label}
       </SidebarGroupLabel>
       <SidebarGroupContent>
@@ -45,7 +45,7 @@ export function NavSecondary({
                 asChild
                 isActive={pathname === item.url || pathname.startsWith(`${item.url}/`)}
                 tooltip={item.title}
-                className="sidebar-nav-button h-10 rounded-xl px-2.5"
+                className="sidebar-nav-button h-11 rounded-xl px-2.5"
               >
                 <Link
                   href={item.url}

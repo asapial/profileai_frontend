@@ -128,7 +128,7 @@ function DragHandle({ id }: { id: number }) {
       {...listeners}
       variant="ghost"
       size="icon"
-      className="size-7 text-muted-foreground hover:bg-transparent"
+      className="size-11 text-muted-foreground hover:bg-transparent"
     >
       <IconGripVertical className="size-3 text-muted-foreground" />
       <span className="sr-only">Drag to reorder</span>
@@ -292,7 +292,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
+            className="flex size-11 text-muted-foreground data-[state=open]:bg-muted"
             size="icon"
           >
             <IconDotsVertical />
@@ -570,7 +570,7 @@ export function DataTable({
             <div className="ml-auto flex items-center gap-2 lg:ml-0">
               <Button
                 variant="outline"
-                className="hidden h-8 w-8 p-0 lg:flex"
+                className="hidden size-11 p-0 lg:flex"
                 onClick={() => table.setPageIndex(0)}
                 disabled={!table.getCanPreviousPage()}
               >
@@ -579,7 +579,7 @@ export function DataTable({
               </Button>
               <Button
                 variant="outline"
-                className="size-8"
+                className="size-11"
                 size="icon"
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
@@ -589,7 +589,7 @@ export function DataTable({
               </Button>
               <Button
                 variant="outline"
-                className="size-8"
+                className="size-11"
                 size="icon"
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
@@ -599,7 +599,7 @@ export function DataTable({
               </Button>
               <Button
                 variant="outline"
-                className="hidden size-8 lg:flex"
+                className="hidden size-11 lg:flex"
                 size="icon"
                 onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                 disabled={!table.getCanNextPage()}

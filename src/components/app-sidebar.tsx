@@ -8,11 +8,13 @@ import {
   IconChartBar,
   IconCreditCard,
   IconDashboard,
+  IconDeviceDesktopCog,
   IconFileDescription,
   IconFlag,
   IconGift,
   IconHelp,
   IconHomeEdit,
+  IconRobot,
   IconListDetails,
   IconLock,
   IconReceipt,
@@ -65,7 +67,9 @@ const USER_CONFIG: SidebarConfig = {
   navMain: [
     { title: "Overview", url: "/dashboard", icon: IconDashboard },
     { title: "Job workspace", url: "/dashboard/jobs", icon: IconSearch },
-    { title: "Career Studio", url: "/dashboard/career", icon: IconFileDescription },
+    { title: "Career studio", url: "/dashboard/career", icon: IconFileDescription },
+    { title: "Agent harness", url: "/dashboard/harness", icon: IconRobot },
+    { title: "Local worker", url: "/dashboard/worker", icon: IconDeviceDesktopCog },
     { title: "Documents", url: "/dashboard/documents", icon: IconListDetails },
     {
       title: "Templates",
@@ -77,7 +81,7 @@ const USER_CONFIG: SidebarConfig = {
   tools: [
     { title: "Role insights / ATS", url: "/dashboard/ats", icon: IconSearch },
     {
-      title: "Cover Letters",
+      title: "Cover letters",
       url: "/dashboard/cover-letters",
       icon: IconFileDescription,
     },
@@ -153,13 +157,13 @@ export function AppSidebar({
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader className="px-3 pb-2 pt-3">
+      <SidebarHeader className="px-3 pb-3 pt-4">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
               tooltip={config.brand.name}
-              className="sidebar-brand h-14 rounded-2xl border border-white/35 bg-background/35 px-2.5 shadow-sm backdrop-blur-xl dark:border-white/8 dark:bg-white/4"
+              className="sidebar-brand h-14 rounded-xl px-2.5"
             >
               <Link href={config.brand.href}>
                 <Image
@@ -167,17 +171,18 @@ export function AppSidebar({
                   alt=""
                   width={48}
                   height={48}
-                  className="size-9 shrink-0 drop-shadow-[0_8px_16px_rgba(104,48,139,.24)] group-data-[collapsible=icon]:size-4"
+                  priority
+                  className="size-9 shrink-0 group-data-[collapsible=icon]:size-5"
                 />
                 <span className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
                   <span className="block truncate text-sm font-semibold tracking-tight">
                     {config.brand.name}
                   </span>
-                  <span className="mt-0.5 block text-xs font-semibold uppercase tracking-[0.18em] text-sidebar-foreground/50">
+                  <span className="mt-0.5 block text-xs font-medium text-sidebar-foreground/55">
                     {role === "ADMIN" ? "Control center" : "Career Studio"}
                   </span>
                 </span>
-                <span className="size-2 rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,.12)] group-data-[collapsible=icon]:hidden" aria-hidden="true" />
+                <span className="size-2 rounded-full bg-primary/70 group-data-[collapsible=icon]:hidden" aria-hidden="true" />
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

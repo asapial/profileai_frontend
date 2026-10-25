@@ -5,23 +5,14 @@ import { useMemo } from "react";
 type Strength = {
   score: 0 | 1 | 2 | 3 | 4;
   label: "Too weak" | "Weak" | "Fair" | "Strong" | "Excellent";
-  color: string;
-  bar: string;
 };
 
 /**
- * Computes a 0–4 strength score for a password and renders a 4-bar meter
- * plus a label. Pure-function: no side effects, no network calls.
+ * Computes a 0–4 strength score for a password and renders a four-segment
+ * studio meter. Pure function: no side effects, no network calls.
  */
 const computeStrength = (password: string): Strength => {
-  if (!password) {
-    return {
-      score: 0,
-      label: "Too weak",
-      color: "text-muted-foreground",
-      bar: "bg-muted-foreground/40",
-    };
-  }
+  if (!password) return { score: 0, label: "Too weak" };
 
   let score = 0;
   if (password.length >= 8) score += 1;
@@ -30,8 +21,7 @@ const computeStrength = (password: string): Strength => {
   if (/\d/.test(password)) score += 1;
   if (/[^A-Za-z0-9]/.test(password)) score += 1;
 
-  // Common-pattern penalty: a password that's just a single word or
-  // repeats a single character class tops out at "Fair".
+  // Common-pattern penalty: a single-class password tops out at "Fair".
   const onlyOneClass =
     !/[a-z]/.test(password) ||
     !/[A-Z]/.test(password) ||
@@ -41,44 +31,31 @@ const computeStrength = (password: string): Strength => {
     score = Math.min(score, 2);
   }
 
-  // Clamp to 0..4
   const clamped = Math.max(0, Math.min(4, score)) as 0 | 1 | 2 | 3 | 4;
-
-  const map: Record<0 | 1 | 2 | 3 | 4, Omit<Strength, "score">> = {
-    0: { label: "Too weak", color: "text-muted-foreground", bar: "bg-muted-foreground/40" },
-    1: { label: "Weak", color: "text-red-400", bar: "bg-red-500" },
-    2: { label: "Fair", color: "text-amber-400", bar: "bg-amber-500" },
-    3: { label: "Strong", color: "text-emerald-400", bar: "bg-emerald-500" },
-    4: {
-      label: "Excellent",
-      color: "text-violet-300",
-      bar: "bg-linear-to-r from-violet-500 to-fuchsia-500",
-    },
+  const labels: Record<0 | 1 | 2 | 3 | 4, Strength["label"]> = {
+    0: "Too weak",
+    1: "Weak",
+    2: "Fair",
+    3: "Strong",
+    4: "Excellent",
   };
 
-  return { score: clamped, ...map[clamped] };
+  return { score: clamped, label: labels[clamped] };
 };
 
 export function PasswordStrength({ password }: { password: string }) {
-  const { score, label, color, bar } = useMemo(
-    () => computeStrength(password),
-    [password]
-  );
+  const { score, label } = useMemo(() => computeStrength(password), [password]);
+  const tone = score <= 1 ? "weak" : score === 2 ? "fair" : "strong";
 
-  // Empty password — render a faint placeholder so the layout doesn't jump
-  // when the user starts typing.
   if (!password) {
     return (
-      <div className="mt-2 space-y-1" aria-hidden="true">
-        <div className="flex gap-1">
+      <div className="ax-strength" aria-hidden="true">
+        <div className="ax-strength-bars">
           {[0, 1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="h-1 flex-1 rounded-full bg-muted"
-            />
+            <span key={i} className="ax-strength-bar" />
           ))}
         </div>
-        <p className="text-xs text-muted-foreground">
+        <p className="ax-strength-note">
           Use 8+ characters with letters, numbers &amp; symbols.
         </p>
       </div>
@@ -86,18 +63,27 @@ export function PasswordStrength({ password }: { password: string }) {
   }
 
   return (
-    <div className="mt-2 space-y-1" aria-live="polite">
-      <div className="flex gap-1" role="meter" aria-valuenow={score} aria-valuemin={0} aria-valuemax={4} aria-label="Password strength">
+    <div className="ax-strength" aria-live="polite">
+      <div
+        className="ax-strength-bars"
+        role="meter"
+        aria-valuenow={score}
+        aria-valuemin={0}
+        aria-valuemax={4}
+        aria-label={`Password strength: ${label}`}
+      >
         {[0, 1, 2, 3].map((i) => (
-          <div
+          <span
             key={i}
-            className={`h-1 flex-1 rounded-full transition-colors duration-200 ${
-              i < score ? bar : "bg-muted"
-            }`}
+            className="ax-strength-bar"
+            data-on={i < score || undefined}
+            data-tone={tone}
           />
         ))}
       </div>
-      <p className={`text-xs font-medium ${color}`}>{label}</p>
+      <p className="ax-strength-note" data-tone={tone}>
+        {label}
+      </p>
     </div>
   );
 }

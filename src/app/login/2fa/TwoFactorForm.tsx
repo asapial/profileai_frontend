@@ -21,14 +21,7 @@ import { OtpInput } from "@/components/auth/OtpInput";
 import { AuthCard, AuthBrandMark } from "@/components/auth/AuthCard";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
-
-function getSafeRedirect(raw: string | null | undefined): string | null {
-  if (!raw) return null;
-  if (!raw.startsWith("/")) return null;
-  if (raw.startsWith("//")) return null;
-  if (raw.includes("\n") || raw.includes("\r")) return null;
-  return raw;
-}
+import { safeRedirectPath } from "@/lib/auth-redirect";
 
 export function TwoFactorForm() {
   const router = useRouter();
@@ -88,7 +81,7 @@ export function TwoFactorForm() {
       return;
     }
 
-    const intended = getSafeRedirect(params.get("redirect"));
+    const intended = safeRedirectPath(params.get("redirect"));
     const destination = intended ?? postLoginRoute(result.user);
     router.push(destination);
     router.refresh();
@@ -115,7 +108,7 @@ export function TwoFactorForm() {
       return;
     }
 
-    const intended = getSafeRedirect(params.get("redirect"));
+    const intended = safeRedirectPath(params.get("redirect"));
     router.push(intended ?? postLoginRoute(result.user));
     router.refresh();
   };
@@ -175,11 +168,11 @@ export function TwoFactorForm() {
             role="alert"
             className="space-y-3 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm"
           >
-            <div className="flex items-start gap-2 text-amber-200">
+            <div className="flex items-start gap-2 text-amber-800 dark:text-amber-200">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
               <div>
                 <p className="font-semibold">Device limit reached</p>
-                <p className="mt-1 text-amber-200/80">
+                <p className="mt-1 text-amber-800/80 dark:text-amber-200/80">
                   Verification succeeded. Sign out all existing devices to keep only this device
                   signed in.
                 </p>
@@ -210,7 +203,7 @@ export function TwoFactorForm() {
         {resendMsg && !error && (
           <div
             role="status"
-            className="flex items-start gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/5 px-3 py-2.5 text-sm text-emerald-300"
+            className="flex items-start gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/5 px-3 py-2.5 text-sm text-emerald-700 dark:text-emerald-300"
           >
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
             <span>{resendMsg}</span>

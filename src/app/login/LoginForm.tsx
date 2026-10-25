@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect, useRef, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   AlertCircle,
   ArrowRight,
@@ -24,19 +24,13 @@ import {
 import { cn } from "@/lib/utils";
 import { AuthCard, AuthBrandMark } from "@/components/auth/AuthCard";
 import { GoogleButton } from "@/components/auth/GoogleButton";
+import { useAuthMascot } from "@/components/auth/AuthMascotContext";
 
 import { api } from "@/lib/api";
 import type { LoginResponse } from "@/types";
+import { safeRedirectPath, twoFactorLoginPath } from "@/lib/auth-redirect";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function getSafeRedirect(raw: string | null | undefined): string | null {
-  if (!raw) return null;
-  if (!raw.startsWith("/")) return null;
-  if (raw.startsWith("//")) return null;
-  if (raw.includes("\n") || raw.includes("\r")) return null;
-  return raw;
-}
 
 export function LoginForm() {
   const router = useRouter();
@@ -54,6 +48,18 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(searchParams.get("oauth_error") ? "Google sign-in was cancelled or unsuccessful. Please try again." : null);
   const [shakeKey, setShakeKey] = useState(0);
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
+  const [passwordActive, setPasswordActive] = useState(false);
+
+  const { setPasswordState } = useAuthMascot();
+
+  useEffect(() => {
+    setPasswordState(passwordActive, showPassword);
+  }, [passwordActive, showPassword, setPasswordState]);
+
+  useEffect(
+    () => () => setPasswordState(false, false),
+    [setPasswordState],
+  );
 
   const googleStarted = useRef(false);
   useEffect(() => {
@@ -63,9 +69,9 @@ export function LoginForm() {
       try {
         const result = await api.post<LoginResponse>("/auth/google/session", {});
         if ("deviceLimitReached" in result) { setDeviceRecoveryToken(result.recoveryToken); return; }
-        if (result.twoFactorRequired) { router.replace(`/login/2fa?email=${encodeURIComponent(result.email)}`); return; }
+        if (result.twoFactorRequired) { router.replace(twoFactorLoginPath(result.email, searchParams.get("redirect"))); return; }
         if (!(await syncFrontendSession(result.accessToken))) throw new Error("Could not secure the browser session. Please sign in again.");
-        window.location.replace(postLoginRoute(result.user));
+        window.location.replace(safeRedirectPath(searchParams.get("redirect")) ?? postLoginRoute(result.user));
       } catch (e) { setError(e instanceof Error ? e.message : "Google sign-in failed."); }
       finally { setSubmitting(false); }
     })();
@@ -95,8 +101,7 @@ export function LoginForm() {
     });
 
     if (result.kind === "2fa") {
-      const params = new URLSearchParams({ email: result.email });
-      router.push(`/login/2fa?${params.toString()}`);
+      router.push(twoFactorLoginPath(result.email, searchParams.get("redirect")));
       return;
     }
     if (result.kind === "device-limit") {
@@ -119,7 +124,7 @@ export function LoginForm() {
       return;
     }
 
-    const intended = getSafeRedirect(searchParams.get("redirect"));
+    const intended = safeRedirectPath(searchParams.get("redirect"));
     const destination = intended ?? postLoginRoute(result.user);
     router.push(destination);
     router.refresh();
@@ -146,28 +151,23 @@ export function LoginForm() {
       return;
     }
 
-    const intended = getSafeRedirect(searchParams.get("redirect"));
+    const intended = safeRedirectPath(searchParams.get("redirect"));
     router.push(intended ?? postLoginRoute(result.user));
     router.refresh();
   };
 
   return (
     <AuthCard>
-      <AuthBrandMark />
+      <AuthBrandMark note="Sign in" />
 
-      {/* Success banner */}
       {showSuccessBanner && (
-        <div
-          role="status"
-          className="mb-6 flex items-start gap-3 rounded-xl border border-emerald-500/30 p-4 text-sm text-emerald-300"
-          style={{ background: "rgba(16,185,129,0.08)" }}
-        >
-          <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-400" />
-          <div className="space-y-0.5">
-            <p className="font-semibold text-emerald-200">
+        <div role="status" className="ax-banner ax-banner-success" style={{ marginBottom: 20 }}>
+          <CheckCircle2 size={16} />
+          <div>
+            <p style={{ fontWeight: 650 }}>
               {justVerified ? "Email verified" : "Password reset complete"}
             </p>
-            <p className="text-emerald-300/80">
+            <p style={{ opacity: 0.85 }}>
               {justVerified
                 ? "Your email is confirmed. You can now log in to your account."
                 : "Your password has been updated. Please sign in with your new password."}
@@ -177,40 +177,26 @@ export function LoginForm() {
       )}
 
       <header>
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Welcome back</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Pick up your drafts and plan your next move.
-        </p>
+        <h1>Welcome back</h1>
+        <p>Pick up your drafts and plan your next move.</p>
       </header>
 
-      {/* Google OAuth */}
-      <div className="mt-6">
+      <div style={{ marginTop: 24 }}>
         <GoogleButton label="Sign in with Google" disabled={submitting} />
       </div>
 
-      {/* Divider */}
-      <div className="relative my-5 flex items-center gap-3">
-        <div className="flex-1 border-t border-border/60" />
-        <span className="text-xs font-medium text-muted-foreground">or sign in with email</span>
-        <div className="flex-1 border-t border-border/60" />
-      </div>
+      <div className="ax-rule">or sign in with email</div>
 
       <form
         noValidate
         onSubmit={onSubmit}
         key={shakeKey}
-        className={cn("space-y-5", error && shakeKey > 0 && "animate-auth-shake")}
+        className={cn("ax-form", error && shakeKey > 0 && "animate-auth-shake")}
       >
-        {/* Email */}
         <div>
-          <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-foreground">
-            Email
-          </label>
-          <div className="relative">
-            <Mail
-              aria-hidden
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-            />
+          <label htmlFor="email">Email</label>
+          <div className="ax-field">
+            <Mail aria-hidden size={16} />
             <input
               id="email"
               type="email"
@@ -226,35 +212,32 @@ export function LoginForm() {
               aria-invalid={Boolean(fieldErrors.email)}
               aria-describedby={fieldErrors.email ? "email-error" : undefined}
               placeholder="you@example.com"
-              className={cn(
-                "auth-input",
-                fieldErrors.email && "error"
-              )}
+              className={cn("auth-input", fieldErrors.email && "error")}
             />
           </div>
           {fieldErrors.email && (
-            <p id="email-error" className="mt-1.5 flex items-center gap-1 text-xs text-destructive">
-              <AlertCircle className="h-3.5 w-3.5" />
+            <p id="email-error" className="ax-error">
+              <AlertCircle size={12} />
               {fieldErrors.email}
             </p>
           )}
         </div>
 
-        {/* Password */}
         <div>
-          <div className="mb-1.5 flex items-center justify-between">
-            <label htmlFor="password" className="block text-sm font-medium text-foreground">
-              Password
-            </label>
-            <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
-              Forgot password?
-            </Link>
+          <div className="ax-label-row">
+            <label htmlFor="password">Password</label>
+            <Link href="/forgot-password">Forgot password?</Link>
           </div>
-          <div className="relative">
-            <Lock
-              aria-hidden
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-            />
+          <div
+            className="ax-field"
+            onFocus={() => setPasswordActive(true)}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                setPasswordActive(false);
+              }
+            }}
+          >
+            <Lock aria-hidden size={16} />
             <input
               id="password"
               type={showPassword ? "text" : "password"}
@@ -268,80 +251,59 @@ export function LoginForm() {
               aria-invalid={Boolean(fieldErrors.password)}
               aria-describedby={fieldErrors.password ? "password-error" : undefined}
               placeholder="••••••••"
-              className={cn(
-                "auth-input pr-10",
-                fieldErrors.password && "error"
-              )}
+              className={cn("auth-input pr-10", fieldErrors.password && "error")}
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? "Hide password" : "Show password"}
               aria-pressed={showPassword}
-              className="absolute right-2 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="ax-eye"
             >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
           {fieldErrors.password && (
-            <p id="password-error" className="mt-1.5 flex items-center gap-1 text-xs text-destructive">
-              <AlertCircle className="h-3.5 w-3.5" />
+            <p id="password-error" className="ax-error">
+              <AlertCircle size={12} />
               {fieldErrors.password}
             </p>
           )}
         </div>
 
-        {/* Device limit banner */}
         {deviceRecoveryToken && (
-          <div
-            role="alert"
-            className="space-y-3 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm"
-          >
-            <div className="flex items-start gap-2 text-amber-200">
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <div role="alert" className="ax-banner ax-banner-warn">
+            <AlertCircle size={16} />
+            <div style={{ display: "grid", gap: 10 }}>
               <div>
-                <p className="font-semibold">Device limit reached</p>
-                <p className="mt-1 text-amber-200/80">
-                  You proved ownership of this account. To continue, sign out all existing devices and
-                  keep only this device signed in.
+                <p style={{ fontWeight: 650 }}>Device limit reached</p>
+                <p style={{ marginTop: 4, opacity: 0.9 }}>
+                  You proved ownership of this account. To continue, sign out all existing devices
+                  and keep only this device signed in.
                 </p>
               </div>
+              <button
+                type="button"
+                disabled={recoveringDevices}
+                onClick={replaceExistingDevices}
+                className="ax-submit"
+                style={{ minHeight: 40, boxShadow: "none" }}
+              >
+                {recoveringDevices && <Loader2 className="h-4 w-4 animate-spin" />}
+                Sign out existing devices and continue
+              </button>
             </div>
-            <button
-              type="button"
-              disabled={recoveringDevices}
-              onClick={replaceExistingDevices}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-amber-200 px-3 py-2 font-semibold text-amber-950 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {recoveringDevices && <Loader2 className="h-4 w-4 animate-spin" />}
-              Sign out existing devices and continue
-            </button>
           </div>
         )}
 
-        {/* Error */}
         {error && (
-          <div
-            role="alert"
-            className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-sm text-destructive"
-          >
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <div role="alert" className="ax-banner ax-banner-error">
+            <AlertCircle size={16} />
             <span>{error}</span>
           </div>
         )}
 
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={submitting}
-          className={cn(
-            "inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-500/30 transition-all",
-            "bg-gradient-to-r from-violet-600 to-fuchsia-600",
-            "hover:from-violet-500 hover:to-fuchsia-500 hover:shadow-violet-500/40",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-            "disabled:cursor-not-allowed disabled:opacity-60"
-          )}
-        >
+        <button type="submit" disabled={submitting} className="ax-submit">
           {submitting ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -349,19 +311,20 @@ export function LoginForm() {
             </>
           ) : (
             <>
-              <ShieldCheck className="h-4 w-4" />
+              <ShieldCheck size={16} />
               <span>Log in</span>
-              <ArrowRight className="h-4 w-4 opacity-70" />
+              <ArrowRight size={16} />
             </>
           )}
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
+      <p className="ax-form-foot">
         New to ProfileAI?{" "}
-        <Link href="/register" className="font-semibold text-primary hover:underline">
-          Create a free account
-        </Link>
+        <Link href="/register">Create a free account</Link>
+      </p>
+      <p className="ax-assurance">
+        <ShieldCheck size={13} /> Your workspace. Your control.
       </p>
     </AuthCard>
   );

@@ -168,7 +168,7 @@ export function VerifyEmailForm() {
         {resendMsg && !error && (
           <div
             role="status"
-            className="flex items-start gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/5 px-3 py-2.5 text-sm text-emerald-300"
+            className="flex items-start gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/5 px-3 py-2.5 text-sm text-emerald-700 dark:text-emerald-300"
           >
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
             <span>{resendMsg}</span>

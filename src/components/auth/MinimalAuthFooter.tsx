@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function MinimalAuthFooter() {
   return (
-    <footer className="auth-minimal-footer">
+    <footer className="ax-footer">
       <span>© {new Date().getFullYear()} ProfileAI</span>
       <nav aria-label="Legal">
         <Link href="/privacy">Privacy</Link>

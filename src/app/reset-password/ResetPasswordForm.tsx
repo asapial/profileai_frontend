@@ -213,7 +213,7 @@ export function ResetPasswordForm() {
               type="button"
               onClick={() => setShowPassword((s) => !s)}
               aria-label={showPassword ? "Hide password" : "Show password"}
-              className="mr-2 grid h-7 w-7 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+              className="mr-1 grid size-11 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
@@ -246,7 +246,7 @@ export function ResetPasswordForm() {
             />
           </div>
           {confirmPassword && !passwordsMatch && (
-            <p className="text-xs text-red-400">Passwords do not match.</p>
+            <p className="text-xs text-red-700 dark:text-red-300">Passwords do not match.</p>
           )}
         </div>
 

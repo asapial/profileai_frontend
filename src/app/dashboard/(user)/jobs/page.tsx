@@ -3,7 +3,7 @@
 import { FormEvent, useDeferredValue, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, BriefcaseBusiness, Check, EyeOff, MapPin, Plus, Search, ShieldCheck, Sparkles, X } from "lucide-react";
+import { ArrowUpRight, BriefcaseBusiness, Check, EyeOff, MapPin, Plus, RefreshCw, Search, ShieldCheck, Sparkles, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -46,6 +46,9 @@ export default function JobsPage() {
           <div className="mt-6 flex flex-wrap gap-3">
             <Button onClick={() => setOpen(true)} className="rounded-full bg-white text-violet-950 hover:bg-violet-50">
               <Plus className="mr-2 size-4" /> Add a job
+            </Button>
+            <Button asChild variant="outline" className="rounded-full border-white/20 bg-white/5 text-white hover:bg-white/10 hover:text-white">
+              <Link href="/dashboard/applications">Application tracker <ArrowUpRight className="ml-2 size-4" /></Link>
             </Button>
             <div className="flex items-center gap-2 text-xs text-violet-100/65"><ShieldCheck className="size-4" /> Private imports stay in your account</div>
           </div>
@@ -99,6 +102,8 @@ export default function JobsPage() {
             </motion.article>
           ))}
         </motion.div>
+      ) : query.isError ? (
+        <Card className="border-dashed border-destructive/30"><CardContent className="grid min-h-56 place-items-center p-8 text-center"><div><span className="mx-auto grid size-12 place-items-center rounded-2xl bg-destructive/10 text-destructive"><BriefcaseBusiness /></span><h3 className="mt-4 font-semibold">We couldn&apos;t load your opportunities</h3><p className="mt-1 text-sm text-muted-foreground">{query.error instanceof Error ? query.error.message : "The jobs service is temporarily unavailable."}</p><Button onClick={() => query.refetch()} variant="outline" className="mt-4"><RefreshCw className="mr-2 size-4" />Try again</Button></div></CardContent></Card>
       ) : (
         <Card className="border-dashed border-violet-500/25"><CardContent className="grid min-h-56 place-items-center p-8 text-center"><div><span className="mx-auto grid size-12 place-items-center rounded-2xl bg-violet-500/10 text-violet-600"><BriefcaseBusiness /></span><h3 className="mt-4 font-semibold">Build your opportunity shortlist</h3><p className="mt-1 text-sm text-muted-foreground">Paste the details of a role you want to evaluate.</p><Button onClick={() => setOpen(true)} variant="outline" className="mt-4">Add your first job</Button></div></CardContent></Card>
       )}

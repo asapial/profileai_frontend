@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Bell,
   KeyRound,
@@ -25,7 +26,10 @@ const tabs = [
 ] as const;
 
 export default function SettingsPage() {
-  const [value, setValue] = useState<string>("security");
+  const searchParams = useSearchParams();
+  const [selectedTab, setValue] = useState<string | null>(null);
+  const requestedTab = searchParams.get("tab");
+  const value = selectedTab ?? (tabs.some((tab) => tab.value === requestedTab) ? requestedTab! : "security");
 
   return (
     <div className="min-w-0 space-y-6 p-4 sm:p-6 md:p-8">

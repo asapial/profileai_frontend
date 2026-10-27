@@ -194,7 +194,7 @@ export default function CoverLettersPage() {
           onClose={() => setCreating(false)}
           onCreated={(created) => {
             setCreating(false);
-            router.push(`/cover-letters/${created.id}`);
+            router.push(`/dashboard/cover-letters/${created.id}`);
           }}
         />
       ) : null}
@@ -298,7 +298,7 @@ function CoverLetterCard({
       <CardHeader className="space-y-2">
         <div className="flex items-start justify-between gap-2">
           <Link
-            href={`/cover-letters/${letter.id}`}
+            href={`/dashboard/cover-letters/${letter.id}`}
             className="block flex-1 hover:underline"
           >
             <CardTitle className="line-clamp-1 text-base">{letter.title}</CardTitle>
@@ -373,7 +373,7 @@ function CoverLetterCard({
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>Updated {formatRelative(letter.updatedAt)}</span>
           <Link
-            href={`/cover-letters/${letter.id}`}
+            href={`/dashboard/cover-letters/${letter.id}`}
             className="font-medium text-violet-700 hover:underline"
           >
             Open →

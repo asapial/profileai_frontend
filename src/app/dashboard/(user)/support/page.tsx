@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function DashboardSupportPage() {
-  redirect("/help");
+  redirect("/contact");
 }

@@ -147,7 +147,7 @@ export default function NotificationsPage() {
             Mark all read
           </Button>
           <Button asChild variant="outline" size="sm" className="gap-1.5">
-            <Link href="/dashboard/profile/notifications">Preferences</Link>
+            <Link href="/dashboard/settings?tab=notifications">Preferences</Link>
           </Button>
         </div>
       </header>

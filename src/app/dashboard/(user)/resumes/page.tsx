@@ -44,6 +44,7 @@ import {
 } from "@/lib/hooks/useResumes";
 import { useDashboardSummary } from "@/lib/hooks/useDashboardSummary";
 import { ResumeDocumentThumbnail } from "@/components/resume/ResumeDocumentThumbnail";
+import { PageFeedback } from "@/components/dashboard/PageFeedback";
 
 const STATUS_LABEL: Record<ResumeStatus, string> = {
   DRAFT: "Draft",
@@ -77,7 +78,7 @@ export default function ResumesListPage() {
     return () => clearTimeout(t);
   }, [search]);
 
-  const { data, isLoading, isFetching } = useResumeList({
+  const { data, isLoading, isFetching, isError, refetch } = useResumeList({
     page,
     limit: PAGE_SIZE,
     search: debouncedSearch || undefined,
@@ -95,6 +96,8 @@ export default function ResumesListPage() {
     if (!limits) return false;
     return limits.resumeUsed >= limits.resumeLimit;
   }, [dashboard?.limits]);
+
+  if (isError) return <PageFeedback error onRetry={() => void refetch()} />;
 
   return (
     <div className="documents-workspace career-workspace relative mx-auto w-full max-w-5xl space-y-6 px-4 pb-16 lg:px-6 [scrollbar-gutter:stable]">
@@ -315,6 +318,17 @@ function ResumeCard({
     onMenuClose();
     try {
       const res = await exportMut.mutateAsync({ id: resume.id });
+      if (res.base64) {
+        const bytes = Uint8Array.from(atob(res.base64), (character) => character.charCodeAt(0));
+        const url = URL.createObjectURL(new Blob([bytes], { type: res.contentType ?? "application/pdf" }));
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = res.fileName ?? `${resume.title}.pdf`;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        toast.success("Export ready.");
+        return;
+      }
       if (res.presignedUrl) {
         window.open(res.presignedUrl, "_blank", "noopener");
         toast.success("Export ready. Opening PDF…");

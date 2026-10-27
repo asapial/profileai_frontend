@@ -29,9 +29,9 @@ export default function BillingPage() {
 
   useEffect(() => {
     const result = searchParams.get("payment");
-    if (result === "success") toast.success("bKash payment successful. Your plan is active.");
-    if (result === "cancel") toast("bKash payment was canceled.");
-    if (result === "failure") toast.error("The bKash payment could not be verified.");
+    if (result === "success") toast.success("Checkout completed. Your plan updates after payment verification.");
+    if (result === "cancel") toast("Payment was canceled.");
+    if (result === "failure") toast.error("Payment could not be verified.");
   }, [searchParams]);
 
   if (plans.isLoading || current.isLoading || invoices.isLoading)
@@ -105,7 +105,7 @@ export default function BillingPage() {
       <div className="grid gap-4 lg:grid-cols-3">
         {(plans.data ?? []).map((plan) => {
           const active = current.data?.plan?.slug === plan.slug;
-          const annualAmount = plan.slug === "pro" ? 299000 : plan.slug === "business" ? 599000 : 0;
+          const annualAmount = plan.amount * 10;
           const displayAmount = billing === "yearly" && annualAmount ? annualAmount : plan.amount;
           return (
             <Card key={plan.id} className={active ? "border-violet-500" : ""}>

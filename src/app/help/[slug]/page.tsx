@@ -7,9 +7,8 @@ import { Footer } from "@/components/layout/Footer";
 import {
   HELP_ARTICLES,
   HELP_CATEGORIES,
-  getArticleBySlug,
-  getRelatedArticles,
 } from "../data";
+import { getHelpArticles } from "../published";
 
 type RouteParams = { slug: string };
 
@@ -23,7 +22,7 @@ export async function generateMetadata({
   params: Promise<RouteParams>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = (await getHelpArticles()).find(article => article.slug === slug);
   if (!article) return { title: "Article not found — ProfileAI" };
   return {
     title: `${article.title} — ProfileAI Help`,
@@ -42,10 +41,11 @@ export default async function HelpArticlePage({
   params: Promise<RouteParams>;
 }) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const articles = await getHelpArticles();
+  const article = articles.find(article => article.slug === slug);
   if (!article) notFound();
 
-  const related = getRelatedArticles(article, 3);
+  const related = articles.filter(item => item.slug !== article.slug && item.category === article.category).slice(0, 3);
   const category = HELP_CATEGORIES.find((c) => c.id === article.category);
 
   return (
@@ -112,7 +112,7 @@ export default async function HelpArticlePage({
                     Email support
                   </Link>
                   <Link
-                    href="/dashboard/support"
+                    href="/contact"
                     className="inline-flex items-center justify-center gap-2 rounded-md bg-foreground px-4 py-2 text-sm font-semibold text-background hover:opacity-90"
                   >
                     Open a ticket

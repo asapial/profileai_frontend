@@ -324,7 +324,7 @@ export function HelpCenter({ articles, categories }: Props) {
                   Email support
                 </Link>
                 <Link
-                  href="/dashboard/support"
+                  href="/contact"
                   className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-foreground px-4 py-2.5 text-sm font-semibold text-background transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
                 >
                   Open a ticket

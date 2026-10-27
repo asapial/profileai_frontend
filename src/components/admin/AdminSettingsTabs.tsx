@@ -391,8 +391,8 @@ function BrandingPanel() {
     primaryColor: "#1F4E79",
     supportEmail: "support@profileai.app",
     footerLinks: [
-      { label: "Privacy", href: "/legal/privacy" },
-      { label: "Terms", href: "/legal/terms" },
+      { label: "Privacy", href: "/privacy" },
+      { label: "Terms", href: "/terms" },
     ],
   };
   const data = useGetOrFallback<BrandingProfile>(

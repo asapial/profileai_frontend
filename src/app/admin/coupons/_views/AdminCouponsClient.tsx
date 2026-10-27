@@ -367,7 +367,7 @@ export function AdminCouponsClient() {
             </div>
           ) : (
             <div className="flex flex-col gap-2">
-              <Label htmlFor="coupon-amount-off">Amount off (cents)</Label>
+              <Label htmlFor="coupon-amount-off">Amount off (currency units)</Label>
               <Input
                 id="coupon-amount-off"
                 type="number"

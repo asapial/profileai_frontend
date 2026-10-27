@@ -135,7 +135,9 @@ export function AdminAnalyticsClient() {
           </div>
 
           <Card className="p-5">
-            <h2 className="text-base font-semibold">Revenue (USD)</h2>
+            <h2 className="text-base font-semibold">
+              Revenue ({data.totals.currency})
+            </h2>
             <Separator className="my-3" />
             {data.revenue.length === 0 ? <Empty /> : <Sparkline series={data.revenue} tall />}
           </Card>
@@ -154,12 +156,24 @@ export function AdminAnalyticsClient() {
   );
 }
 
+function formatMoney(value: number, currency: string, digits = 0) {
+  try {
+    return new Intl.NumberFormat("en", {
+      style: "currency",
+      currency,
+      maximumFractionDigits: digits,
+    }).format(value);
+  } catch {
+    return `${currency} ${value.toLocaleString()}`;
+  }
+}
+
 function KpiStrip({ totals }: { totals: AdminAnalyticsSummary["totals"] }) {
   const cards = [
     { label: "Signups", value: totals.signups.toLocaleString() },
     { label: "Active users", value: totals.activeUsers.toLocaleString() },
-    { label: "MRR", value: `$${totals.mrr.toLocaleString()}` },
-    { label: "ARPU", value: `$${totals.arpu.toFixed(2)}` },
+    { label: "MRR", value: formatMoney(totals.mrr, totals.currency) },
+    { label: "ARPU", value: formatMoney(totals.arpu, totals.currency, 2) },
     {
       label: "Trial → Paid",
       value: `${(totals.trialConversion * 100).toFixed(1)}%`,

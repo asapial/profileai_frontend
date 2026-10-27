@@ -15,6 +15,7 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar";
 import { getRoleFromCookies } from "@/lib/role";
+import { AdminQueryNotice } from "@/components/admin/AdminQueryNotice";
 
 import "./admin.css";
 
@@ -57,6 +58,7 @@ export default async function AdminLayout({
         <main id="main" tabIndex={-1} className="flex min-w-0 flex-1 flex-col outline-none">
           <div className="@container/main flex min-w-0 flex-1 flex-col gap-2">
             <div className="app-workspace-content flex min-w-0 max-w-full flex-col gap-5 overflow-x-clip py-5 md:gap-8 md:py-8">
+              <AdminQueryNotice />
               {children}
             </div>
           </div>

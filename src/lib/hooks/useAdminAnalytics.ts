@@ -38,6 +38,7 @@ export type AdminAnalyticsSummary = {
     mrr: number;
     arpu: number;
     trialConversion: number;
+    currency: string;
   };
   revenue: AnalyticsSeries[];
   atsDistribution: Array<{ bucket: string; count: number }>;

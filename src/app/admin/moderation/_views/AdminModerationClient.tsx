@@ -26,6 +26,13 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -75,8 +82,9 @@ export function AdminModerationClient() {
     item: ModerationItem;
     action: ModerationItemStatus;
   } | null>(null);
+  const [preview, setPreview] = useState<ModerationItem | null>(null);
 
-  const { data, isLoading } = useAdminModeration({ status, kind, q });
+  const { data, error, isError, isLoading, refetch } = useAdminModeration({ status, kind, q });
   const items = useMemo(() => data ?? [], [data]);
 
   const resolve = useResolveModerationItem();
@@ -219,6 +227,15 @@ export function AdminModerationClient() {
               <Skeleton key={i} className="h-12" />
             ))}
           </div>
+        ) : isError ? (
+          <div className="flex flex-col items-center justify-center gap-3 p-12 text-center">
+            <IconShieldOff className="text-destructive size-10" />
+            <p className="text-sm font-medium">Could not load moderation queue.</p>
+            <p className="text-muted-foreground max-w-md text-xs">
+              {error instanceof Error ? error.message : "Unknown request error."}
+            </p>
+            <Button variant="outline" onClick={() => void refetch()}>Retry</Button>
+          </div>
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 p-12 text-center">
             <IconShieldOff className="text-muted-foreground size-10" />
@@ -278,7 +295,12 @@ export function AdminModerationClient() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="inline-flex items-center gap-1">
-                      <Button size="sm" variant="ghost">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setPreview(it)}
+                        aria-label={`Preview ${it.title}`}
+                      >
                         <IconEye className="size-4" />
                       </Button>
                       {it.status === "PENDING" ? (
@@ -309,6 +331,29 @@ export function AdminModerationClient() {
       </Card>
 
       <Separator />
+
+      <Sheet open={Boolean(preview)} onOpenChange={(open) => { if (!open) setPreview(null); }}>
+        <SheetContent className="overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>{preview?.title ?? "Moderation item"}</SheetTitle>
+            <SheetDescription>
+              Review the reported content and report metadata before resolving it.
+            </SheetDescription>
+          </SheetHeader>
+          {preview ? (
+            <div className="space-y-4 px-4 pb-6 text-sm">
+              <div><p className="text-muted-foreground text-xs">Preview</p><p className="mt-1 whitespace-pre-wrap">{preview.preview || "No preview available."}</p></div>
+              <div><p className="text-muted-foreground text-xs">Reason</p><p className="mt-1">{preview.reason || "No reason provided."}</p></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><p className="text-muted-foreground text-xs">Author</p><p>{preview.author.name ?? preview.author.id}</p></div>
+                <div><p className="text-muted-foreground text-xs">Reporter</p><p>{preview.reportedBy?.name ?? "Unknown"}</p></div>
+                <div><p className="text-muted-foreground text-xs">Reports</p><p>{preview.reportCount}</p></div>
+                <div><p className="text-muted-foreground text-xs">Status</p><StatusBadge status={preview.status} /></div>
+              </div>
+            </div>
+          ) : null}
+        </SheetContent>
+      </Sheet>
 
       <AdminConfirmDialog
         open={Boolean(confirm)}

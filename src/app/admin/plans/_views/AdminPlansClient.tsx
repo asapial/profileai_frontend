@@ -275,7 +275,7 @@ export function AdminPlansClient() {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="plan-monthly">Monthly ($)</Label>
+            <Label htmlFor="plan-monthly">Monthly ({(draft.currency ?? "BDT").toUpperCase()})</Label>
             <Input
               id="plan-monthly"
               type="number"
@@ -289,17 +289,12 @@ export function AdminPlansClient() {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="plan-yearly">Yearly ($)</Label>
+            <Label htmlFor="plan-yearly">Yearly ({(draft.currency ?? "BDT").toUpperCase()}) · 10 months</Label>
             <Input
               id="plan-yearly"
               type="number"
-              value={draft.priceYearly ?? 0}
-              onChange={(e) =>
-                setDraft((d) => ({
-                  ...d,
-                  priceYearly: Number(e.target.value),
-                }))
-              }
+              value={(draft.priceMonthly ?? 0) * 10}
+              readOnly
             />
           </div>
           <div className="flex flex-col gap-2">

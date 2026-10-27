@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 
@@ -21,11 +22,10 @@ const tabs = [
 ] as const;
 
 export default function ProfilePage() {
-  const [value, setValue] = useState<string>(() => {
-    if (typeof window === "undefined") return "personal";
-    const requestedTab = new URLSearchParams(window.location.search).get("tab");
-    return tabs.some((tab) => tab.value === requestedTab) ? requestedTab! : "personal";
-  });
+  const searchParams = useSearchParams();
+  const [selectedTab, setValue] = useState<string | null>(null);
+  const requestedTab = searchParams.get("tab");
+  const value = selectedTab ?? (tabs.some((tab) => tab.value === requestedTab) ? requestedTab! : "personal");
 
 
   return (

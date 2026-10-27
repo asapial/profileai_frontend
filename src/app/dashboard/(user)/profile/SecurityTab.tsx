@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import toast from "react-hot-toast";
 import {
   KeyRound,
+  Loader2,
   LogOut,
   Monitor,
   Shield,
@@ -23,7 +25,6 @@ import {
   useRevokeDevice,
   useRevokeSession,
   useSessions,
-  useToggleTwoFactor,
   useTrustDevice,
 } from "@/lib/hooks/useSecurity";
 import { api } from "@/lib/api";
@@ -54,7 +55,11 @@ function PasswordSection() {
       return;
     }
     mut.mutate(
-      { currentPassword: form.current, newPassword: form.next },
+      {
+        currentPassword: form.current,
+        newPassword: form.next,
+        confirmPassword: form.confirm,
+      },
       {
         onSuccess: () => {
           toast.success("Password updated");
@@ -113,7 +118,9 @@ function PasswordSection() {
 
 function TwoFactorSection() {
   const [me, setMe] = useState<CurrentUser | null>(null);
-  const mut = useToggleTwoFactor();
+  const [showDisable, setShowDisable] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     api
@@ -123,6 +130,31 @@ function TwoFactorSection() {
   }, []);
 
   const enabled = Boolean(me?.twoFactorEnabled);
+
+  const disable = async () => {
+    if (!/^\d{6}$/.test(otp)) {
+      toast.error("Enter the six-digit code from your email");
+      return;
+    }
+    setBusy(true);
+    try {
+      await api.post("/auth/2fa/disable", { otp });
+      setMe((current) =>
+        current ? { ...current, twoFactorEnabled: false } : current,
+      );
+      setOtp("");
+      setShowDisable(false);
+      toast.success("Two-factor authentication disabled");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Could not disable two-factor authentication",
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <Card>
@@ -135,16 +167,60 @@ function TwoFactorSection() {
           Add a one-time code at sign-in to protect your account.
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <Button
-          variant={enabled ? "outline" : "default"}
-          onClick={() => mut.mutate(!enabled)}
-          disabled={mut.isPending}
-          className="gap-2"
-        >
-          <Shield className="h-4 w-4" />
-          {enabled ? "Disable 2FA" : "Enable 2FA"}
-        </Button>
+      <CardContent className="space-y-3">
+        {enabled ? (
+          <>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                Enabled
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => setShowDisable((value) => !value)}
+                disabled={busy}
+                className="gap-2"
+              >
+                <Shield className="h-4 w-4" />
+                Disable 2FA
+              </Button>
+            </div>
+            {showDisable ? (
+              <div className="flex flex-col gap-2 rounded-xl border bg-muted/30 p-3 sm:flex-row sm:items-end">
+                <div className="flex-1">
+                  <label
+                    htmlFor="disable-2fa-otp"
+                    className="mb-1.5 block text-sm font-medium"
+                  >
+                    Verification code
+                  </label>
+                  <input
+                    id="disable-2fa-otp"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={6}
+                    value={otp}
+                    onChange={(event) =>
+                      setOtp(event.target.value.replace(/\D/g, ""))
+                    }
+                    placeholder="000000"
+                    className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+                  />
+                </div>
+                <Button onClick={disable} disabled={busy || otp.length !== 6}>
+                  {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Confirm disable
+                </Button>
+              </div>
+            ) : null}
+          </>
+        ) : (
+          <Button asChild className="gap-2">
+            <Link href="/login/2fa/setup?redirect=%2Fdashboard%2Fprofile">
+              <Shield className="h-4 w-4" />
+              Enable 2FA
+            </Link>
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

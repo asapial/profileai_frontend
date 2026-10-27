@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useProfileDraft } from "@/lib/hooks/useProfileDraft";
+import { ProfileLoadState } from "@/components/dashboard/ProfileLoadState";
 import toast from "react-hot-toast";
 import { Plus, Save, Sparkles, X } from "lucide-react";
 import {
@@ -21,16 +23,9 @@ type Skill = {
 };
 
 export function SkillsTab() {
-  const [items, setItems] = useState<Skill[]>([]);
+  const { draft: items, setDraft: setItems, loading, error, retry } = useProfileDraft<Skill[]>("/user/skills", []);
   const [draft, setDraft] = useState("");
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    api
-      .get<Skill[]>("/user/skills")
-      .then(setItems)
-      .catch(() => setItems([]));
-  }, []);
 
   const add = () => {
     const name = draft.trim();
@@ -55,6 +50,7 @@ export function SkillsTab() {
     setItems((s) => s.filter((i) => i.id !== id));
 
   const save = async () => {
+    if (loading || error || saving) return;
     setSaving(true);
     try {
       await api.put("/user/skills", { items });
@@ -65,6 +61,8 @@ export function SkillsTab() {
       setSaving(false);
     }
   };
+
+  if (loading || error) return <ProfileLoadState loading={loading} error={error} onRetry={retry} />;
 
   return (
     <Card>

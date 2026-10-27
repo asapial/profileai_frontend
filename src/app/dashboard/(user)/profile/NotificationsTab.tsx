@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { Bell } from "lucide-react";
+import { ProfileLoadState } from "@/components/dashboard/ProfileLoadState";
 import {
   Card,
   CardContent,
@@ -16,13 +17,16 @@ import {
 } from "@/lib/hooks/useNotificationPrefs";
 
 export function NotificationsTab() {
-  const { data } = useNotificationPrefs();
+  const { data, error, isError, isPending, refetch } = useNotificationPrefs();
   const mut = useUpdateNotificationPrefs();
 
   // Invalidate on success
   useEffect(() => {
     if (mut.isSuccess) {
       toast.success("Notification preferences saved");
+      mut.reset();
+    } else if (mut.isError) {
+      toast.error(mut.error instanceof Error ? mut.error.message : "Could not save notification preferences");
       mut.reset();
     }
   }, [mut]);
@@ -46,11 +50,11 @@ export function NotificationsTab() {
     mut.mutate({ digestFrequency: v });
   };
 
-  if (!data) {
+  if (isPending || isError || !data) {
     return (
       <Card>
-        <CardContent className="py-8 text-center text-sm text-muted-foreground">
-          Loading preferences…
+        <CardContent className="py-6">
+          <ProfileLoadState loading={isPending} error={error?.message ?? "Could not load notification preferences"} onRetry={() => void refetch()} />
         </CardContent>
       </Card>
     );
@@ -68,6 +72,7 @@ export function NotificationsTab() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        <fieldset disabled={mut.isPending} className="space-y-6">
         <Section title="Channels">
           <Switch
             label="In-app notifications"
@@ -123,8 +128,9 @@ export function NotificationsTab() {
         </Section>
 
         <p className="text-xs text-muted-foreground">
-          Changes are saved automatically.
+          {mut.isPending ? "Saving preferences…" : "Changes are saved automatically."}
         </p>
+        </fieldset>
       </CardContent>
     </Card>
   );

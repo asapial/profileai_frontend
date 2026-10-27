@@ -40,8 +40,7 @@ export function useRevokeSession() {
 export function useRevokeAllSessions() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: () =>
-      api.delete<{ ok: true }>("/user/sessions", { all: true }),
+    mutationFn: () => api.delete<{ count: number }>("/user/sessions"),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["sessions"] }),
   });
 }
@@ -57,7 +56,7 @@ export function useTrustDevice() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) =>
-      api.patch<LoginDevice>(`/user/login-devices/${id}/trust`, { trusted: true }),
+      api.patch<LoginDevice>(`/user/login-devices/${id}`, { isTrusted: true }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["login-devices"] }),
   });
 }
@@ -73,16 +72,10 @@ export function useRevokeDevice() {
 
 export function useChangePassword() {
   return useMutation({
-    mutationFn: (body: { currentPassword: string; newPassword: string }) =>
-      api.post<{ ok: true }>("/user/change-password", body),
-  });
-}
-
-export function useToggleTwoFactor() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (enabled: boolean) =>
-      api.post<{ ok: true; enabled: boolean }>("/user/2fa/toggle", { enabled }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["me"] }),
+    mutationFn: (body: {
+      currentPassword: string;
+      newPassword: string;
+      confirmPassword: string;
+    }) => api.put<{ ok: true }>("/user/change-password", body),
   });
 }

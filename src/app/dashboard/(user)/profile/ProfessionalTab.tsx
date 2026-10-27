@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useProfileDraft } from "@/lib/hooks/useProfileDraft";
+import { ProfileLoadState } from "@/components/dashboard/ProfileLoadState";
 import toast from "react-hot-toast";
 import {
   Briefcase,
@@ -52,17 +54,11 @@ export function ProfessionalTab() {
 }
 
 function ExperienceSection() {
-  const [items, setItems] = useState<Experience[]>([]);
+  const { draft: items, setDraft: setItems, loading, error, retry } = useProfileDraft<Experience[]>("/user/experiences", []);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    api
-      .get<Experience[]>("/user/experiences")
-      .then(setItems)
-      .catch(() => setItems([]));
-  }, []);
-
   const save = async () => {
+    if (loading || error || saving) return;
     setSaving(true);
     try {
       await api.put("/user/experiences", { items });
@@ -90,6 +86,8 @@ function ExperienceSection() {
 
   const remove = (id: string) =>
     setItems((s) => s.filter((i) => i.id !== id));
+
+  if (loading || error) return <ProfileLoadState loading={loading} error={error} onRetry={retry} />;
 
   return (
     <Card>
@@ -173,7 +171,7 @@ function ExperienceRow({
           type="month"
           value={item.startDate?.slice(0, 7) ?? ""}
           onChange={(e) =>
-            onChange({ ...item, startDate: e.target.value + "-01" })
+            onChange({ ...item, startDate: e.target.value ? e.target.value + "-01" : "" })
           }
           className="rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
         />
@@ -182,7 +180,7 @@ function ExperienceRow({
           disabled={item.current}
           value={item.endDate?.slice(0, 7) ?? ""}
           onChange={(e) =>
-            onChange({ ...item, endDate: e.target.value + "-01" })
+            onChange({ ...item, endDate: e.target.value ? e.target.value + "-01" : null })
           }
           className="rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 disabled:opacity-60"
         />
@@ -197,7 +195,7 @@ function ExperienceRow({
           <input
             type="checkbox"
             checked={item.current}
-            onChange={(e) => onChange({ ...item, current: e.target.checked })}
+            onChange={(e) => onChange({ ...item, current: e.target.checked, endDate: e.target.checked ? null : item.endDate })}
             className="h-4 w-4 rounded border-input text-violet-600 focus:ring-violet-500/40"
           />
           I currently work here
@@ -208,15 +206,8 @@ function ExperienceRow({
 }
 
 function EducationSection() {
-  const [items, setItems] = useState<Education[]>([]);
+  const { draft: items, setDraft: setItems, loading, error, retry } = useProfileDraft<Education[]>("/user/educations", []);
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    api
-      .get<Education[]>("/user/educations")
-      .then(setItems)
-      .catch(() => setItems([]));
-  }, []);
 
   const add = () =>
     setItems((s) => [
@@ -234,6 +225,7 @@ function EducationSection() {
     setItems((s) => s.filter((i) => i.id !== id));
 
   const save = async () => {
+    if (loading || error || saving) return;
     setSaving(true);
     try {
       await api.put("/user/educations", { items });
@@ -244,6 +236,8 @@ function EducationSection() {
       setSaving(false);
     }
   };
+
+  if (loading || error) return <ProfileLoadState loading={loading} error={error} onRetry={retry} />;
 
   return (
     <Card>

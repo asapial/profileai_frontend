@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
+import { ProfileLoadState } from "@/components/dashboard/ProfileLoadState";
+import { useQueryClient } from "@tanstack/react-query";
 
 type UserProfileResponse = {
   profile: {
@@ -29,7 +31,10 @@ type UserProfileResponse = {
 };
 
 export function PersonalTab() {
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     firstName: "",
@@ -44,9 +49,11 @@ export function PersonalTab() {
   });
 
   useEffect(() => {
+    let active = true;
     api
       .get<UserProfileResponse>("/user/profile")
       .then((d) => {
+        if (!active) return;
         const p = d.profile;
         setForm({
           firstName: p?.firstName ?? "",
@@ -60,13 +67,21 @@ export function PersonalTab() {
           avatarUrl: p?.avatarUrl ?? "",
         });
       })
-      .finally(() => setLoading(false));
-  }, []);
+      .catch((reason: unknown) => {
+        if (active) setError(reason instanceof Error ? reason.message : "Could not load your profile.");
+      })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [attempt]);
 
   const save = async () => {
+    if (loading || error || saving) return;
     setSaving(true);
     try {
       await api.put("/user/profile", form);
+      void queryClient.invalidateQueries({ queryKey: ["me"] });
+      void queryClient.invalidateQueries({ queryKey: ["user", "profile"] });
+      void queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] });
       toast.success("Personal info saved");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to save");
@@ -74,6 +89,12 @@ export function PersonalTab() {
       setSaving(false);
     }
   };
+
+  if (loading || error) return <ProfileLoadState loading={loading} error={error} onRetry={() => {
+    setLoading(true);
+    setError(null);
+    setAttempt((value) => value + 1);
+  }} />;
 
   return (
     <motion.div initial={{ opacity: 0, scale: 0.99 }} animate={{ opacity: 1, scale: 1 }}>

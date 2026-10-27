@@ -1,10 +1,8 @@
 import { AuthScene } from "@/components/auth/AuthScene";
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { MinimalAuthFooter } from "@/components/auth/MinimalAuthFooter";
 import { RegisterForm } from "./RegisterForm";
-import { AuthFormFallback } from "@/components/auth/AuthFormFallback";
 
 export const metadata: Metadata = {
   title: "Create your account — ProfileAI",
@@ -19,16 +17,7 @@ export default function RegisterPage() {
       <Navbar />
       <main id="main" className="ax-page">
         <AuthScene>
-          <Suspense
-            fallback={
-              <AuthFormFallback
-                title="Create your account"
-                description="Loading your registration form…"
-              />
-            }
-          >
-            <RegisterForm />
-          </Suspense>
+          <RegisterForm />
         </AuthScene>
       </main>
       <MinimalAuthFooter />

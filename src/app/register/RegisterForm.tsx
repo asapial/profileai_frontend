@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, type FocusEvent, type FormEvent } from "react";
 import {
   AlertCircle,
@@ -22,6 +22,7 @@ import { GoogleButton } from "@/components/auth/GoogleButton";
 import { AuthCard, AuthBrandMark } from "@/components/auth/AuthCard";
 import { useAuthMascot } from "@/components/auth/AuthMascotContext";
 import { cn } from "@/lib/utils";
+import { useClientSearchParams } from "@/lib/hooks/useClientSearchParams";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const REFERRAL_RE = /^[A-Za-z0-9_-]{4,24}$/;
@@ -44,7 +45,7 @@ type FieldErrors = Partial<{
 
 export function RegisterForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = useClientSearchParams();
 
   const [photoBusy, setPhotoBusy] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);

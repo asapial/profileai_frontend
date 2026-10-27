@@ -1,10 +1,8 @@
 import { AuthScene } from "@/components/auth/AuthScene";
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { MinimalAuthFooter } from "@/components/auth/MinimalAuthFooter";
 import { LoginForm } from "./LoginForm";
-import { AuthFormFallback } from "@/components/auth/AuthFormFallback";
 
 export const metadata: Metadata = {
   title: "Log in — ProfileAI",
@@ -19,16 +17,7 @@ export default function LoginPage() {
       <Navbar />
       <main id="main" className="ax-page">
         <AuthScene>
-          <Suspense
-            fallback={
-              <AuthFormFallback
-                title="Welcome back"
-                description="Loading your secure sign-in form…"
-              />
-            }
-          >
-            <LoginForm />
-          </Suspense>
+          <LoginForm />
         </AuthScene>
       </main>
       <MinimalAuthFooter />

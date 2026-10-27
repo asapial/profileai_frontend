@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   AlertCircle,
@@ -29,12 +29,13 @@ import { useAuthMascot } from "@/components/auth/AuthMascotContext";
 import { api } from "@/lib/api";
 import type { LoginResponse } from "@/types";
 import { safeRedirectPath, twoFactorLoginPath } from "@/lib/auth-redirect";
+import { useClientSearchParams } from "@/lib/hooks/useClientSearchParams";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function LoginForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = useClientSearchParams();
   const justVerified = searchParams.get("verified") === "1";
   const justReset = searchParams.get("reset") === "1";
   const showSuccessBanner = justVerified || justReset;

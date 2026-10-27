@@ -131,7 +131,7 @@ const nextConfig: NextConfig = {
       { source: "/profile", destination: "/dashboard/profile", permanent: true },
       { source: "/analyzer", destination: "/dashboard/ats", permanent: true },
       { source: "/tools/jd-analyzer", destination: "/dashboard/ats", permanent: true },
-      { source: "/dashboard/profile/notifications", destination: "/dashboard/profile?tab=notifications", permanent: true },
+      { source: "/dashboard/profile/notifications", destination: "/dashboard/settings?tab=notifications", permanent: true },
       { source: "/legal/privacy", destination: "/privacy", permanent: true },
       { source: "/legal/terms", destination: "/terms", permanent: true },
     ];

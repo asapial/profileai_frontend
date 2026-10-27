@@ -4,12 +4,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { NotificationRealtimeProvider } from "@/components/NotificationRealtimeProvider";
-import dynamic from "next/dynamic";
+import { AiChat } from "@/components/ai-chat/AiChat";
 import { usePathname } from "next/navigation";
-const AiChat = dynamic(
-  () => import("@/components/ai-chat/AiChat").then((module) => module.AiChat),
-  { ssr: false },
-);
 
 export function Providers({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -33,7 +29,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <QueryClientProvider client={client}>
       <NotificationRealtimeProvider />
       {children}
-      {showAssistant && <AiChat />}
+      {showAssistant ? <AiChat /> : null}
       <Toaster
         position="top-right"
         toastOptions={{

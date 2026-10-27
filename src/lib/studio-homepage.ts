@@ -94,11 +94,15 @@ export function studioSection(
   const hasDefaultCta =
     section.primaryCta?.label === "Get Started Free" &&
     section.primaryCta.href === "/register";
+  const hasLegacyDescription =
+    section.description === legacy.description ||
+    (section.id === "hero" &&
+      section.description ===
+        "Create, tailor, score, and export a professional resume in minutes. ProFile AI helps you beat applicant tracking systems and land more interviews.");
   return {
     ...section,
     title: section.title === legacy.title ? "" : section.title,
-    description:
-      section.description === legacy.description ? "" : section.description,
+    description: hasLegacyDescription ? "" : section.description,
     items: hasDefaultItems ? undefined : items,
     primaryCta: hasDefaultCta ? undefined : section.primaryCta,
   };

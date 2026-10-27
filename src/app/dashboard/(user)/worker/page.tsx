@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { Dialog as DialogPrimitive } from "radix-ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Activity,
@@ -32,6 +33,7 @@ import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { AutomationNavigation } from "@/components/dashboard/AutomationNavigation";
 import { WorkerConsentPanel, type Consent } from "./WorkerConsentPanel";
 import { WorkerInstructionPanel, type CapturedListing } from "./WorkerInstructionPanel";
 
@@ -279,13 +281,13 @@ export default function WorkerPage() {
   const control = useMutation({
     mutationFn: ({ id, action }: { id: string; action: "pause" | "resume" | "stop" | "takeover" | "handback" }) =>
       api.post(`/worker/tasks/${id}/control`, { action }),
-    onSuccess: () => { void refresh(); },
+    onSuccess: () => refresh(),
     onError: (error: Error) => toast.error(error.message),
   });
 
   const data = overview.data;
   const pending = data?.approvals.filter(approval => approval.state === "PENDING") ?? [];
-  const paired = data?.status !== "NOT_PAIRED";
+  const paired = Boolean(data && data.status !== "NOT_PAIRED");
   const pairingSeconds = pairing ? Math.max(0, Math.floor((Date.parse(pairing.expiresAt) - now) / 1000)) : 0;
 
   const copyCode = async () => {
@@ -298,8 +300,19 @@ export default function WorkerPage() {
     }
   };
 
+  if (!data) return <div className="mx-auto max-w-[88rem] space-y-5 px-4 pb-14 lg:px-6">
+    <AutomationNavigation current="worker" />
+    <h1 className="text-3xl font-semibold tracking-tight">Local worker</h1>
+    {overview.isError ? <div role="alert" className="rounded-2xl border border-destructive/25 bg-card p-6">
+      <h2 className="font-semibold">Worker status could not be loaded</h2>
+      <p className="mt-2 text-sm text-muted-foreground">{overview.error.message}</p>
+      <Button className="mt-4" variant="outline" onClick={() => void overview.refetch()} disabled={overview.isFetching}><RefreshCw className="mr-2 size-4" />Retry</Button>
+    </div> : <div role="status" aria-label="Loading worker workspace" className="space-y-4"><div className="h-48 animate-pulse rounded-2xl bg-muted" /><div className="h-80 animate-pulse rounded-2xl bg-muted" /></div>}
+  </div>;
+
   return (
-    <div className="space-y-6 px-4 pb-14 lg:px-6">
+    <div className="mx-auto max-w-[88rem] space-y-6 px-4 pb-14 lg:px-6">
+      <AutomationNavigation current="worker" />
       <section className="relative overflow-hidden rounded-[2rem] border border-border bg-card p-6 text-foreground shadow-[var(--shadow-2)] sm:p-8">
         <div aria-hidden className="pointer-events-none absolute -right-28 -top-56 size-[32rem] rounded-full bg-primary/10 blur-3xl" />
         <div className="relative grid gap-8 xl:grid-cols-[minmax(0,1fr)_390px] xl:items-end">
@@ -308,7 +321,7 @@ export default function WorkerPage() {
               <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"><Zap className="size-3" /> Local browser worker</span>
               <StatusPill status={data?.status ?? "NOT_PAIRED"} />
             </div>
-            <h1 className="mt-5 max-w-3xl text-3xl font-semibold tracking-[-.03em] sm:text-[2.65rem] sm:leading-[1.08]">Your job search runs on your machine. The cloud only holds the plan.</h1>
+            <h1 className="mt-5 max-w-3xl text-3xl font-semibold tracking-[-.03em] sm:text-[2.65rem] sm:leading-[1.08]">Your browser. Your control.</h1>
             <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground">Pair one Windows worker, queue a browser search only after granting per-source permission, and decide every submit from here. Passwords and browser cookies stay in the local vault, never in this account.</p>
             <div className="mt-6 flex flex-wrap gap-2 text-xs leading-5 text-muted-foreground">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/60 px-2.5 py-1"><ShieldCheck className="size-3.5 text-emerald-600 dark:text-emerald-300" /> Human approval before submit</span>
@@ -318,7 +331,7 @@ export default function WorkerPage() {
           </div>
           <div className="grid grid-cols-2 gap-2">
             <Metric label="Worker" value={data?.status === "ONLINE" ? "Ready" : data?.status === "OFFLINE" ? "Away" : "None"} note={data?.devices[0] ? `${data.devices[0].name} · ${relative(data.devices[0].lastSeenAt)}` : "Pair the desktop app"} />
-            <Metric label="Active runs" value={data?.summary.activeTasks ?? 0} note="Signed tasks in flight" />
+            <Metric label="Active tasks" value={data?.summary.activeTasks ?? 0} note="Signed tasks in flight" />
             <Metric label="Waiting on you" value={data?.summary.pendingApprovals ?? 0} note="Actions never self-approve" />
             <Metric label="Captured" value={data?.summary.capturedListings ?? 0} note={`${data?.summary.submissionsToday ?? 0} submitted today`} />
           </div>
@@ -349,12 +362,12 @@ export default function WorkerPage() {
                 </Button>
               </div>
               {pairing ? (
-                <div className="grid gap-4 border-t border-border bg-muted/35 p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                <div className="grid min-w-0 gap-4 border-t border-border bg-muted/35 p-5">
                   <div>
                     <p className="text-xs font-semibold text-muted-foreground">One-time pairing code</p>
                     <div className="mt-2 flex flex-wrap items-center gap-3">
-                      <span className="font-mono text-3xl font-semibold tracking-[.16em] text-foreground">{pairing.code}</span>
-                      <Button size="sm" variant="outline" onClick={() => void copyCode()}><Copy className="mr-2 size-3.5" /> Copy</Button>
+                      <span className="whitespace-nowrap font-mono text-2xl font-semibold tracking-[.12em] text-foreground sm:text-3xl">{pairing.code}</span>
+                      <Button size="sm" variant="outline" disabled={pairingSeconds <= 0} onClick={() => void copyCode()}><Copy className="mr-2 size-3.5" /> Copy</Button>
                     </div>
                     <p className={cn("mt-2 text-xs", pairingSeconds > 0 ? "text-muted-foreground" : "text-rose-600 dark:text-rose-300")}>{pairingSeconds > 0 ? `Expires in ${Math.floor(pairingSeconds / 60)}m ${pairingSeconds % 60}s · single use` : "This code expired. Create a new one."}</p>
                   </div>
@@ -413,7 +426,7 @@ export default function WorkerPage() {
               {data?.tasks.length ? (
                 <ul className="divide-y divide-border/70">
                   {data.tasks.slice(0, 8).map(task => {
-                    const active = ["CLAIMED", "OPENED", "FILLED", "WAITING_FOR_USER", "PAUSED", "TAKEOVER"].includes(task.state);
+                    const active = ["QUEUED", "CLAIMED", "OPENED", "FILLED", "WAITING_FOR_USER", "PAUSED", "TAKEOVER", "BLOCKED"].includes(task.state);
                     return (
                       <li key={task.id} className="p-5">
                         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
@@ -429,7 +442,7 @@ export default function WorkerPage() {
                             <div className="mt-3 max-w-md"><div className="h-1.5 overflow-hidden rounded-full bg-muted"><div className={cn("h-full rounded-full", task.state === "SUBMITTED" || task.state === "COMPLETED" ? "bg-emerald-500" : task.state === "BLOCKED" || task.state === "FAILED" ? "bg-rose-500" : "bg-primary")} style={{ width: `${Math.max(2, task.progress)}%` }} /></div></div>
                           </div>
                           <div className="flex shrink-0 flex-wrap items-center gap-2">
-                            {task.state === "PAUSED" ? <Button size="sm" variant="outline" disabled={control.isPending} onClick={() => control.mutate({ id: task.id, action: "resume" })}><Play className="mr-1.5 size-3.5" /> Resume</Button> : active ? <Button size="sm" variant="outline" disabled={control.isPending} onClick={() => control.mutate({ id: task.id, action: "pause" })}><Pause className="mr-1.5 size-3.5" /> Pause</Button> : null}
+                            {task.state === "TAKEOVER" ? <Button size="sm" variant="outline" disabled={control.isPending} onClick={() => control.mutate({ id: task.id, action: "handback" })}><Play className="mr-1.5 size-3.5" />Hand back</Button> : task.state === "PAUSED" ? <Button size="sm" variant="outline" disabled={control.isPending} onClick={() => control.mutate({ id: task.id, action: "resume" })}><Play className="mr-1.5 size-3.5" /> Resume</Button> : active && task.state !== "BLOCKED" ? <Button size="sm" variant="outline" disabled={control.isPending} onClick={() => control.mutate({ id: task.id, action: "pause" })}><Pause className="mr-1.5 size-3.5" /> Pause</Button> : null}
                             {active ? <Button size="sm" variant="outline" disabled={control.isPending} onClick={() => control.mutate({ id: task.id, action: "stop" })} className="text-rose-600 hover:bg-rose-500/5 hover:text-rose-700"><CircleStop className="mr-1.5 size-3.5" /> Stop</Button> : null}
                             {task.runId ? <Link href="/dashboard/harness" className="inline-flex h-9 items-center rounded-md border px-3 text-sm font-medium hover:bg-muted">Open harness</Link> : null}
                           </div>
@@ -524,15 +537,15 @@ export default function WorkerPage() {
       </div>
 
       {revokeTarget ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/55 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="revoke-title" onMouseDown={event => { if (event.target === event.currentTarget) setRevokeTarget(null); }}>
-          <div className="w-full max-w-md rounded-3xl border bg-background p-6 shadow-2xl">
+        <DialogPrimitive.Root open onOpenChange={open => { if (!open && !revoke.isPending) setRevokeTarget(null); }}>
+          <DialogPrimitive.Portal><DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-slate-950/55 backdrop-blur-sm" /><DialogPrimitive.Content aria-labelledby="revoke-title" className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-3xl border bg-background p-6 shadow-2xl">
             <span className="grid size-11 place-items-center rounded-2xl bg-rose-500/10 text-rose-600"><ShieldAlert className="size-5" /></span>
-            <h2 id="revoke-title" className="mt-4 text-xl font-semibold tracking-tight">Revoke {revokeTarget.name}?</h2>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">Every access and refresh token for this device is invalidated immediately. Pending approvals are cancelled. Local browser cookies and vault secrets stay on the machine until you clear them in the desktop app.</p>
+            <DialogPrimitive.Title asChild><h2 id="revoke-title" className="mt-4 text-xl font-semibold tracking-tight">Revoke {revokeTarget.name}?</h2></DialogPrimitive.Title>
+            <DialogPrimitive.Description className="mt-2 text-sm leading-6 text-muted-foreground">Every access and refresh token for this device is invalidated immediately. Pending approvals are cancelled. Local browser cookies and vault secrets stay on the machine until you clear them in the desktop app.</DialogPrimitive.Description>
             <div className="mt-5 rounded-xl border border-rose-500/15 bg-rose-500/[.04] px-3 py-2 font-mono text-xs text-muted-foreground">{revokeTarget.publicKeyFingerprint.slice(0, 36)}…</div>
-            <div className="mt-6 flex justify-end gap-2"><Button variant="ghost" onClick={() => setRevokeTarget(null)}>Cancel</Button><Button className="bg-rose-600 text-white hover:bg-rose-700" disabled={revoke.isPending} onClick={() => revoke.mutate(revokeTarget.id)}>{revoke.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Trash2 className="mr-2 size-4" />} Revoke device</Button></div>
-          </div>
-        </div>
+            <div className="mt-6 flex justify-end gap-2"><Button variant="ghost" disabled={revoke.isPending} onClick={() => setRevokeTarget(null)}>Cancel</Button><Button className="bg-rose-600 text-white hover:bg-rose-700" disabled={revoke.isPending} onClick={() => revoke.mutate(revokeTarget.id)}>{revoke.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Trash2 className="mr-2 size-4" />} Revoke device</Button></div>
+          </DialogPrimitive.Content></DialogPrimitive.Portal>
+        </DialogPrimitive.Root>
       ) : null}
     </div>
   );

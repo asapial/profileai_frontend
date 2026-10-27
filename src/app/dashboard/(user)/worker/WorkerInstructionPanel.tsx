@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import type { Consent } from "./WorkerConsentPanel";
+import { captureSourceForUrl } from "@/lib/automation-workflow";
 
 export type CapturedListing = {
   id: string;
@@ -47,23 +48,6 @@ const SOURCE_LABEL: Record<string, string> = {
   MANUAL: "Manual",
 };
 
-function guessSource(value: string): string | undefined {
-  try {
-    const host = new URL(value).hostname.toLowerCase();
-    if (host.endsWith("linkedin.com")) return "LINKEDIN";
-    if (host.endsWith("facebook.com") || host.endsWith("fb.com")) return "FACEBOOK";
-    if (host.endsWith("bdjobs.com")) return "BDJOBS";
-    if (host.endsWith("remotive.com")) return "REMOTIVE";
-    if (host.endsWith("greenhouse.io")) return "GREENHOUSE";
-    if (host.endsWith("lever.co")) return "LEVER";
-    if (host.endsWith("ashbyhq.com")) return "ASHBY";
-    if (host.startsWith("http")) return "COMPANY_CAREER";
-  } catch {
-    return undefined;
-  }
-  return undefined;
-}
-
 function relative(value: string) {
   const diff = Math.max(0, Date.now() - Date.parse(value));
   const minutes = Math.floor(diff / 60_000);
@@ -79,6 +63,7 @@ export function WorkerInstructionPanel({ consents, listings }: { consents: Conse
   const [mode, setMode] = useState<"search" | "capture">("search");
   const [source, setSource] = useState(() => consents.find(row => row.searchCapability)?.source ?? "LINKEDIN");
   const [query, setQuery] = useState("");
+  const [company, setCompany] = useState("");
   const [startUrl, setStartUrl] = useState("");
   const [maxPages, setMaxPages] = useState(1);
   const [maxResults, setMaxResults] = useState(10);
@@ -88,11 +73,13 @@ export function WorkerInstructionPanel({ consents, listings }: { consents: Conse
   const [captureAck, setCaptureAck] = useState(false);
 
   const selected = consents.find(row => row.source === source);
-  const captureSource = guessSource(captureUrl);
+  const captureSource = captureSourceForUrl(captureUrl, consents);
   const captureConsent = captureSource ? consents.find(row => row.source === captureSource) : null;
   const searchReady = Boolean(selected?.search);
   const scrollReady = Boolean(selected?.scroll && selected.search);
-  const canSearch = searchReady && searchAck && Boolean(query.trim() || startUrl.trim());
+  const pageLimit = scrollReady ? Math.max(1, Math.min(selected?.maxPages ?? 1, selected?.maxPagesLimit ?? 1, 10)) : 1;
+  const effectivePages = Math.min(maxPages, pageLimit);
+  const canSearch = searchReady && searchAck && (source === "COMPANY_CAREER" ? Boolean(company.trim() || startUrl.trim()) : Boolean(query.trim() || startUrl.trim()));
   const canCapture = Boolean(captureUrl.trim()) && captureAck && Boolean(captureConsent?.capture);
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["worker-overview"] });
@@ -101,8 +88,9 @@ export function WorkerInstructionPanel({ consents, listings }: { consents: Conse
     mutationFn: () => api.post<{ id: string }>("/worker/search-tasks", {
       source,
       ...(query.trim() ? { query: query.trim() } : {}),
+      ...(source === "COMPANY_CAREER" && company.trim() ? { company: company.trim() } : {}),
       ...(startUrl.trim() ? { startUrl: startUrl.trim() } : {}),
-      maxPages,
+      maxPages: effectivePages,
       maxResults,
       scrollRounds: scrollReady ? scrollRounds : 0,
       mode: "RESEARCH",
@@ -207,8 +195,16 @@ export function WorkerInstructionPanel({ consents, listings }: { consents: Conse
                 </div>
               </div>
 
+              {source === "COMPANY_CAREER" ? (
+                <div className="space-y-1.5">
+                  <Label htmlFor="worker-search-company">Company name</Label>
+                  <Input id="worker-search-company" value={company} onChange={event => setCompany(event.target.value)} placeholder="e.g. Stripe" maxLength={120} />
+                  <p className="text-xs leading-5 text-muted-foreground">Finds a verified Greenhouse board or a reviewed company board. Add a job title above to filter roles. A career-page URL is optional.</p>
+                </div>
+              ) : null}
+
               <div className="space-y-1.5">
-                <Label htmlFor="worker-search-url">Collection or search URL <span className="font-normal text-muted-foreground">(optional if a query is enough)</span></Label>
+                <Label htmlFor="worker-search-url">Collection or search URL <span className="font-normal text-muted-foreground">(optional{source === "COMPANY_CAREER" ? " when company name is provided" : " if a query is enough"})</span></Label>
                 <Input
                   id="worker-search-url"
                   value={startUrl}
@@ -229,9 +225,9 @@ export function WorkerInstructionPanel({ consents, listings }: { consents: Conse
                     type="number"
                     min={1}
                     max={Math.max(1, Math.min(selected?.maxPages ?? 1, 10))}
-                    value={scrollReady ? maxPages : 1}
+                    value={effectivePages}
                     disabled={!scrollReady}
-                    onChange={event => setMaxPages(Math.max(1, Math.min(10, Number(event.target.value) || 1)))}
+                    onChange={event => setMaxPages(Math.max(1, Math.min(pageLimit, Math.floor(Number(event.target.value)) || 1)))}
                   />
                   {!scrollReady ? <p className="text-xs text-muted-foreground">One page until Scroll is enabled.</p> : null}
                 </div>
@@ -270,10 +266,10 @@ export function WorkerInstructionPanel({ consents, listings }: { consents: Conse
                 </div>
               ) : null}
 
-              <label className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-border/70 bg-muted/20 px-3 py-2.5 text-xs leading-5">
-                <Checkbox checked={searchAck} onCheckedChange={value => setSearchAck(value === true)} className="mt-0.5" />
-                <span>For this task only, I allow the worker to search and read the visible results within the page cap. It will not message, apply, or fill a form.</span>
-              </label>
+              <div className="flex items-start gap-2.5 rounded-xl border border-border/70 bg-muted/20 px-3 py-2.5 text-xs leading-5">
+                <Checkbox id="worker-search-ack" checked={searchAck} onCheckedChange={value => setSearchAck(value === true)} className="mt-0.5" />
+                <Label htmlFor="worker-search-ack" className="cursor-pointer text-xs leading-5">For this task only, I allow the worker to search and read the visible results within the page cap. It will not message, apply, or fill a form.</Label>
+              </div>
             </div>
           ) : (
             <div className="space-y-4">
@@ -307,10 +303,10 @@ export function WorkerInstructionPanel({ consents, listings }: { consents: Conse
                 </span>
               </div>
 
-              <label className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-border/70 bg-muted/20 px-3 py-2.5 text-xs leading-5">
-                <Checkbox checked={captureAck} onCheckedChange={value => setCaptureAck(value === true)} className="mt-0.5" />
-                <span>I allow the worker to read this page once and return the job details to my ProfileAI account.</span>
-              </label>
+              <div className="flex items-start gap-2.5 rounded-xl border border-border/70 bg-muted/20 px-3 py-2.5 text-xs leading-5">
+                <Checkbox id="worker-capture-ack" checked={captureAck} onCheckedChange={value => setCaptureAck(value === true)} className="mt-0.5" />
+                <Label htmlFor="worker-capture-ack" className="cursor-pointer text-xs leading-5">I allow the worker to read this page once and return the job details to my ProfileAI account.</Label>
+              </div>
             </div>
           )}
 

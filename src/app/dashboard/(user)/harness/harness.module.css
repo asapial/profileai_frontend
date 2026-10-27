@@ -24,9 +24,9 @@
 .masthead::after { display: none; }
 
 .title {
-  max-width: 20ch;
+  max-width: 24ch;
   font-family: var(--font-ui), "Segoe UI", sans-serif;
-  font-size: clamp(2.1rem, 4vw, 3.8rem);
+  font-size: clamp(1.85rem, 3vw, 2.8rem);
   font-weight: 650;
   letter-spacing: -.045em;
   line-height: 1.02;
@@ -62,7 +62,7 @@
 .setupItem {
   min-height: 6.25rem;
   padding: 1rem;
-  border: 0;
+  border: 1px solid var(--border);
   border-radius: .55rem;
   background: var(--card);
 }
@@ -78,7 +78,7 @@
 }
 
 .panel {
-  border: 0;
+  border: 1px solid var(--border);
   border-radius: .65rem;
   background: var(--card);
 }
@@ -89,7 +89,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 1.15rem 1.25rem;
-  border-bottom: 0;
+  border-bottom: 1px solid var(--border);
 }
 
 .activityPanel {
@@ -115,6 +115,23 @@
   height: .45rem;
   border-radius: 50%;
   background: currentColor;
+}
+
+.liveState[data-state="PAUSED"],
+.liveState[data-state="WAITING_FOR_USER"] {
+  color: var(--h-amber);
+  background: color-mix(in srgb, var(--h-amber) 10%, var(--card));
+}
+
+.liveState[data-state="FAILED"] {
+  color: var(--destructive);
+  background: color-mix(in srgb, var(--destructive) 8%, var(--card));
+}
+
+.liveState[data-state="IDLE"],
+.liveState[data-state="CANCELLED"] {
+  color: var(--muted-foreground);
+  background: var(--muted);
 }
 
 .activityFeed {

@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import { captureSourceForUrl, companionIsOnline, csvCell } from '../src/lib/automation-workflow.ts';
+const sources = [{source:'LINKEDIN',domains:['linkedin.com','*.linkedin.com']},{source:'GREENHOUSE',domains:['boards.greenhouse.io']}];
+assert.equal(captureSourceForUrl('https://www.linkedin.com/jobs/1',sources),'LINKEDIN');
+for (const url of ['https://evil-linkedin.com/jobs/1','https://linkedin.com.evil.test','javascript:alert(1)','https://name:password@linkedin.com/jobs/1']) assert.equal(captureSourceForUrl(url,sources),undefined);
+assert.equal(captureSourceForUrl('https://boards.greenhouse.io/example',sources),'GREENHOUSE');
+assert.equal(csvCell('=HYPERLINK("url")'),'"\'=HYPERLINK(""url"")"');
+assert.equal(csvCell('ordinary, text'),'"ordinary, text"');
+const now = Date.now();
+const companion = {status:'ACTIVE',lastSeenAt:new Date(now-1000).toISOString(),expiresAt:new Date(now+60000).toISOString()};
+assert.equal(companionIsOnline(companion,now),true);
+assert.equal(companionIsOnline({...companion,lastSeenAt:new Date(now-120000).toISOString()},now),false);
+assert.equal(companionIsOnline({...companion,expiresAt:new Date(now-1).toISOString()},now),false);
+console.log('Automation helpers: domain boundaries, CSV formula escaping, and companion freshness passed.');

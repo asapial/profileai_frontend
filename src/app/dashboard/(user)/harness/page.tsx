@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -29,6 +29,8 @@ import { env } from "@/lib/env";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import styles from "./harness.module.css";
+import { AutomationNavigation } from "@/components/dashboard/AutomationNavigation";
+import { companionIsOnline, csvCell } from "@/lib/automation-workflow";
 
 type Preferences = {
   roles: string[];
@@ -53,6 +55,7 @@ type Preferences = {
   maximumJobAgeDays: number;
   minimumMatchScore: number;
   dailySearchLimit: number;
+  automaticSearchHours: 0 | 12 | 24;
   dailyApplicationLimit: number;
   autoSaveThreshold: number;
   autoPrepareThreshold: number;
@@ -107,11 +110,11 @@ type Overview = {
   google: null | { email: string; status: string; capabilities: Array<{ capability: string; enabled: boolean }> };
   tracker: null | { externalUrl: string | null; lastSyncedAt: string };
   companions: Array<{ id: string; name: string; status: string; lastSeenAt: string | null; expiresAt: string }>;
-  reviewTasks: Array<{ id: string; state: string; adapter: string; targetUrl: string; mode: string; error: string | null }>;
+  reviewTasks: Array<{ deviceId: string | null; id: string; state: string; adapter: string; targetUrl: string; mode: string; error: string | null }>;
   candidates: Array<{ id: string; score: number; decision: string; reasons: unknown; missing: unknown; job: null | { id: string; company: string; title: string; location: string | null; canonicalUrl: string | null; lifecycle: string } }>;
   sheet: SheetRow[];
   sheetStats: SheetStats;
-  audits: Array<{ id: string; runId: string | null; action: string; outcome: string; metadata: { message?: string; step?: string } | null; createdAt: string }>;
+  audits: Array<{ id: string; runId: string | null; action: string; outcome: string; metadata: { message?: string; step?: string; eventAt?: string } | null; createdAt: string }>;
 };
 
 const sheetStatusLabel: Record<SheetRow["status"], string> = {
@@ -136,12 +139,11 @@ function gmailComposeUrl(row: SheetRow) {
 }
 
 function downloadSheetCsv(rows: SheetRow[]) {
-  const escape = (value: string) => `"${value.replaceAll('"', '""')}"`;
   const header = ["Company", "Role", "Location", "Source", "Score", "Decision", "Status", "ATS", "Job URL", "Email subject"];
   const lines = [header, ...rows.map(row => [
     row.company, row.title, row.location ?? "", row.sourceName, String(row.score), row.decision,
     sheetStatusLabel[row.status], row.atsScore === null ? "" : String(row.atsScore), row.canonicalUrl ?? "", row.subject ?? "",
-  ])].map(cells => cells.map(escape).join(","));
+  ])].map(cells => cells.map(csvCell).join(","));
   const blob = new Blob([lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -191,6 +193,7 @@ export default function HarnessPage() {
   const client = useQueryClient();
   const query = useQuery({ queryKey: ["harness"], queryFn: () => api.get<Overview>("/harness"), refetchInterval: current => current.state.data?.runs.some(run => ["SCHEDULED", "RUNNING", "WAITING_FOR_USER"].includes(run.state)) ? 3_000 : 12_000 });
   const [busy, setBusy] = useState("");
+  const busyRef = useRef("");
   const [mode, setMode] = useState("PREPARE");
   const [draft, setForm] = useState<Preferences | null>(null);
   const [pairToken, setPairToken] = useState("");
@@ -211,6 +214,7 @@ export default function HarnessPage() {
   const activeRun = query.data?.runs.find(run => ["SCHEDULED", "RUNNING", "PAUSED", "WAITING_FOR_USER"].includes(run.state));
   const latestRun = activeRun ?? query.data?.runs[0];
   const audits = query.data?.audits ?? [];
+  const localEvents = audits.filter(event => event.action === 'WORKER_LOCAL_PROGRESS' && event.metadata?.message).slice(0, 20).sort((a, b) => (a.metadata?.eventAt ?? a.createdAt).localeCompare(b.metadata?.eventAt ?? b.createdAt));
   const activityRuns = (query.data?.runs ?? [])
     .map(run => ({ run, events: audits.filter(event => event.runId === run.id && event.metadata?.message).slice().reverse() }))
     .filter(entry => entry.events.length)
@@ -220,45 +224,50 @@ export default function HarnessPage() {
   const capabilitySet = useMemo(() => new Set(query.data?.google?.capabilities.filter(item => item.enabled).map(item => item.capability) ?? []), [query.data?.google]);
 
   async function action(name: string, task: () => Promise<unknown>, message?: string) {
+    if (busyRef.current && name !== "stop") return;
+    busyRef.current = name;
     setBusy(name);
     try {
       await task();
       if (message) toast.success(message);
       await client.invalidateQueries({ queryKey: ["harness"] });
     } catch (error) { toast.error(error instanceof Error ? error.message : "Action failed."); }
-    finally { setBusy(""); }
+    finally { if (busyRef.current === name) { busyRef.current = ""; setBusy(""); } }
   }
 
   async function connect(capability: string) {
+    if (busyRef.current) return;
+    const popup = window.open("about:blank", "profileai-google", "popup=yes,width=540,height=700");
+    if (!popup) { toast.error("Popup blocked. Allow popups and try again."); return; }
     await action(`connect-${capability}`, async () => {
+      try {
       const result = await api.post<{ url: string }>("/harness/google/connect", { capabilities: [capability], popupOrigin: window.location.origin });
-      const width = 540;
-      const height = 700;
-      const popup = window.open(result.url, "profileai-google", `popup=yes,width=${width},height=${height},left=${Math.max(0, window.screenX + (window.outerWidth - width) / 2)},top=${Math.max(0, window.screenY + (window.outerHeight - height) / 2)}`);
-      if (!popup) throw new Error("Popup blocked. Allow popups and try again.");
+      popup.location.href = result.url;
+      } catch (error) { popup.close(); throw error; }
     });
   }
 
-  if (query.isPending || !form) return <div className={styles.page}><div className={`${styles.masthead} animate-pulse`} /></div>;
-  if (query.isError || !query.data) return <div className={styles.page}><div className={styles.panel}><div className="p-8"><h1 className="text-xl font-semibold">Harness could not load</h1><p className="mt-2 text-sm text-muted-foreground">Check the API and database migration, then reload.</p></div></div></div>;
+  if (query.isError) return <div className={styles.page}><div className={styles.panel}><div className="p-8"><h1 className="text-xl font-semibold">Harness could not load</h1><p className="mt-2 text-sm text-muted-foreground">Please retry loading your workspace.</p><button className="mt-4 underline" onClick={() => void query.refetch()}>Retry</button></div></div></div>;
+  if (query.isPending || !query.data || !form) return <div className={styles.page}><div className={`${styles.masthead} animate-pulse`} /></div>;
 
-  const browserReady = query.data.companions.some(companion => companion.status === "ACTIVE" && companion.lastSeenAt);
+  const browserReady = query.data.companions.some(companion => companionIsOnline(companion, query.dataUpdatedAt));
   const setup = [
     { label: "Profile", ready: true, detail: "Career evidence workspace" },
-    { label: "Preferences", ready: query.data.preference.version > 0 && form.roles.length > 0, detail: query.data.preference.version ? `Version ${query.data.preference.version}` : "Not saved" },
+    { label: "Preferences", ready: query.data.preference.version > 0 && query.data.preference.preferences.roles.length > 0, detail: query.data.preference.version ? `Version ${query.data.preference.version}` : "Not saved" },
     { label: "Google", ready: Boolean(query.data.google), detail: query.data.google?.email ?? "Not connected" },
-    { label: "Browser", ready: Boolean(browserReady), detail: browserReady ? "Connected and polling" : query.data.companions.length ? "Token created, extension not connected" : "Not paired" },
+    { label: "Browser", ready: Boolean(browserReady), detail: browserReady ? "Recently connected" : query.data.companions.length ? "Offline or awaiting connection" : "Not paired" },
   ];
   const sheetStats = query.data.sheetStats;
   const sheetStatItems: Array<[string, number]> = [["Total", sheetStats.total], ["Eligible", sheetStats.eligible], ["Needs review", sheetStats.reviewRequired], ["CVs", sheetStats.cvs], ["Drafts", sheetStats.drafts], ["In queue", sheetStats.queued], ["Applied", sheetStats.applied]];
 
   return (
     <div className={styles.page}>
+      <AutomationNavigation current="harness" />
       <section className={styles.masthead}>
         <div className="relative z-10 flex flex-wrap items-start justify-between gap-8">
           <div>
             <div className="mb-6 flex items-center gap-3 text-sm font-medium text-slate-600 dark:text-slate-300"><span className={styles.statusDot} />Hybrid agent workspace</div>
-            <h1 className={styles.title}>One controlled run from search to application.</h1>
+            <h1 className={styles.title}>From shortlist to a reviewed application.</h1>
             <p className={styles.lede}>ProfileAI searches approved sources, verifies fit, prepares evidence-backed documents, syncs your Google workspace, then hands logged-in forms to your browser.</p>
           </div>
           <div className="relative z-10 flex max-w-sm flex-wrap justify-end gap-2">
@@ -268,16 +277,17 @@ export default function HarnessPage() {
               <option value="REVIEW_SUBMIT">Review and submit</option>
               <option value="AUTO_APPLY">Approved auto apply</option>
             </select>
-            {!activeRun ? <Button disabled={busy === "start" || !form.roles.length} onClick={() => void action("start", () => api.post("/harness/runs", { mode, consent: true }), "Harness run queued")}><Play className="mr-2 size-4" />Start harness</Button> : (
+            {!activeRun ? <Button disabled={Boolean(busy) || Boolean(draft) || !query.data.preference.version || !query.data.preference.preferences.roles.length} onClick={() => void action("start", () => api.post("/harness/runs", { mode, consent: true }), "Harness run queued")}><Play className="mr-2 size-4" />Start harness</Button> : (
               <>
-                {activeRun.state === "PAUSED" || (activeRun.state === "WAITING_FOR_USER" && activeRun.steps.some(step => step.state === "BLOCKED")) ? <Button variant="outline" onClick={() => void action("resume", () => api.post(`/harness/runs/${activeRun.id}/resume`, {}))}><Play className="mr-2 size-4" />Resume</Button> : activeRun.state !== "WAITING_FOR_USER" ? <Button variant="outline" onClick={() => void action("pause", () => api.post(`/harness/runs/${activeRun.id}/pause`, {}))}><Pause className="mr-2 size-4" />Pause</Button> : null}
-                <Button variant="destructive" onClick={() => void action("stop", () => api.post(`/harness/runs/${activeRun.id}/emergency-stop`, {}), "Harness stopped")}><CircleStop className="mr-2 size-4" />Emergency stop</Button>
+                {activeRun.state === "PAUSED" || (activeRun.state === "WAITING_FOR_USER" && activeRun.steps.some(step => step.state === "BLOCKED")) ? <Button variant="outline" disabled={Boolean(busy)} onClick={() => void action("resume", () => api.post(`/harness/runs/${activeRun.id}/resume`, {}))}><Play className="mr-2 size-4" />Resume</Button> : activeRun.state !== "WAITING_FOR_USER" ? <Button variant="outline" disabled={Boolean(busy)} onClick={() => void action("pause", () => api.post(`/harness/runs/${activeRun.id}/pause`, {}))}><Pause className="mr-2 size-4" />Pause</Button> : null}
+                <Button variant="destructive" disabled={busy === "stop"} onClick={() => void action("stop", () => api.post(`/harness/runs/${activeRun.id}/emergency-stop`, {}), "Harness stopped")}><CircleStop className="mr-2 size-4" />Emergency stop</Button>
               </>
             )}
           </div>
         </div>
       </section>
 
+      {draft && <div role="status" className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-500/25 bg-amber-500/5 p-4 text-sm"><span>Unsaved preferences. Save them before starting a new run.</span><button type="button" className="font-medium underline" onClick={() => setForm(null)}>Discard changes</button></div>}
       <section className={styles.setupStrip} aria-label="Harness setup">
         {setup.map(item => <div key={item.label} className={styles.setupItem}><div className="flex items-center gap-2 text-sm font-semibold">{item.ready ? <Check className="size-4 text-emerald-600" /> : <AlertTriangle className="size-4 text-amber-600" />}{item.label}</div><p className="mt-2 text-xs leading-5 text-muted-foreground">{item.detail}</p></div>)}
       </section>
@@ -285,15 +295,16 @@ export default function HarnessPage() {
       <div className={styles.workspace}>
         <div className="space-y-4">
           <section className={`${styles.panel} ${styles.activityPanel}`} aria-live="polite">
-            <header className={styles.panelHeader}><div><h2 className="font-semibold">Live activity</h2><p className="mt-1 text-xs text-muted-foreground">Search, decisions, documents, and sync appear here as they happen.</p></div><span className={styles.liveState}><span />{activeRun?.state === "RUNNING" || activeRun?.state === "SCHEDULED" ? "Working" : latestRun?.state === "COMPLETED" ? "Complete" : latestRun?.state === "WAITING_FOR_USER" ? "Needs you" : "Idle"}</span></header>
+            <header className={styles.panelHeader}><div><h2 className="font-semibold">Live activity</h2><p className="mt-1 text-xs text-muted-foreground">Search, decisions, documents, and sync appear here as they happen.</p></div><span className={styles.liveState} data-state={latestRun?.state ?? "IDLE"}><span />{activeRun?.state === "RUNNING" || activeRun?.state === "SCHEDULED" ? "Working" : latestRun?.state === "COMPLETED" ? "Complete" : latestRun?.state === "WAITING_FOR_USER" ? "Needs you" : latestRun?.state === "PAUSED" ? "Paused" : latestRun?.state === "FAILED" ? "Failed" : latestRun?.state === "CANCELLED" ? "Stopped" : "Idle"}</span></header>
             <div className={styles.activityFeed}>
+              {localEvents.length > 0 && <><div className={styles.runDivider}><span>Local worker · recent search</span></div>{localEvents.map(event => <article className={styles.activityMessage} key={event.id}><div className={`${styles.agentMark} ${event.outcome === 'PARTIAL' ? styles.agentMarkWarning : ''}`}><Bot className="size-4" /></div><div><div className="flex flex-wrap items-center gap-2"><strong>Local worker</strong><time>{new Date(event.metadata?.eventAt ?? event.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</time></div><p>{event.metadata?.message}</p>{event.outcome === 'PARTIAL' && <span className={styles.activityAction}>Action needed</span>}</div></article>)}</>}
               {activityRuns.length ? activityRuns.map(entry => <Fragment key={entry.run.id}>
                 <div className={styles.runDivider}><span>Run · {entry.run.mode.replaceAll("_", " ").toLowerCase()}</span><time>{new Date(entry.run.createdAt).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</time><Badge variant="outline">{entry.run.state}</Badge></div>
                 {entry.events.map(event => {
                   const warning = ["FAILED", "RETRYABLE", "WAITING_FOR_USER", "PARTIAL"].includes(event.outcome);
                   return <article className={styles.activityMessage} key={event.id}><div className={`${styles.agentMark} ${warning ? styles.agentMarkWarning : ""}`}><Bot className="size-4" /></div><div><div className="flex flex-wrap items-center gap-2"><strong>ProfileAI agent</strong><time>{new Date(event.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time></div><p>{event.metadata?.message}</p>{warning && <span className={styles.activityAction}>Action needed</span>}</div></article>;
                 })}
-              </Fragment>) : <div className={styles.activityEmpty}><Bot className="size-5" /><p>Save preferences, connect Google, then start a run. Progress will appear here.</p></div>}
+              </Fragment>) : !localEvents.length && <div className={styles.activityEmpty}><Bot className="size-5" /><p>Save preferences, connect Google, then start a run. Progress will appear here.</p></div>}
               {(activeRun?.state === "RUNNING" || activeRun?.state === "SCHEDULED") && <div className={styles.typing} aria-label="Agent is working"><span /><span /><span /></div>}
             </div>
           </section>
@@ -329,7 +340,7 @@ export default function HarnessPage() {
                       <div className={styles.kitGrid}>
                         <div className={styles.kitCard}>
                           <span className={styles.kitLabel}>Tailored CV</span>
-                          {row.resumeId ? <><p className={styles.kitSubject}>Resume {row.resumeId.slice(-6)}{row.atsScore !== null ? ` · ATS ${row.atsScore}/100` : ""}</p><div className={styles.kitActions}><Link className={styles.kitButton} href={`/dashboard/documents/${row.resumeId}/edit`}>Open CV<ExternalLink className="size-3.5" /></Link></div></> : <p className={styles.kitBody}>No CV prepared for this job yet. Run a PREPARE harness run.</p>}
+                          {row.resumeId ? <><p className={styles.kitSubject}>Resume {row.resumeId.slice(-6)}{row.atsScore !== null ? ` · ATS ${row.atsScore}/100` : ""}</p><div className={styles.kitActions}><Link className={styles.kitButton} href={`/dashboard/resume/${row.resumeId}/edit`}>Open CV<ExternalLink className="size-3.5" /></Link></div></> : <p className={styles.kitBody}>No CV prepared for this job yet. Run a PREPARE harness run.</p>}
                         </div>
                         <div className={styles.kitCard}>
                           <span className={styles.kitLabel}>Email draft</span>
@@ -349,8 +360,8 @@ export default function HarnessPage() {
           </section>
 
           <section className={styles.panel}>
-            <header className={styles.panelHeader}><div><h2 className="font-semibold">Harness preferences</h2><p className="mt-1 text-xs text-muted-foreground">Every save creates an immutable version used by future runs.</p></div><FileText className="size-5 text-blue-600" /></header>
-            <form onSubmit={event => { event.preventDefault(); void action("preferences", () => api.put("/harness/preferences", form), "Preferences saved"); }}>
+            <header className={styles.panelHeader}><div><h2 className="font-semibold">Harness preferences</h2><p className="mt-1 text-xs text-muted-foreground">Changes apply to future runs. Save all three sections together.</p></div><FileText className="size-5 text-blue-600" /></header>
+            <form aria-label="Harness preferences" onSubmit={event => { event.preventDefault(); void action("preferences", async () => { const submitted = form; await api.put("/harness/preferences", submitted); setForm(current => current === submitted ? null : current); }, "Preferences saved"); }}>
               <div className={styles.preferenceSteps} role="tablist" aria-label="Preference sections">
                 {["Target jobs", "Eligibility", "Automation"].map((label, index) => <button key={label} type="button" role="tab" aria-selected={preferenceStep === index} className={preferenceStep === index ? styles.preferenceStepActive : styles.preferenceStep} onClick={() => setPreferenceStep(index)}><span>{index + 1}</span>{label}</button>)}
               </div>
@@ -377,6 +388,8 @@ export default function HarnessPage() {
                   <Field label="Portfolio links" full><TagInput value={form.portfolioUrls} onChange={portfolioUrls => setForm({ ...form, portfolioUrls })} placeholder="https://yourportfolio.com" /></Field>
                 </>}
                 {preferenceStep === 2 && <>
+                  <Field label="Automatic public job search"><select className={styles.input} value={form.automaticSearchHours ?? 0} onChange={event => setForm({ ...form, automaticSearchHours: Number(event.target.value) as 0 | 12 | 24 })}><option value={0}>Off</option><option value={24}>Once every 24 hours</option><option value={12}>Once every 12 hours</option></select></Field>
+                  <p className={`${styles.full} text-xs text-muted-foreground`}>The paired worker searches public Remotive listings while your computer is on. It can use a cached permission for up to 36 hours offline. New jobs trigger preparation and Google sync when ProfileAI reconnects.</p>
                   <Field label="Minimum match score"><input className={styles.input} type="number" min="0" max="100" value={form.minimumMatchScore} onChange={event => setForm({ ...form, minimumMatchScore: Number(event.target.value) })} /></Field>
                   <Field label="Applications prepared daily"><input className={styles.input} type="number" min="1" max="50" value={form.dailyApplicationLimit} onChange={event => setForm({ ...form, dailyApplicationLimit: Number(event.target.value) })} /></Field>
                   <Field label="Allowed auto-apply sites" full><TagInput value={form.allowedAutoApplyDomains} onChange={allowedAutoApplyDomains => setForm({ ...form, allowedAutoApplyDomains: allowedAutoApplyDomains.map(value => value.toLowerCase()) })} placeholder="boards.greenhouse.io" /></Field>
@@ -386,7 +399,7 @@ export default function HarnessPage() {
               </div>
               <div className={styles.preferenceActions}>
                 <Button type="button" variant="ghost" disabled={preferenceStep === 0} onClick={() => setPreferenceStep(step => Math.max(0, step - 1))}>Back</Button>
-                {preferenceStep < 2 ? <Button type="button" onClick={() => setPreferenceStep(step => Math.min(2, step + 1))}>Continue</Button> : <Button type="submit" disabled={busy === "preferences" || !form.roles.length}>Save preferences</Button>}
+                {preferenceStep < 2 ? <Button key="continue" type="button" onClick={event => { event.preventDefault(); setPreferenceStep(step => Math.min(2, step + 1)); }}>Continue</Button> : <Button key="save" type="submit" disabled={busy === "preferences" || !form.roles.length || !draft}>Save preferences</Button>}
               </div>
             </form>
           </section>
@@ -403,12 +416,12 @@ export default function HarnessPage() {
 
           <section className={styles.panel}>
             <header className={styles.panelHeader}><div><h2 className="font-semibold">Browser companion</h2><p className="mt-1 text-xs text-muted-foreground">It opens search tabs and prepares approved application forms.</p></div><Bot className="size-5 text-blue-600" /></header>
-            <div className="p-4"><div className={styles.companionGuide}><strong>Connect once</strong><span>Reload the unpacked extension, paste a fresh token, enable automatic tabs, then save.</span></div><Button className="mt-4 w-full" variant="outline" onClick={() => void action("pair", async () => { const result = await api.post<{ token: string }>("/harness/browser/pair", { name: "My browser" }); setPairToken(result.token); }, "Pairing token created")}>Create fresh pairing token</Button>{pairToken && <><p className="mt-4 text-xs text-muted-foreground">Copy once. ProfileAI stores only its hash.</p><div className={`${styles.token} mt-2`}>{pairToken}</div></>}{query.data.companions.map(companion => <div key={companion.id} className="mt-3 flex items-center justify-between border-t border-border pt-3"><div><p className="text-sm font-semibold">{companion.name}</p><p className="text-xs text-muted-foreground">{companion.lastSeenAt ? `Connected ${new Date(companion.lastSeenAt).toLocaleString()}` : "Token created, extension not connected"}</p></div><Button size="sm" variant="ghost" onClick={() => void action("revoke", () => api.delete(`/harness/browser/${companion.id}`))}>Revoke</Button></div>)}</div>
+            <div className="p-4"><div className={styles.companionGuide}><strong>Connect once</strong><span>Reload the unpacked extension, paste a fresh token, enable automatic tabs, then save.</span></div><Button className="mt-4 w-full" variant="outline" disabled={Boolean(busy)} onClick={() => void action("pair", async () => { const result = await api.post<{ token: string }>("/harness/browser/pair", { name: "My browser" }); setPairToken(result.token); }, "Pairing token created")}>Create fresh pairing token</Button>{pairToken && <><p className="mt-4 text-xs text-muted-foreground">Copy once. ProfileAI stores only its hash.</p><div className={`${styles.token} mt-2`}>{pairToken}</div><Button size="sm" variant="outline" className="mt-2" onClick={() => void navigator.clipboard.writeText(pairToken).then(() => toast.success("Pairing token copied"), () => toast.error("Select the token and copy it manually."))}><Copy className="mr-2 size-3.5" />Copy token</Button></>}{query.data.companions.map(companion => <div key={companion.id} className="mt-3 flex items-center justify-between border-t border-border pt-3"><div><p className="text-sm font-semibold">{companion.name}</p><p className="text-xs text-muted-foreground">{companion.lastSeenAt ? `Connected ${new Date(companion.lastSeenAt).toLocaleString()}` : "Token created, extension not connected"}</p></div><Button size="sm" variant="ghost" onClick={() => void action("revoke", () => api.delete(`/harness/browser/${companion.id}`))}>Revoke</Button></div>)}</div>
           </section>
 
           <section className={styles.panel}>
             <header className={styles.panelHeader}><div><h2 className="font-semibold">Review queue</h2><p className="mt-1 text-xs text-muted-foreground">Unknown or sensitive fields stop here.</p></div><ShieldCheck className="size-5 text-emerald-600" /></header>
-            {query.data.reviewTasks.length ? query.data.reviewTasks.slice(0, 8).map(task => <div className="border-t border-border p-4" key={task.id}><div className="flex items-center justify-between gap-2"><Badge variant="outline">{task.adapter}</Badge><span className="text-xs text-muted-foreground">{task.state}</span></div><p className="mt-2 line-clamp-2 text-xs text-muted-foreground">{task.error ?? task.targetUrl}</p>{["WAITING_FOR_USER", "BLOCKED"].includes(task.state) && <Button className="mt-3" size="sm" onClick={() => void action("approve", () => api.post(`/harness/browser/tasks/${task.id}/approve`, {}), "Task approved")}>Approve retry</Button>}</div>) : <div className="p-5 text-xs leading-5 text-muted-foreground">No form needs review.</div>}
+            {query.data.reviewTasks.length ? query.data.reviewTasks.slice(0, 8).map(task => <div className="border-t border-border p-4" key={task.id}><div className="flex items-center justify-between gap-2"><Badge variant="outline">{task.adapter}</Badge><span className="text-xs text-muted-foreground">{task.state}</span></div><p className="mt-2 line-clamp-2 text-xs text-muted-foreground">{task.error ?? task.targetUrl}</p>{task.deviceId ? <Link href="/dashboard/worker" className="mt-3 inline-flex text-sm font-medium text-primary underline">Review in local worker</Link> : ["WAITING_FOR_USER", "BLOCKED"].includes(task.state) && <Button disabled={Boolean(busy)} className="mt-3" size="sm" onClick={() => void action("approve", () => api.post(`/harness/browser/tasks/${task.id}/approve`, {}), "Task approved")}>Approve retry</Button>}</div>) : <div className="p-5 text-xs leading-5 text-muted-foreground">No form needs review.</div>}
           </section>
 
           <section className={`${styles.panel} ${styles.safety}`}>

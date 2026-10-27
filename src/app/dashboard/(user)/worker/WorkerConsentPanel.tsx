@@ -51,7 +51,7 @@ export function WorkerConsentPanel({ consents }: { consents: Consent[] }) {
           ? `${variables.source.replaceAll("_", " ")} permission saved.`
           : `${variables.source.replaceAll("_", " ")} browser permission removed.`,
       );
-      void queryClient.invalidateQueries({ queryKey: ["worker-overview"] });
+      return queryClient.invalidateQueries({ queryKey: ["worker-overview"] });
     },
     onError: (error: Error) => toast.error(error.message),
   });
@@ -173,6 +173,7 @@ export function WorkerConsentPanel({ consents }: { consents: Consent[] }) {
                         const value = Number(event.target.value);
                         if (!Number.isFinite(value)) return;
                         const next = Math.max(1, Math.min(Math.floor(value), row.maxPagesLimit, 10));
+                        event.currentTarget.value = String(next);
                         if (next !== row.maxPages) update(row, { maxPages: next });
                       }}
                       className="h-8 w-20 text-center"

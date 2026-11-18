@@ -1,7 +1,5 @@
-import { AuthScene } from "@/components/auth/AuthScene";
+import { AccessAuthScene as AuthScene } from "@/components/auth/AccessAuthScene";
 import type { Metadata } from "next";
-import { Navbar } from "@/components/layout/Navbar";
-import { MinimalAuthFooter } from "@/components/auth/MinimalAuthFooter";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = {
@@ -13,14 +11,8 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <>
-      <Navbar />
-      <main id="main" className="ax-page">
-        <AuthScene>
+    <AuthScene>
           <LoginForm />
-        </AuthScene>
-      </main>
-      <MinimalAuthFooter />
-    </>
+    </AuthScene>
   );
 }

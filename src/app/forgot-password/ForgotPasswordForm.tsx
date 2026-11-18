@@ -174,7 +174,7 @@ export function ForgotPasswordForm() {
         </div>
       )}
 
-      <form onSubmit={submit} noValidate className="space-y-5">
+      <form data-ui onSubmit={submit} noValidate className="space-y-5">
         <div className="space-y-1.5">
           <label htmlFor="email" className="text-sm font-medium text-foreground">
             Email

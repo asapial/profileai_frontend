@@ -1,8 +1,6 @@
-import { AuthScene } from "@/components/auth/AuthScene";
+import { AccessAuthScene as AuthScene } from "@/components/auth/AccessAuthScene";
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Navbar } from "@/components/layout/Navbar";
-import { MinimalAuthFooter } from "@/components/auth/MinimalAuthFooter";
 import { VerifyEmailForm } from "./VerifyEmailForm";
 import { AuthFormFallback } from "@/components/auth/AuthFormFallback";
 
@@ -15,16 +13,10 @@ export const metadata: Metadata = {
 
 export default function VerifyEmailPage() {
   return (
-    <>
-      <Navbar />
-      <main id="main" className="ax-page">
-        <AuthScene>
+    <AuthScene>
           <Suspense fallback={<AuthFormFallback title="Check your inbox" description="Loading email verification…" />}>
             <VerifyEmailForm />
           </Suspense>
-        </AuthScene>
-      </main>
-      <MinimalAuthFooter />
-    </>
+    </AuthScene>
   );
 }

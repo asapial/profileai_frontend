@@ -1,0 +1,236 @@
+{
+  "tool": "Built-in image_gen",
+  "purpose": "Approved ProfileAI authentication and contact design implementation",
+  "date": "2026-11-18",
+  "fit": "Full intrinsic aspect ratio; no cover resize",
+  "assets": [
+    {
+      "key": "contact",
+      "theme": "dark",
+      "ref": "D:/Project/ProfileAI/output/access-page-proposals-2026-11-18/contact-dark-light.png",
+      "prompt": "Use case: product-mockup. Asset type: production website background artwork, NOT a webpage screenshot.\nInput image is a STYLE AND MATERIAL REFERENCE from the approved ProfileAI mockup. Create a NEW CLEAN art-only room asset for only the DARK theme. Do not copy any UI or labels from the reference.\nWIDE horizontal 3:1 website hero background. LEFT 51% is very quiet uniform wall for native headline overlay. RIGHT: a tactile plum paper envelope with a cream letter embossed only with a subtle P, on a low round blue-grey marble dais. A cool teal recessed architectural arch behind it, subtle vertical fluting at far right. Plant only at upper right. Physical polished stone floor across the bottom quarter, natural reflections and contact shadows. Camera front-facing, human eye level. Keep the envelope fully visible with breathing room. No baked text or UI.\nDARK theme: deep ink-navy #11141f and slate #242735 surroundings, matte plum/lilac architecture, natural soft violet rim lights; objects remain clear and tactile against the room. The left quiet wall must remain near #11141f.\nPhotorealistic premium architectural product photography. Real marble veining, physical paper and fine fabric/leather texture, contact shadows, believable bevels, visible polished floor and restrained reflections. No flat gradients pretending to be a room, no sci-fi neon, no floating objects.\nABSOLUTELY NO webpage UI, no title, no navigation, no buttons, no labels Dark/Light, no borders, no browser frame, no words, no legible print, no numbers. Only the small subtle brand P may appear on the object. One single image, one theme, no comparison panels.",
+      "source": "C:\\Users\\Abdullah\\.codex\\generated_images\\01a1d90e-2440-78c1-8aa4-3bfed3ca21df\\exec-adc3c9f6-f2fd-445a-8981-421f5499f191.png",
+      "desktop": {
+        "file": "contact-dark.webp",
+        "bytes": 70682,
+        "width": 1920,
+        "height": 640
+      },
+      "mobile": {
+        "file": "contact-dark-mobile.webp",
+        "bytes": 36786,
+        "width": 780,
+        "height": 530
+      }
+    },
+    {
+      "key": "contact",
+      "theme": "light",
+      "ref": "D:/Project/ProfileAI/output/access-page-proposals-2026-11-18/contact-dark-light.png",
+      "prompt": "Use case: product-mockup. Asset type: production website background artwork, NOT a webpage screenshot.\nInput image is a STYLE AND MATERIAL REFERENCE from the approved ProfileAI mockup. Create a NEW CLEAN art-only room asset for only the LIGHT theme. Do not copy any UI or labels from the reference.\nWIDE horizontal 3:1 website hero background. LEFT 51% is very quiet uniform wall for native headline overlay. RIGHT: a tactile plum paper envelope with a cream letter embossed only with a subtle P, on a low round blue-grey marble dais. A cool teal recessed architectural arch behind it, subtle vertical fluting at far right. Plant only at upper right. Physical polished stone floor across the bottom quarter, natural reflections and contact shadows. Camera front-facing, human eye level. Keep the envelope fully visible with breathing room. No baked text or UI.\nLIGHT theme: pearl-white #f7f6fb, clean lilac/blue-grey architecture, natural daylight and real soft shadows. The left quiet wall should remain near #f7f6fb, no dark or saturated region behind native copy.\nPhotorealistic premium architectural product photography. Real marble veining, physical paper and fine fabric/leather texture, contact shadows, believable bevels, visible polished floor and restrained reflections. No flat gradients pretending to be a room, no sci-fi neon, no floating objects.\nABSOLUTELY NO webpage UI, no title, no navigation, no buttons, no labels Dark/Light, no borders, no browser frame, no words, no legible print, no numbers. Only the small subtle brand P may appear on the object. One single image, one theme, no comparison panels.",
+      "source": "C:\\Users\\Abdullah\\.codex\\generated_images\\01a1d90e-2440-78c1-8aa4-3bfed3ca21df\\exec-6464913a-ccda-487d-b896-7731769c255b.png",
+      "desktop": {
+        "file": "contact-light.webp",
+        "bytes": 69330,
+        "width": 1920,
+        "height": 640
+      },
+      "mobile": {
+        "file": "contact-light-mobile.webp",
+        "bytes": 38692,
+        "width": 780,
+        "height": 530
+      }
+    },
+    {
+      "key": "forgot",
+      "theme": "dark",
+      "ref": "D:/Project/ProfileAI/output/access-page-proposals-2026-11-18/forgot-password-dark-light.png",
+      "prompt": "Use case: product-mockup. Asset type: production website background artwork, NOT a webpage screenshot.\nInput image is a STYLE AND MATERIAL REFERENCE from the approved ProfileAI mockup. Create a NEW CLEAN art-only room asset for only the DARK theme. Do not copy any UI or labels from the reference.\nVERTICAL portrait 3:4 architectural scene filling an authentication left column. A tactile plum envelope, blank cream paper slip and a little brushed brass key on a low circular grey marble dais. Calm ice-blue/lavender arch behind, a little hanging leaf detail high at the side. The objects occupy the lower middle; keep the top quarter quiet. Physical wall-to-floor horizon at lower 72%, polished grey stone floor and restrained reflections in the bottom quarter. Front-facing composition, camera level, realistic perspective. No puppet, no text.\nDARK theme: deep ink-navy #11141f and slate #242735 surroundings, matte plum/lilac architecture, natural soft violet rim lights; objects remain clear and tactile against the room. The left quiet wall must remain near #11141f.\nPhotorealistic premium architectural product photography. Real marble veining, physical paper and fine fabric/leather texture, contact shadows, believable bevels, visible polished floor and restrained reflections. No flat gradients pretending to be a room, no sci-fi neon, no floating objects.\nABSOLUTELY NO webpage UI, no title, no navigation, no buttons, no labels Dark/Light, no borders, no browser frame, no words, no legible print, no numbers. Only the small subtle brand P may appear on the object. One single image, one theme, no comparison panels.",
+      "source": "C:\\Users\\Abdullah\\.codex\\generated_images\\01a1d90e-2440-78c1-8aa4-3bfed3ca21df\\exec-4c8160d8-a6f3-4831-9f56-b3f08684644e.png",
+      "desktop": {
+        "file": "forgot-dark.webp",
+        "bytes": 86322,
+        "width": 1086,
+        "height": 1448
+      },
+      "mobile": {
+        "file": "forgot-dark-mobile.webp",
+        "bytes": 41896,
+        "width": 780,
+        "height": 1040
+      }
+    },
+    {
+      "key": "forgot",
+      "theme": "light",
+      "ref": "D:/Project/ProfileAI/output/access-page-proposals-2026-11-18/forgot-password-dark-light.png",
+      "prompt": "Use case: product-mockup. Asset type: production website background artwork, NOT a webpage screenshot.\nInput image is a STYLE AND MATERIAL REFERENCE from the approved ProfileAI mockup. Create a NEW CLEAN art-only room asset for only the LIGHT theme. Do not copy any UI or labels from the reference.\nVERTICAL portrait 3:4 architectural scene filling an authentication left column. A tactile plum envelope, blank cream paper slip and a little brushed brass key on a low circular grey marble dais. Calm ice-blue/lavender arch behind, a little hanging leaf detail high at the side. The objects occupy the lower middle; keep the top quarter quiet. Physical wall-to-floor horizon at lower 72%, polished grey stone floor and restrained reflections in the bottom quarter. Front-facing composition, camera level, realistic perspective. No puppet, no text.\nLIGHT theme: pearl-white #f7f6fb, clean lilac/blue-grey architecture, natural daylight and real soft shadows. The left quiet wall should remain near #f7f6fb, no dark or saturated region behind native copy.\nPhotorealistic premium architectural product photography. Real marble veining, physical paper and fine fabric/leather texture, contact shadows, believable bevels, visible polished floor and restrained reflections. No flat gradients pretending to be a room, no sci-fi neon, no floating objects.\nABSOLUTELY NO webpage UI, no title, no navigation, no buttons, no labels Dark/Light, no borders, no browser frame, no words, no legible print, no numbers. Only the small subtle brand P may appear on the object. One single image, one theme, no comparison panels.",
+      "source": "C:\\Users\\Abdullah\\.codex\\generated_images\\01a1d90e-2440-78c1-8aa4-3bfed3ca21df\\exec-586d26a7-73d9-4c4d-a131-550a0378ad81.png",
+      "desktop": {
+        "file": "forgot-light.webp",
+        "bytes": 85950,
+        "width": 1086,
+        "height": 1448
+      },
+      "mobile": {
+        "file": "forgot-light-mobile.webp",
+        "bytes": 42146,
+        "width": 780,
+        "height": 1040
+      }
+    },
+    {
+      "key": "verify",
+      "theme": "dark",
+      "ref": "D:/Project/ProfileAI/output/access-page-proposals-2026-11-18/verify-email-dark-light.png",
+      "prompt": "Use case: product-mockup. Asset type: production website background artwork, NOT a webpage screenshot.\nInput image is a STYLE AND MATERIAL REFERENCE from the approved ProfileAI mockup. Create a NEW CLEAN art-only room asset for only the DARK theme. Do not copy any UI or labels from the reference.\nVERTICAL portrait 3:4 architectural scene filling an authentication left column. A cream envelope standing open, subtle violet P wax seal, cream paper emerging with exactly six tiny EMPTY embossed square recesses in one row. Envelope resting on a low round grey marble dais. Mint/slate and lilac architectural arch and small hanging leaves above. Objects lower-middle with top quarter quiet. Physical wall-to-floor horizon at lower 72%, polished stone floor and restrained reflection at bottom. Front-facing, level camera. No puppet, no digits, no text.\nDARK theme: deep ink-navy #11141f and slate #242735 surroundings, matte plum/lilac architecture, natural soft violet rim lights; objects remain clear and tactile against the room. The left quiet wall must remain near #11141f.\nPhotorealistic premium architectural product photography. Real marble veining, physical paper and fine fabric/leather texture, contact shadows, believable bevels, visible polished floor and restrained reflections. No flat gradients pretending to be a room, no sci-fi neon, no floating objects.\nABSOLUTELY NO webpage UI, no title, no navigation, no buttons, no labels Dark/Light, no borders, no browser frame, no words, no legible print, no numbers. Only the small subtle brand P may appear on the object. One single image, one theme, no comparison panels.",
+      "source": "C:\\Users\\Abdullah\\.codex\\generated_images\\01a1d90e-2440-78c1-8aa4-3bfed3ca21df\\exec-a43d3512-47d0-42ea-965d-3740b099235e.png",
+      "desktop": {
+        "file": "verify-dark.webp",
+        "bytes": 82548,
+        "width": 1086,
+        "height": 1448
+      },
+      "mobile": {
+        "file": "verify-dark-mobile.webp",
+        "bytes": 38036,
+        "width": 780,
+        "height": 1040
+      }
+    },
+    {
+      "key": "verify",
+      "theme": "light",
+      "ref": "D:/Project/ProfileAI/output/access-page-proposals-2026-11-18/verify-email-dark-light.png",
+      "prompt": "Use case: product-mockup. Asset type: production website background artwork, NOT a webpage screenshot.\nInput image is a STYLE AND MATERIAL REFERENCE from the approved ProfileAI mockup. Create a NEW CLEAN art-only room asset for only the LIGHT theme. Do not copy any UI or labels from the reference.\nVERTICAL portrait 3:4 architectural scene filling an authentication left column. A cream envelope standing open, subtle violet P wax seal, cream paper emerging with exactly six tiny EMPTY embossed square recesses in one row. Envelope resting on a low round grey marble dais. Mint/slate and lilac architectural arch and small hanging leaves above. Objects lower-middle with top quarter quiet. Physical wall-to-floor horizon at lower 72%, polished stone floor and restrained reflection at bottom. Front-facing, level camera. No puppet, no digits, no text.\nLIGHT theme: pearl-white #f7f6fb, clean lilac/blue-grey architecture, natural daylight and real soft shadows. The left quiet wall should remain near #f7f6fb, no dark or saturated region behind native copy.\nPhotorealistic premium architectural product photography. Real marble veining, physical paper and fine fabric/leather texture, contact shadows, believable bevels, visible polished floor and restrained reflections. No flat gradients pretending to be a room, no sci-fi neon, no floating objects.\nABSOLUTELY NO webpage UI, no title, no navigation, no buttons, no labels Dark/Light, no borders, no browser frame, no words, no legible print, no numbers. Only the small subtle brand P may appear on the object. One single image, one theme, no comparison panels.",
+      "source": "C:\\Users\\Abdullah\\.codex\\generated_images\\01a1d90e-2440-78c1-8aa4-3bfed3ca21df\\exec-fae31647-3cde-4c80-b9ad-41ed787ca1b0.png",
+      "desktop": {
+        "file": "verify-light.webp",
+        "bytes": 76152,
+        "width": 1086,
+        "height": 1448
+      },
+      "mobile": {
+        "file": "verify-light-mobile.webp",
+        "bytes": 37296,
+        "width": 780,
+        "height": 1040
+      }
+    },
+    {
+      "key": "billing-help",
+      "theme": "dark",
+      "ref": "D:/Project/ProfileAI/output/access-page-proposals-2026-11-18/cancel-or-refund-dark-light.png",
+      "prompt": "Use case: product-mockup. Asset type: production website background artwork, NOT a webpage screenshot.\nInput image is a STYLE AND MATERIAL REFERENCE from the approved ProfileAI mockup. Create a NEW CLEAN art-only room asset for only the DARK theme. Do not copy any UI or labels from the reference.\nWIDE horizontal 3:1 help article hero background. LEFT 53% very quiet uniform wall for native article headline. RIGHT: a tactile plum P-embossed leather billing folio and a small stack of cream unprinted receipts standing on a low round grey marble dais. Slate and lilac recessed architectural arch, delicate vertical fluting at far right, a little greenery high at upper right. Physical polished stone floor across lower quarter with restrained accurate reflection and natural contact shadow. Camera level front-facing. No currency, no money piles, no card numbers. No text.\nDARK theme: deep ink-navy #11141f and slate #242735 surroundings, matte plum/lilac architecture, natural soft violet rim lights; objects remain clear and tactile against the room. The left quiet wall must remain near #11141f.\nPhotorealistic premium architectural product photography. Real marble veining, physical paper and fine fabric/leather texture, contact shadows, believable bevels, visible polished floor and restrained reflections. No flat gradients pretending to be a room, no sci-fi neon, no floating objects.\nABSOLUTELY NO webpage UI, no title, no navigation, no buttons, no labels Dark/Light, no borders, no browser frame, no words, no legible print, no numbers. Only the small subtle brand P may appear on the object. One single image, one theme, no comparison panels.",
+      "source": "C:\\Users\\Abdullah\\.codex\\generated_images\\01a1d90e-2440-78c1-8aa4-3bfed3ca21df\\exec-0743d303-40f2-4f99-96c7-f658977b1bd0.png",
+      "desktop": {
+        "file": "billing-help-dark.webp",
+        "bytes": 66176,
+        "width": 1920,
+        "height": 640
+      },
+      "mobile": {
+        "file": "billing-help-dark-mobile.webp",
+        "bytes": 35636,
+        "width": 780,
+        "height": 530
+      }
+    },
+    {
+      "key": "billing-help",
+      "theme": "light",
+      "ref": "D:/Project/ProfileAI/output/access-page-proposals-2026-11-18/cancel-or-refund-dark-light.png",
+      "prompt": "Use case: product-mockup. Asset type: production website background artwork, NOT a webpage screenshot.\nInput image is a STYLE AND MATERIAL REFERENCE from the approved ProfileAI mockup. Create a NEW CLEAN art-only room asset for only the LIGHT theme. Do not copy any UI or labels from the reference.\nWIDE horizontal 3:1 help article hero background. LEFT 53% very quiet uniform wall for native article headline. RIGHT: a tactile plum P-embossed leather billing folio and a small stack of cream unprinted receipts standing on a low round grey marble dais. Slate and lilac recessed architectural arch, delicate vertical fluting at far right, a little greenery high at upper right. Physical polished stone floor across lower quarter with restrained accurate reflection and natural contact shadow. Camera level front-facing. No currency, no money piles, no card numbers. No text.\nLIGHT theme: pearl-white #f7f6fb, clean lilac/blue-grey architecture, natural daylight and real soft shadows. The left quiet wall should remain near #f7f6fb, no dark or saturated region behind native copy.\nPhotorealistic premium architectural product photography. Real marble veining, physical paper and fine fabric/leather texture, contact shadows, believable bevels, visible polished floor and restrained reflections. No flat gradients pretending to be a room, no sci-fi neon, no floating objects.\nABSOLUTELY NO webpage UI, no title, no navigation, no buttons, no labels Dark/Light, no borders, no browser frame, no words, no legible print, no numbers. Only the small subtle brand P may appear on the object. One single image, one theme, no comparison panels.",
+      "source": "C:\\Users\\Abdullah\\.codex\\generated_images\\01a1d90e-2440-78c1-8aa4-3bfed3ca21df\\exec-8a3200e4-de68-4a81-a617-7b6afaaac4cb.png",
+      "desktop": {
+        "file": "billing-help-light.webp",
+        "bytes": 62476,
+        "width": 1920,
+        "height": 640
+      },
+      "mobile": {
+        "file": "billing-help-light-mobile.webp",
+        "bytes": 34548,
+        "width": 780,
+        "height": 530
+      }
+    },
+    {
+      "key": "puppet-room",
+      "theme": "dark",
+      "ref": "D:/Project/ProfileAI/output/auth-puppet-proposals-2026-11-18/register-dark-light.png",
+      "prompt": "Use case: product-mockup. Asset type: production website background artwork, NOT a webpage screenshot.\nInput image is a STYLE AND MATERIAL REFERENCE from the approved ProfileAI mockup. Create a NEW CLEAN art-only room asset for only the DARK theme. Do not copy any UI or labels from the reference.\nVERTICAL portrait 3:4 architectural environment for a live 3D puppet, but DO NOT render the puppet or any character. Center-lower: EMPTY clean low round grey marble dais with broad clear top surface, ready for a puppet to stand there. The top of the dais should be at 78% down the image, floor underneath filling the lower 22%. To the REAR LEFT of the dais place a much smaller plum P folio and blank white A4 paper in a .707 width-to-height ratio. Lilac fluted arch frames the empty space. Small hanging plant high at upper right. Beautiful actual wall depth, studio shadows and polished grey marble floor with soft reflections. The dais is front-facing, centered at 50% horizontal. No person, no mascot, no hands, no face; empty middle ready for live canvas overlay. No text.\nDARK theme: deep ink-navy #11141f and slate #242735 surroundings, matte plum/lilac architecture, natural soft violet rim lights; objects remain clear and tactile against the room. The left quiet wall must remain near #11141f.\nPhotorealistic premium architectural product photography. Real marble veining, physical paper and fine fabric/leather texture, contact shadows, believable bevels, visible polished floor and restrained reflections. No flat gradients pretending to be a room, no sci-fi neon, no floating objects.\nABSOLUTELY NO webpage UI, no title, no navigation, no buttons, no labels Dark/Light, no borders, no browser frame, no words, no legible print, no numbers. Only the small subtle brand P may appear on the object. One single image, one theme, no comparison panels.",
+      "source": "C:\\Users\\Abdullah\\.codex\\generated_images\\01a1d90e-2440-78c1-8aa4-3bfed3ca21df\\exec-8bb4a332-bacc-41f4-ac1d-0d88c6828af0.png",
+      "desktop": {
+        "file": "puppet-room-dark.webp",
+        "bytes": 80502,
+        "width": 1086,
+        "height": 1448
+      },
+      "mobile": {
+        "file": "puppet-room-dark-mobile.webp",
+        "bytes": 41808,
+        "width": 780,
+        "height": 1040
+      }
+    },
+    {
+      "key": "puppet-room",
+      "theme": "light",
+      "ref": "D:/Project/ProfileAI/output/auth-puppet-proposals-2026-11-18/register-dark-light.png",
+      "prompt": "Use case: product-mockup. Asset type: production website background artwork, NOT a webpage screenshot.\nInput image is a STYLE AND MATERIAL REFERENCE from the approved ProfileAI mockup. Create a NEW CLEAN art-only room asset for only the LIGHT theme. Do not copy any UI or labels from the reference.\nVERTICAL portrait 3:4 architectural environment for a live 3D puppet, but DO NOT render the puppet or any character. Center-lower: EMPTY clean low round grey marble dais with broad clear top surface, ready for a puppet to stand there. The top of the dais should be at 78% down the image, floor underneath filling the lower 22%. To the REAR LEFT of the dais place a much smaller plum P folio and blank white A4 paper in a .707 width-to-height ratio. Lilac fluted arch frames the empty space. Small hanging plant high at upper right. Beautiful actual wall depth, studio shadows and polished grey marble floor with soft reflections. The dais is front-facing, centered at 50% horizontal. No person, no mascot, no hands, no face; empty middle ready for live canvas overlay. No text.\nLIGHT theme: pearl-white #f7f6fb, clean lilac/blue-grey architecture, natural daylight and real soft shadows. The left quiet wall should remain near #f7f6fb, no dark or saturated region behind native copy.\nPhotorealistic premium architectural product photography. Real marble veining, physical paper and fine fabric/leather texture, contact shadows, believable bevels, visible polished floor and restrained reflections. No flat gradients pretending to be a room, no sci-fi neon, no floating objects.\nABSOLUTELY NO webpage UI, no title, no navigation, no buttons, no labels Dark/Light, no borders, no browser frame, no words, no legible print, no numbers. Only the small subtle brand P may appear on the object. One single image, one theme, no comparison panels.",
+      "source": "C:\\Users\\Abdullah\\.codex\\generated_images\\01a1d90e-2440-78c1-8aa4-3bfed3ca21df\\exec-8001353e-1193-475f-9dd7-9980ec78ceaa.png",
+      "desktop": {
+        "file": "puppet-room-light.webp",
+        "bytes": 75462,
+        "width": 1086,
+        "height": 1448
+      },
+      "mobile": {
+        "file": "puppet-room-light-mobile.webp",
+        "bytes": 40410,
+        "width": 780,
+        "height": 1040
+      }
+    },
+    {
+      "key": "login-room",
+      "theme": "dark",
+      "ref": "D:/Project/ProfileAI/output/auth-puppet-proposals-2026-11-18/login-dark-light.png",
+      "prompt": "Production art-only room repair for ProfileAI Login. Reference 1 is the user's approved LOGIN mockup board (dark LEFT, light RIGHT); reference 2 is the existing empty-room stage whose full 3:4 framing and dais coordinates MUST be preserved. Make one DARK theme portrait room only, no webpage or comparison board. Match the approved LOGIN room: a believable partially OPEN deep-plum/lavender door on the LEFT, within a rounded architectural recess, brushed metal vertical pull handle, quiet physical wall depth and fine fluting on the right of the recess. Keep the door behind the props, NOT a flat rectangular graphic. Small trailing green plant only high at the right. At rear-left, a plum P folio and a real white A4 resume page with tiny subtle nonlegible layout lines; both fully visible in FRONT of the open door. Main foreground is an EMPTY broad low circular grey marble dais centered at x=50%; its top supporting surface stays exactly at y=76.7% of image height, ready for a live animated character. Maintain the same perspective, physical marble surface, visible full floor and restrained reflections as reference 2. Keep the middle above the dais empty; character will be rendered live in code. Door, arch, folio, resume, entire dais and floor must remain inside the frame with breathing room. Deep ink-navy #11141f room, luminous but restrained lilac material rim light, natural real shadows and restrained purple floor reflections. Extremely realistic premium architectural product photography, physical depth, natural light falloff, matte fabric/leather grain, marble veins, polished stone reflections. DO NOT include any puppet, person, face, hands or creature. Remove all UI, headers, footers, labels, native text, captions, buttons and controls. No typography except one subtle embossed P on the folio. Exact full 3:4 portrait scene.",
+      "source": "C:\\Users\\Abdullah\\.codex\\generated_images\\01a1d90e-2440-78c1-8aa4-3bfed3ca21df\\exec-b1ca90e9-e295-465c-baed-b2752a519dc9.png",
+      "desktop": {
+        "file": "login-room-dark.webp",
+        "bytes": 76754,
+        "width": 1086,
+        "height": 1448
+      },
+      "mobile": {
+        "file": "login-room-dark-mobile.webp",
+        "bytes": 40230,
+        "width": 780,
+        "height": 1040
+      }
+    },
+    {
+      "key": "login-room",
+      "theme": "light",
+      "ref": "D:/Project/ProfileAI/output/auth-puppet-proposals-2026-11-18/login-dark-light.png",
+      "prompt": "Production art-only room repair for ProfileAI Login. Reference 1 is the user's approved LOGIN mockup board (dark LEFT, light RIGHT); reference 2 is the existing empty-room stage whose full 3:4 framing and dais coordinates MUST be preserved. Make one LIGHT theme portrait room only, no webpage or comparison board. Match the approved LOGIN room: a believable partially OPEN deep-plum/lavender door on the LEFT, within a rounded architectural recess, brushed metal vertical pull handle, quiet physical wall depth and fine fluting on the right of the recess. Keep the door behind the props, NOT a flat rectangular graphic. Small trailing green plant only high at the right. At rear-left, a plum P folio and a real white A4 resume page with tiny subtle nonlegible layout lines; both fully visible in FRONT of the open door. Main foreground is an EMPTY broad low circular grey marble dais centered at x=50%; its top supporting surface stays exactly at y=76.7% of image height, ready for a live animated character. Maintain the same perspective, physical marble surface, visible full floor and restrained reflections as reference 2. Keep the middle above the dais empty; character will be rendered live in code. Door, arch, folio, resume, entire dais and floor must remain inside the frame with breathing room. Pearl #f7f6fb room, soft lilac architecture, natural daylight and believable tactile material contact shadows. Extremely realistic premium architectural product photography, physical depth, natural light falloff, matte fabric/leather grain, marble veins, polished stone reflections. DO NOT include any puppet, person, face, hands or creature. Remove all UI, headers, footers, labels, native text, captions, buttons and controls. No typography except one subtle embossed P on the folio. Exact full 3:4 portrait scene.",
+      "source": "C:\\Users\\Abdullah\\.codex\\generated_images\\01a1d90e-2440-78c1-8aa4-3bfed3ca21df\\exec-480627ef-4885-4304-9cbf-78c8c19e692a.png",
+      "desktop": {
+        "file": "login-room-light.webp",
+        "bytes": 70576,
+        "width": 1086,
+        "height": 1448
+      },
+      "mobile": {
+        "file": "login-room-light-mobile.webp",
+        "bytes": 41110,
+        "width": 780,
+        "height": 1040
+      }
+    }
+  ]
+}

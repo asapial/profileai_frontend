@@ -1,0 +1,43 @@
+{
+  "tool": "Built-in image_gen",
+  "reference": "../output/auth-puppet-proposals-2026-11-18/register-dark-light.png",
+  "method": "Reference-matched transparent character artwork with metadata-only SVG gaze and animated pose layers",
+  "canvas": [
+    1024,
+    1536
+  ],
+  "assets": [
+    {
+      "key": "idle",
+      "source": "C:\\Users\\Abdullah\\.codex\\generated_images\\01a1d90e-2440-78c1-8aa4-3bfed3ca21df\\exec-623f6b52-89a1-4c66-aea2-403fdae450fb.png",
+      "file": "idle.webp",
+      "width": 900,
+      "height": 1350,
+      "bytes": 260648
+    },
+    {
+      "key": "cover",
+      "source": "C:\\Users\\Abdullah\\.codex\\generated_images\\01a1d90e-2440-78c1-8aa4-3bfed3ca21df\\exec-ef57f609-ac2b-4aca-b1a5-13daa06f9319.png",
+      "file": "cover.webp",
+      "width": 900,
+      "height": 1350,
+      "bytes": 311514
+    },
+    {
+      "key": "eyes",
+      "source": "C:\\Users\\Abdullah\\.codex\\generated_images\\01a1d90e-2440-78c1-8aa4-3bfed3ca21df\\exec-1a8200ff-8030-4ee6-b20e-515384e526b4.png",
+      "file": "eyes.webp",
+      "width": 900,
+      "height": 1350,
+      "bytes": 205078
+    },
+    {
+      "key": "lift",
+      "source": "C:\\Users\\Abdullah\\.codex\\generated_images\\01a1d90e-2440-78c1-8aa4-3bfed3ca21df\\exec-84f7acc6-ced8-4783-a4f4-5c439a19fea5.png",
+      "file": "lift.webp",
+      "width": 900,
+      "height": 1350,
+      "bytes": 215102
+    }
+  ]
+}

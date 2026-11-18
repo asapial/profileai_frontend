@@ -104,10 +104,6 @@ export function VerifyEmailForm() {
       <AuthBrandMark />
 
       <header>
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
-          <Mail className="h-3.5 w-3.5 text-primary" />
-          Email verification
-        </div>
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Check your inbox</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           We sent a 6-digit code to{" "}
@@ -120,7 +116,7 @@ export function VerifyEmailForm() {
         </p>
       </header>
 
-      <form noValidate onSubmit={onSubmit} className="mt-7 space-y-6">
+      <form data-ui noValidate onSubmit={onSubmit} className="mt-7 space-y-6">
         {/* Email (editable) */}
         <div>
           <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-foreground">

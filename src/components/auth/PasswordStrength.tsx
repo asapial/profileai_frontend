@@ -56,7 +56,7 @@ export function PasswordStrength({ password }: { password: string }) {
           ))}
         </div>
         <p className="ax-strength-note">
-          Use 8+ characters with letters, numbers &amp; symbols.
+          8+ characters, uppercase, number and symbol.
         </p>
       </div>
     );

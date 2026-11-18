@@ -163,7 +163,7 @@ export function ResetPasswordForm() {
         </div>
       )}
 
-      <form onSubmit={submit} noValidate className="space-y-6">
+      <form data-ui onSubmit={submit} noValidate className="space-y-6">
         {/* OTP */}
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Reset code</label>
@@ -213,6 +213,8 @@ export function ResetPasswordForm() {
               type="button"
               onClick={() => setShowPassword((s) => !s)}
               aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-pressed={showPassword}
+              aria-controls="new-password confirm-password"
               className="mr-1 grid size-11 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -244,6 +246,16 @@ export function ResetPasswordForm() {
               placeholder="••••••••"
               className="w-full bg-transparent px-3 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((visible) => !visible)}
+              aria-label={showPassword ? "Hide confirmation password" : "Show confirmation password"}
+              aria-pressed={showPassword}
+              aria-controls="new-password confirm-password"
+              className="ax-eye"
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
           </div>
           {confirmPassword && !passwordsMatch && (
             <p className="text-xs text-red-700 dark:text-red-300">Passwords do not match.</p>

@@ -171,7 +171,7 @@ export function RegisterForm() {
 
       <header>
         <h1>Create your account</h1>
-        <p>Start building AI-powered resumes for free.</p>
+        <p>Start building your resume for free.</p>
       </header>
 
       <div style={{ marginTop: 24 }}>
@@ -180,7 +180,7 @@ export function RegisterForm() {
 
       <div className="ax-rule">or register with email</div>
 
-      <form
+      <form data-ui
         noValidate
         onSubmit={onSubmit}
         className={cn("ax-form", error && shakeKey > 0 && "animate-auth-shake")}

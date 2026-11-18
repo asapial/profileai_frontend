@@ -188,7 +188,7 @@ export function LoginForm() {
 
       <div className="ax-rule">or sign in with email</div>
 
-      <form
+      <form data-ui
         noValidate
         onSubmit={onSubmit}
         key={shakeKey}

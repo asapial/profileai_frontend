@@ -1,0 +1,106 @@
+/* The approved layered neural graph: source labels and outputs stay in HTML. */
+.graph {
+  --ng-wire: #8490b2;
+  --ng-neuron-light: #f3f6ff;
+  --ng-neuron-mid: #a0afda;
+  --ng-neuron-shade: #526799;
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  color: var(--cg-ink);
+  pointer-events: none;
+  contain: layout style;
+}
+:global(.dark) .graph {
+  --ng-wire: #697da9;
+  --ng-neuron-light: #e1eaff;
+  --ng-neuron-mid: #8198d2;
+  --ng-neuron-shade: #394b7a;
+}
+.network { position: absolute; inset: 0; overflow: visible; }
+.edges path { fill: none; stroke: var(--ng-wire); stroke-width: 1.1; opacity: .62; }
+.edges, .activeRoute, .signal { opacity: var(--ng-structure, 0); }
+.stageLabel, .input, .output, .source, .mobilePicker { opacity: var(--ng-annotations, 0); }
+.activeRoute { fill: none; stroke: var(--cg-accent); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.signal { fill: none; stroke: var(--cg-ink); stroke-width: 3.5; stroke-dasharray: .6 24.4; stroke-linecap: round; animation: neuralSignal 5s linear infinite; }
+.neuronLight { stop-color: var(--ng-neuron-light); }
+.neuronMid { stop-color: var(--ng-neuron-mid); }
+.neuronShade { stop-color: var(--ng-neuron-shade); }
+.neuronBody { stroke: var(--ng-neuron-shade); stroke-width: 1; }
+.neuronSpark { fill: #ffffff; opacity: .55; }
+.activeRing { fill: var(--cg-bg); stroke: var(--cg-accent); stroke-width: 2.5; opacity: 0; }
+.neuron[data-active="1"] .activeRing { opacity: 1; }
+.neuron[data-active="1"] .neuronBody { fill: var(--cg-action); stroke: var(--cg-accent); }
+.stageLabel { position: absolute; transform: translateX(-50%); color: var(--cg-ink); font-size: 16px; font-weight: 650; white-space: nowrap; }
+.input, .output {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--cg-ink);
+  text-align: left;
+  font-family: inherit;
+  line-height: 1.35;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.input { transform: translate(calc(-100% - 24px), -50%); max-width: 185px; font-size: 15px; font-weight: 560; text-align: right; justify-content: flex-end; white-space: nowrap; }
+.output { transform: translate(26px, -50%); padding-block: 5px; }
+.output strong { display: block; font-size: 18px; font-weight: 650; }
+.output small { display: block; margin-top: 4px; color: var(--cg-muted); font-size: 14px; line-height: 1.4; }
+.outputDot { display: none; }
+.input[aria-pressed="true"], .output[aria-pressed="true"] strong { color: var(--cg-accent); }
+.input:hover, .output:hover strong { color: var(--cg-accent); }
+.input:focus-visible, .output:focus-visible, .mobilePicker select:focus-visible { outline: 2px solid var(--cg-accent); outline-offset: 6px; border-radius: 4px; }
+.source { position: absolute; left: clamp(22px, 5vw, 76px); width: clamp(260px, calc(39vw - 280px), 330px); padding: 22px; border-radius: 16px; background: var(--cg-glass-soft); }
+.source > strong { display: block; color: var(--cg-ink); font-size: 18px; font-weight: 650; }
+.source p { margin-top: 10px; color: var(--cg-muted); font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+.source > span { display: flex; align-items: center; gap: 8px; margin-top: 16px; color: var(--cg-accent); font-size: 14px; font-weight: 600; }
+.mobilePicker { display: none; }
+.graph[data-calm="1"] .signal { animation: none; opacity: 0; }
+@keyframes neuralSignal { to { stroke-dashoffset: -100; } }
+
+@media (min-width: 520px) and (max-width: 1299px) {
+  .source { left: auto; right: clamp(22px, 5vw, 54px); width: 280px; padding: 14px; }
+  .source > strong { font-size: 16px; }
+  .source p { margin-top: 5px; font-size: 13px; }
+  .source > span { margin-top: 6px; font-size: 13px; }
+  .input { font-size: 14px; max-width: 160px; transform: translate(calc(-100% - 18px), -50%); }
+  .output { transform: translate(20px, -50%); }
+  .output strong { font-size: 16px; }
+  .output small { font-size: 13px; }
+  .stageLabel { font-size: 14px; }
+}
+@media (max-width: 519px) {
+  .input, .stageLabel, .source { display: none; }
+  .edges path { stroke-width: .9; opacity: .65; }
+  .neuronBody { r: 6px; }
+  .neuronSpark { r: 1.5px; cx: -1.5px; cy: -2px; }
+  .activeRing { r: 10px; stroke-width: 2px; }
+  .activeRoute { stroke-width: 2.5; }
+  .output { transform: none; width: calc((100% - 52px) / 2) !important; min-height: 44px; gap: 8px; padding-block: 4px; }
+  .output strong { font-size: 14px; line-height: 1.35; }
+  .output small { display: none; }
+  .outputDot { display: block; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--ng-neuron-shade); }
+  .output[aria-pressed="true"] .outputDot { background: var(--cg-accent); }
+  .mobilePicker { position: absolute; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 6px 10px; left: 20px; right: 20px; pointer-events: auto; }
+  .mobilePicker label { color: var(--cg-muted); font-size: 14px; }
+  .mobilePicker select { max-width: 200px; min-height: 44px; padding: 6px 10px; border: 1px solid var(--cg-edge-strong); border-radius: 9px; color: var(--cg-ink); background: var(--cg-glass); font-size: 14px; }
+  .mobilePicker p { grid-column: 1 / -1; color: var(--cg-muted); font-size: 13px; line-height: 1.45; }
+}
+@media (max-height: 540px) and (min-width: 520px) {
+  .source, .stageLabel { display: none; }
+  .input { min-height: 22px; font-size: 13px; }
+  .output { min-height: 24px; padding-block: 0; }
+  .output strong { font-size: 14px; }
+  .output small { display: none; }
+  .stageLabel { font-size: 13px; }
+  .neuronBody { r: 7px; }
+  .activeRing { r: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .signal { animation: none; }
+}

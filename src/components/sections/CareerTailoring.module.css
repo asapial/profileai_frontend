@@ -1,0 +1,158 @@
+.tailoring {
+  position: absolute; inset: 0; z-index: 5; pointer-events: none; color: var(--cg-ink); contain: layout style;
+  --tailoring-selected: #eee5fa; --tailoring-proof-bg: #e1f1e8; --tailoring-proof: #17694e;
+}
+:global(.dark) .tailoring { --tailoring-selected: #4a3868; --tailoring-proof-bg: #25463e; --tailoring-proof: #82e2bb; }
+.connections { position: absolute; inset: 0; z-index: 2; overflow: visible; pointer-events: none; opacity: var(--tailoring-lines, 0); }
+.connections path { fill: none; stroke: var(--cg-accent); stroke-width: 2.3; stroke-linecap: round; }
+.connections path[data-tailoring-route="evidence"] { stroke: var(--tailoring-proof); }
+.panel { position: absolute; top: 0; left: 0; z-index: 1; padding: 24px 28px; border: 1px solid var(--cg-edge-strong); border-radius: 18px; background: var(--cg-glass); opacity: var(--tailoring-surface, 0); pointer-events: auto; will-change: transform; }
+.content { height: 100%; display: flex; flex-direction: column; opacity: var(--tailoring-copy, 0); }
+.panel h3 { margin: 0; font-size: 24px; font-weight: 650; line-height: 1.25; letter-spacing: -.025em; }
+.kicker { margin: 0 0 10px; font-size: 15px; font-weight: 550; line-height: 1.3; color: var(--cg-muted); } /* taste-skill-ignore: Approved data-ui context label. */
+.panel blockquote { margin: 24px 0 0; font-size: 23px; line-height: 1.5; font-weight: 450; letter-spacing: -.018em; }
+.original .content { justify-content: center; }
+.original blockquote { font-size: 21px; }
+.evidence { padding-block: 20px; }
+.evidenceHeader { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sourceRows { display: flex; flex-direction: column; gap: 15px; margin: 20px 0 16px; }
+.sourceRows > div { display: flex; align-items: center; gap: 12px; }
+.sourceRows svg { flex: none; color: var(--cg-accent); }
+.sourceRows p { margin: 0; font-size: 16px; line-height: 1.35; }
+.sourceRows small { display: inline; margin-left: 6px; font-size: 14px; color: var(--cg-muted); }
+.sourceRows small::before { content: "· "; }
+.verified { display: inline-flex; align-items: center; gap: 7px; width: max-content; max-width: 100%; padding: 6px 11px; border-radius: 999px; background: var(--tailoring-proof-bg); color: var(--tailoring-proof); font-size: 14px; line-height: 1.3; font-weight: 650; }
+.verified svg, .phoneVerified svg { flex: none; }
+.evidence .verified { margin-top: auto; }
+.phoneVerified { display: none; }
+.suggestion { border: 2px solid var(--cg-accent); padding: 24px 28px; }
+.suggestionHeader { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.suggestionHeader .verified { flex: none; }
+.suggestion blockquote { margin-top: 24px; font-size: clamp(21px, 1.7vw, 26px); }
+.diffNew { color: var(--cg-ink); background: var(--tailoring-selected); border-radius: 4px; padding: 1px 3px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.legend { display: flex; align-items: center; gap: 10px; margin: 23px 0 18px; color: var(--cg-muted); font-size: 14px; line-height: 1.5; }
+.legend svg { color: var(--cg-accent); flex: none; }
+.reviewFooter { margin-top: auto; }
+.reviewActions { display: flex; gap: 14px; }
+.reviewActions button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-width: 0; min-height: 48px; padding: 10px 17px; border: 1px solid var(--cg-edge-strong); border-radius: 999px; background: var(--cg-glass-soft); color: var(--cg-ink); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 150ms var(--cg-ease), background-color 150ms ease; }
+.reviewActions button:first-child { flex: 1; }
+.reviewActions button:last-child { flex: 1.8; border-color: var(--cg-action); background: var(--cg-action); color: #fff; }
+.reviewActions button:hover { transform: translateY(-2px); }
+.reviewActions button:active { transform: translateY(0) scale(.98); }
+.reviewActions button:focus-visible, .inputPicker button:focus-visible { outline: 2px solid var(--cg-accent); outline-offset: 4px; }
+.reviewActions button[aria-pressed="true"] { outline: 2px solid var(--cg-accent); outline-offset: 3px; }
+.reviewStatus { min-height: 20px; margin: 14px 0 0; color: var(--cg-muted); font-size: 13px; line-height: 1.45; }
+.core { position: absolute; top: 0; left: 0; z-index: 2; border: 3px solid var(--cg-accent); border-radius: 50%; color: var(--cg-accent); background: var(--tailoring-selected); opacity: var(--tailoring-surface, 0); }
+.core > div { height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 3px; }
+.core strong { font-size: 26px; font-weight: 650; line-height: 1.2; }
+.core p { position: absolute; top: 100%; left: 50%; width: 190px; margin: 20px 0 0; transform: translateX(-50%); color: var(--cg-muted); text-align: center; font-size: 14px; line-height: 1.4; white-space: normal; }
+.port { position: absolute; top: 0; left: 0; z-index: 3; width: 10px; height: 10px; border: 2px solid var(--cg-accent); border-radius: 50%; background: var(--cg-accent); opacity: var(--tailoring-lines, 0); }
+.port[data-tailoring-port="evidence"], .port[data-tailoring-port="evidenceIn"] { background: var(--tailoring-proof); border-color: var(--tailoring-proof); }
+.inputPicker { display: none; }
+.acceptChip { font-weight: 650; }
+@media (min-width: 600px) and (max-width: 1099px) {
+  .panel { padding: 18px; }
+  .panel h3 { font-size: 20px; }
+  .kicker { font-size: 14px; margin-bottom: 7px; } /* taste-skill-ignore: Responsive product context label. */
+  .panel blockquote, .suggestion blockquote { font-size: 18px; line-height: 1.5; margin-top: 18px; }
+  .sourceRows { gap: 12px; margin-block: 16px; }
+  .sourceRows p { font-size: 14px; }
+  .sourceRows small { display: block; margin: 2px 0 0; font-size: 13px; }
+  .sourceRows small::before { content: none; }
+  .suggestionHeader { align-items: flex-start; flex-direction: column; gap: 10px; }
+  .suggestionHeader .kicker { display: none; } /* taste-skill-ignore: Hide product context in the compact header. */
+  .verified { font-size: 13px; padding: 5px 9px; }
+  .legend { font-size: 13px; margin-block: 15px; }
+  .reviewActions { gap: 8px; }
+  .reviewActions button { font-size: 14px; padding-inline: 8px; min-height: 44px; gap: 5px; }
+  .reviewStatus { margin-top: 10px; }
+  .core svg { width: 23px; height: 23px; }
+  .core strong { font-size: 21px; }
+  .core p { width: 140px; font-size: 13px; }
+}
+@media (max-width: 599px) {
+  .panel { padding: 12px 15px; border-radius: 14px; }
+  .panel h3 { font-size: 18px; }
+  .kicker { display: none; } /* taste-skill-ignore: Hide product context on phones. */
+  .panel blockquote { margin-top: 8px; font-size: 15px; line-height: 1.4; }
+  .original .content { justify-content: center; }
+  .evidenceHeader h3 { font-size: 17px; }
+  .evidence .verified { display: none; }
+  .phoneVerified { display: inline-flex; align-items: center; gap: 4px; color: var(--tailoring-proof); font-size: 13px; }
+  .sourceRows { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 11px 0 0; }
+  .sourceRows > div { align-items: flex-start; gap: 6px; }
+  .sourceRows svg { width: 16px; height: 16px; margin-top: 2px; }
+  .sourceRows p, .sourceRows small { font-size: 13px; line-height: 1.4; }
+  .sourceRows small { display: block; margin: 2px 0 0; }
+  .sourceRows small::before { content: none; }
+  .suggestionHeader { gap: 8px; }
+  .suggestionHeader h3 { font-size: 19px; }
+  .suggestionHeader .verified { max-width: 116px; padding: 5px 7px; gap: 4px; font-size: 13px; }
+  .suggestion blockquote { margin-top: 12px; font-size: 17px; line-height: 1.45; }
+  .legend { display: none; }
+  .reviewActions { gap: 9px; }
+  .reviewActions button { min-height: 42px; padding: 8px 10px; font-size: 14px; gap: 5px; }
+  .reviewStatus { margin-top: 10px; font-size: 13px; }
+  .core { border-width: 2px; }
+  .core > div { flex-direction: row; gap: 2px; }
+  .core svg { width: 14px; height: 14px; }
+  .core strong { font-size: 15px; }
+  .core p { top: 50%; left: 100%; width: 225px; margin: 0 0 0 13px; transform: translateY(-50%); text-align: left; font-size: 13px; }
+  .port { width: 7px; height: 7px; border-width: 1px; }
+  .port[data-tailoring-port="original"], .port[data-tailoring-port="originalIn"] { display: none; }
+  .tailoring[data-compact="1"][data-input="original"] .port[data-tailoring-port="original"], .tailoring[data-compact="1"][data-input="original"] .port[data-tailoring-port="originalIn"] { display: block; }
+  .tailoring[data-compact="1"] .inputPicker { position: absolute; z-index: 4; display: flex; gap: 4px; pointer-events: auto; opacity: var(--tailoring-copy, 0); }
+  .inputPicker button { min-height: 30px; padding: 4px 9px; border: 0; border-radius: 999px; background: transparent; color: var(--cg-muted); font: inherit; font-size: 13px; cursor: pointer; }
+  .inputPicker button[aria-pressed="true"] { background: var(--tailoring-selected); color: var(--cg-ink); }
+  .tailoring[data-compact="1"] .original, .tailoring[data-compact="1"] .evidence { padding-top: 44px; padding-bottom: 9px; }
+  .tailoring[data-compact="1"] .original h3, .tailoring[data-compact="1"] .evidenceHeader { display: none; }
+  .tailoring[data-compact="1"] .original blockquote { margin: 0; font-size: 14px; }
+  .tailoring[data-compact="1"] .sourceRows { margin: 0; }
+  .tailoring[data-compact="1"] .legend { display: none; }
+  .tailoring[data-compact="1"] .suggestion blockquote { font-size: 16px; margin-top: 12px; }
+  .tailoring[data-compact="1"] .reviewActions button { min-height: 38px; padding-block: 6px; }
+  .tailoring[data-compact="1"][data-input="original"] .port[data-tailoring-port="evidence"], .tailoring[data-compact="1"][data-input="original"] .port[data-tailoring-port="evidenceIn"] { display: none; }
+}
+@media (min-width: 1100px) and (max-height: 850px) {
+  .panel { padding: 20px 24px; }
+  .panel h3 { font-size: 22px; }
+  .kicker { font-size: 14px; margin-bottom: 8px; } /* taste-skill-ignore: Approved data-ui context label. */
+  .suggestion blockquote { font-size: 21px; line-height: 1.5; margin-top: 18px; }
+  .original blockquote { font-size: 18px; margin-top: 14px; }
+  .sourceRows { gap: 12px; margin-block: 15px; }
+  .sourceRows p { font-size: 15px; }
+  .sourceRows small { font-size: 13px; }
+  .verified { font-size: 13px; }
+  .legend { margin-block: 14px; font-size: 13px; }
+  .reviewActions button { min-height: 44px; }
+  .reviewStatus { margin-top: 10px; }
+}
+@media (max-width: 359px) {
+  .tailoring[data-compact="1"] .sourceRows { display: flex; flex-direction: column; gap: 7px; }
+  .tailoring[data-compact="1"] .sourceRows svg { display: none; }
+  .tailoring[data-compact="1"] .sourceRows small { display: inline; margin-left: 5px; }
+  .tailoring[data-compact="1"] .sourceRows small::before { content: "· "; }
+}
+@media (min-width: 600px) and (max-height: 540px) {
+  .panel { padding: 10px 12px; border-radius: 12px; }
+  .panel h3 { font-size: 17px; }
+  .kicker, .legend, .evidence > .content > .verified { display: none; } /* taste-skill-ignore: Compact product context. */
+  .phoneVerified { display: inline-flex; align-items: center; gap: 3px; font-size: 13px; color: var(--tailoring-proof); }
+  .evidenceHeader h3 { font-size: 16px; }
+  .sourceRows { gap: 6px; margin: 10px 0 0; }
+  .sourceRows > div { gap: 6px; }
+  .sourceRows svg { width: 15px; height: 15px; }
+  .sourceRows p, .sourceRows small { font-size: 13px; line-height: 1.3; }
+  .sourceRows small { display: inline; margin-left: 4px; }
+  .sourceRows small::before { content: "· "; }
+  .panel blockquote, .suggestion blockquote { font-size: 15px; line-height: 1.4; margin-top: 10px; }
+  .suggestionHeader { flex-direction: row; gap: 6px; }
+  .suggestionHeader .verified { font-size: 13px; padding: 3px 6px; }
+  .suggestionHeader .verified svg { width: 13px; height: 13px; }
+  .reviewActions button { min-height: 36px; padding: 5px 8px; font-size: 13px; }
+  .reviewStatus { margin-top: 7px; font-size: 13px; }
+  .core svg { width: 18px; height: 18px; }
+  .core strong { font-size: 17px; }
+  .core p { width: 122px; margin-top: 10px; font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) { .reviewActions button { transition: none; } }

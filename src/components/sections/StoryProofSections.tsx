@@ -1,146 +1,49 @@
 import Link from "next/link";
-import { ArrowUpRight, Check, FileText, Link2 } from "lucide-react";
+import Image from "next/image";
+import { ArrowUpRight, FileText, Link2, MessagesSquare } from "lucide-react";
+import { homeTemplate, homeTemplateAsset } from "@/lib/home-templates";
+import { EvidenceWorkbench } from "./EvidenceWorkbench";
+import styles from "./ReadingSections.module.css";
+import { SectionEnvironment, sectionEnvironmentClass } from "./SectionEnvironment";
 
 /**
  * The three proof sections that carry the story into the standard landing:
- * product screens, one customer story, and the template collection. They sit
+ * product screens, an illustrative workflow, and the template collection. They sit
  * between the workspace flow and the plans table, and read from the same
- * evidence-first position as the cinema — no scores, no invented outcomes.
+ * evidence-first position as the cinema, without scores or invented outcomes.
  */
-
-const alignmentRows = [
-  { label: "React development", status: "Strong match", tone: "matched" },
-  { label: "System design", status: "Needs proof", tone: "missing" },
-  { label: "Mentoring juniors", status: "Related work", tone: "partial" },
-] as const;
+export function StoryShowcaseSection() { return <EvidenceWorkbench />; }
 
 const storyNotes = [
-  "Four years of projects turned into one evidence-linked master resume.",
-  "Every AI suggestion reviewed line by line before it reaches the document.",
-  "The same proof carried into applications, versions and interview stories.",
+  { title:"Your experience", copy:"Bring projects, skills and outcomes into one evidence-linked master resume.", icon:Link2 },
+  { title:"Your resume", copy:"Every AI suggestion reviewed line by line before it reaches the document.", icon:FileText },
+  { title:"Your next conversation", copy:"The same proof carried into applications, versions and interview stories.", icon:MessagesSquare },
 ];
 
-const templateCards = [
-  { id: "technical", name: "Technical", role: "Frontend engineer", description: "Clear structure. Confident detail." },
-  { id: "editorial", name: "Editorial", role: "Product designer", description: "Timeless typography. Quiet presence." },
-  { id: "minimal", name: "Minimal", role: "Data analyst", description: "Focused content. Room to breathe." },
-] as const;
-
-export function StoryShowcaseSection() {
-  return (
-    <section className="static-section showcase-section" aria-labelledby="showcase-title">
-      <div className="static-section-heading">
-        <div>
-          <h2 id="showcase-title">One workspace.<br /><em>Every claim in view.</em></h2>
-        </div>
-        <p className="static-lede">The evidence behind the story follows you into the document, the role fit, and the export — nothing appears without a source.</p>
-      </div>
-
-      <div className="showcase-grid">
-        <article className="showcase-screen showcase-screen--wide">
-          <div className="showcase-frame" aria-hidden="true">
-            <span className="showcase-frame__bar"><i>Resume · Senior Frontend</i><b>Evidence on</b></span>
-            <div className="showcase-doc">
-              <span className="showcase-line is-linked">Rebuilt the checkout flow — LCP improved 31%</span>
-              <span className="showcase-line is-linked">Mentored two juniors through their first releases</span>
-              <span className="showcase-line" />
-              <span className="showcase-line is-short" />
-            </div>
-            <div className="showcase-source">
-              <FileText size={16} aria-hidden />
-              <div>
-                <strong>Lighthouse report · Q3</strong>
-                <span>&ldquo;LCP 2.9s &rarr; 2.0s after the lazy-load rework&rdquo;</span>
-              </div>
-              <Link2 size={14} aria-hidden />
-            </div>
-          </div>
-          <div>
-            <h3>Evidence, attached</h3>
-            <p>Open any line in the document and the project note, report or outcome it came from is right there.</p>
-          </div>
-        </article>
-
-        <article className="showcase-screen">
-          <div className="showcase-frame" aria-hidden="true">
-            <span className="showcase-frame__bar"><i>Alignment · Frontend Engineer</i></span>
-            <ul className="showcase-rows">
-              {alignmentRows.map((row) => (
-                <li key={row.label} data-tone={row.tone}>
-                  <span>{row.label}</span><em>{row.status}</em>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <h3>Alignment, explained</h3>
-          <p>Matched, missing, or needs proof — every requirement lands in one of three honest states.</p>
-        </article>
-
-        <article className="showcase-screen">
-          <div className="showcase-frame" aria-hidden="true">
-            <span className="showcase-frame__bar"><i>Export</i></span>
-            <div className="showcase-files">
-              <span><FileText size={16} aria-hidden /> Resume.pdf <em>Ready</em></span>
-              <span><FileText size={16} aria-hidden /> Resume.docx <em>Editable</em></span>
-              <span><Link2 size={16} aria-hidden /> Share link <em>Private</em></span>
-            </div>
-          </div>
-          <h3>Ready to send</h3>
-          <p>A clean A4 document, an editable copy, or a private link — the format each application asks for.</p>
-        </article>
-      </div>
-    </section>
-  );
-}
-
 export function StoryCustomerStorySection() {
-  return (
-    <section className="static-section story-section" aria-labelledby="story-title">
-      <h2 id="story-title">A clearer resume.<br /><em>A calmer search.</em></h2>
-      <div className="story-grid">
-        <figure className="story-quote">
-          <blockquote>&ldquo;I stopped guessing what to cut. Every line now points to something I actually did — and I can explain it in the interview.&rdquo;</blockquote>
-          <figcaption>
-            <strong>Maya Chen</strong>
-            <span>Product designer · Uses ProfileAI for applications and interview prep</span>
-          </figcaption>
-        </figure>
-        <ul className="story-notes">
-          {storyNotes.map((note) => (
-            <li key={note}><Check size={15} aria-hidden />{note}</li>
-          ))}
-        </ul>
+  return <section className={`${styles.section} ${sectionEnvironmentClass} static-section story-section`} aria-labelledby="story-title" data-reading-section="story">
+    <SectionEnvironment kind="story"/>
+    <div className={styles.storyCanvas}>
+      <div className={styles.storyTop}>
+        <h2 id="story-title" className={styles.heading}>A clearer resume.<br/>A calmer search.</h2>
+        <figure><blockquote>Start with real work. Keep the same evidence beside your resume, applications and interview stories.</blockquote><figcaption>One source, carried forward.<br/>An illustrative workflow, from your first project note to your next conversation.</figcaption></figure>
       </div>
-    </section>
-  );
+      <ol className={styles.storyPath}>{storyNotes.map(({title,copy,icon:Icon})=><li key={title}><span className={styles.iconTile}><Icon size={25} aria-hidden/></span><h3>{title}</h3><p>{copy}</p></li>)}</ol>
+    </div>
+  </section>;
 }
 
+const templates=[homeTemplate("kinship"),homeTemplate("orbit"),homeTemplate("editorial-cut")];
 export function StoryTemplatesSection() {
-  return (
-    <section className="static-section templates-section" aria-labelledby="templates-title">
-      <div className="static-section-heading">
-        <div>
-          <h2 id="templates-title">Three presentations.<br /><em>One body of evidence.</em></h2>
-        </div>
-        <p className="static-lede">Change the type and the rhythm without rewriting a line — every template reads from the same verified content.</p>
-      </div>
-
-      <div className="template-row">
-        {templateCards.map((card) => (
-          <Link key={card.id} href="/templates" className="template-card">
-            <span className="template-paper" data-variant={card.id} aria-hidden="true">
-              <b className="template-paper__name">Alex Morgan</b>
-              <em className="template-paper__role">{card.role}</em>
-              <i /><i /><i /><i />
-            </span>
-            <span className="template-card__body">
-              <h3>{card.name}</h3>
-              <span>{card.description}</span>
-              <em>Preview template <ArrowUpRight size={13} aria-hidden /></em>
-            </span>
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
+  return <section className={`${styles.section} ${sectionEnvironmentClass} static-section templates-section`} aria-labelledby="templates-title" data-reading-section="templates">
+    <SectionEnvironment kind="templates"/>
+    <div className={`${styles.sectionHeading} static-section-heading`}><h2 id="templates-title" className={styles.heading}>One resume.<br/>Three styles.</h2><div><p className={styles.lede}>Change the type and the rhythm without rewriting a line. Every template reads from the same verified content.</p><Link href="/templates" className="story-text-link">Explore all templates <ArrowUpRight size={18} aria-hidden/></Link></div></div>
+    <div className={`${styles.gallery} template-row`}>
+      {templates.map(template=><Link key={template.slug} href="/templates" className={`${styles.templateCard} template-card`}>
+        <div className={styles.paperStage}><span className={`${styles.paper} template-paper`} data-ui><Image src={homeTemplateAsset(template)} alt={`${template.name} resume template with illustrative Frontend Engineer content`} width={794} height={1123} sizes="(max-width:620px) 250px, (max-width:900px) 28vw, 320px"/></span><span className={styles.reflection} aria-hidden><Image src={homeTemplateAsset(template)} alt="" width={794} height={1123} sizes="320px"/></span></div>
+        <div className={styles.templateBody}><h3>{template.name}</h3><p>{template.slug==="kinship"?"A confident sidebar. A clear career story.":template.slug==="orbit"?"Balanced columns. Every detail in place.":"An editorial layout with room for your work."}</p><span>Preview template <ArrowUpRight size={17} aria-hidden/></span></div>
+      </Link>)}
+    </div>
+    <p className={styles.small}>Actual catalog layouts · Illustrative resume content · A4 proportions</p>
+  </section>;
 }

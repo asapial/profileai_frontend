@@ -3,7 +3,7 @@
  *
  * Needs a dev server (default http://localhost:3000) and Chrome. Verifies the
  * things a picture cannot: scene indexing at every rest pose, clean URL behavior,
- * the chapter cross-fade (no blank gaps), rail jumps, gallery dots/keyboard,
+ * the chapter cross-fade (no blank gaps), rail jumps, template choices/keyboard,
  * accept/reject state, and the ultrawide/short-viewport world fit.
  *
  * Usage:
@@ -13,8 +13,9 @@
  * Exit code 0 = all checks pass. Console/page errors on the page fail the run.
  */
 import { spawn } from "node:child_process";
-import { join } from "node:path";
-import { mkdirSync, rmSync } from "node:fs";
+import { resolve, sep } from "node:path";
+import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, readFileSync } from "node:fs";
 
 const args = process.argv.slice(2);
 const opt = (name, fallback) => {
@@ -42,21 +43,21 @@ const chromePath = opt("chrome", "C:\\Program Files\\Google\\Chrome\\Application
 const port = Number(opt("port", 9414));
 const scenes = all("scene").map(Number).filter((n) => Number.isFinite(n));
 const sceneList = scenes.length ? scenes : [1, 2, 3, 4, 5, 6, 7, 8];
-const profile = join(process.env.TEMP ?? ".", `cinema-regression-${port}`);
+const profile = resolve(tmpdir(), `cinema-regression-${port}`);
+if (!Number.isInteger(port) || !profile.startsWith(resolve(tmpdir()) + sep)) throw new Error("Invalid temporary browser profile");
 // Wipe the profile: leftover localStorage (a previous run's locale clicks) must
 // not turn into a false failure for the no-persistence assertion.
 rmSync(profile, { recursive: true, force: true });
 mkdirSync(profile, { recursive: true });
 
 const CHAPTER_TITLES = [
-  "Turn your experience into a resume built for the role.", "Your experience starts making sense.", "Every claim keeps its source.", "See the fit clearly.",
-  "Improve the language without changing the truth.", "Choose the presentation. Keep the substance.", "Watch your evidence become a document.", "Your professional resume is ready.",
+  "Your experience. A tailored resume.", "Your work, connected.", "Every claim keeps its source.", "See the fit clearly.",
+  "Stronger words. Same truth.", "Choose your resume style.", "Evidence becomes a resume.", "Ready for your next move.",
 ];
 
 // Mirrors SCENE_DISTANCES / progressForUnit() in src/lib/career-cinema.ts: the
-// story spends 1.2 viewports on the opening frame, 0.6 on each middle move and
-// a full viewport on the finale (≈5.8 viewports of travel in total).
-const SCENE_DISTANCES = [1.2, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 1.0];
+// allocation is read from the source so retiming cannot leave browser checks behind.
+const SCENE_DISTANCES = JSON.parse(readFileSync(new URL('../../src/lib/career-cinema.ts', import.meta.url), 'utf8').match(/SCENE_DISTANCES = (\[[^\]]+\])/)[1]);
 const UNIT_TRAVEL = SCENE_DISTANCES.reduce((sum, step) => sum + step, 0);
 const progressForUnit = (unit) => {
   const clamped = Math.max(0, Math.min(SCENE_DISTANCES.length, unit));
@@ -72,10 +73,10 @@ const FIT = [
   { w: 1920, h: 1080, scale: 1.1 },
   { w: 1024, h: 800, scale: 0.82 },
   { w: 1440, h: 760, scale: 0.92 },
-  { w: 768, h: 1024, scale: 0.68 },
+  { w: 768, h: 1024, scale: 0.58 },
   { w: 844, h: 390, scale: 0.55 },
-  { w: 430, h: 932, scale: 0.32 },
-  { w: 390, h: 844, scale: 0.32 },
+  { w: 430, h: 932, scale: 0.78 },
+  { w: 390, h: 844, scale: 0.78 },
 ];
 
 // ── Assertion harness ───────────────────────────────────────────────────────
@@ -91,9 +92,10 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const chrome = spawn(chromePath, [
   "--headless=new",
-  "--disable-gpu",
-  "--disable-frame-rate-limit",
-  "--disable-gpu-vsync",
+  // Match the stable WebGL backend used by the native scene acceptance checks.
+  "--use-gl=angle",
+  "--use-angle=swiftshader",
+  "--enable-unsafe-swiftshader",
   "--disable-background-timer-throttling",
   "--disable-backgrounding-occluded-windows",
   "--disable-renderer-backgrounding",
@@ -106,6 +108,7 @@ const chrome = spawn(chromePath, [
   `--remote-debugging-port=${port}`,
   "about:blank",
 ], { stdio: ["ignore", "pipe", "pipe"] });
+process.on("exit", () => { chrome.kill(); });
 chrome.on("exit", (code) => { if (code && code !== 0) process.stderr.write(`[chrome exited ${code}]\n`); });
 
 async function endpoint() {
@@ -137,7 +140,8 @@ let loadedResolve = null;
 ws.addEventListener("message", (event) => {
   const message = JSON.parse(event.data);
   if (message.id && pending.has(message.id)) {
-    const { resolve, reject } = pending.get(message.id);
+    const { resolve, reject, timer } = pending.get(message.id);
+    clearTimeout(timer);
     pending.delete(message.id);
     if (message.error) reject(new Error(message.error.message));
     else resolve(message.result);
@@ -175,7 +179,8 @@ function send(method, params = {}, useSession = true) {
   const payload = { id, method, params };
   if (useSession && session) payload.sessionId = session;
   return new Promise((resolve, reject) => {
-    pending.set(id, { resolve, reject });
+    const timer = setTimeout(() => { pending.delete(id); reject(new Error(`CDP timeout: ${method}`)); }, 30000);
+    pending.set(id, { resolve, reject, timer });
     ws.send(JSON.stringify(payload));
   });
 }
@@ -186,12 +191,13 @@ const evaluate = async (expression) => {
   return result.result?.value;
 };
 
-const { targetId } = await send("Target.createTarget", { url: "about:blank" }, false);
+const { targetId } = await send("Target.createTarget", { url: "about:blank", newWindow: true }, false);
 const attached = await send("Target.attachToTarget", { targetId, flatten: true }, false);
 session = attached.sessionId;
 
 await send("Page.enable");
 await send("Runtime.enable");
+await send("Page.bringToFront");
 // The only intercepted request is the auth probe; everything else flows free.
 await send("Fetch.enable", { patterns: [{ urlPattern: "*auth/me*" }] });
 await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-color-scheme", value: "dark" }, { name: "prefers-reduced-motion", value: "no-preference" }] });
@@ -205,6 +211,7 @@ async function navigate(targetUrl) {
   await send("Page.navigate", { url: targetUrl });
   await Promise.race([loaded, sleep(30000)]);
   loadedResolve = null;
+  if (targetUrl === "about:blank") return;
   // Hydration: the film element exists.
   for (let attempt = 0; attempt < 80; attempt += 1) {
     if (await evaluate(`!!document.querySelector('[class*="__film"]')`)) break;
@@ -232,10 +239,24 @@ async function waitSettled(timeoutMs = 20000) {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
     await sleep(700);
+    // A legacy world pose can stay still while the native 3D camera is moving.
+    // Paint a real frame and wait for the shared scroll unit as well.
+    await send("Page.captureScreenshot", { format: "jpeg", quality: 10, captureBeyondViewport: false });
+    const position = JSON.parse(await evaluate(`JSON.stringify({
+      unit: Number(document.querySelector('[data-resume-preview]')?.dataset.unit),
+      progress: (() => {const film=document.querySelector('[class*="__film"]');return film?Math.max(0,Math.min(1,-film.getBoundingClientRect().top/Math.max(1,film.offsetHeight-innerHeight))):0;})(),
+    })`));
+    let remaining = position.progress * UNIT_TRAVEL, wanted = 0;
+    for (let index = 0; index < SCENE_DISTANCES.length; index += 1) {
+      const step = SCENE_DISTANCES[index];
+      if (remaining <= step || index === SCENE_DISTANCES.length - 1) { wanted = index + Math.max(0,Math.min(1,remaining/step)); break; }
+      remaining -= step;
+    }
+    const arrived = Number.isFinite(position.unit) && Math.abs(position.unit - wanted) < .001;
     const raw = await evaluate(`(document.querySelector('[class*="__world"]')?.style.transform.match(/translate3d\\(([^)]+)\\)/) ?? ['','0px,0px,0px'])[1]`);
     const [px, py] = String(raw).split(",").map((value) => Number.parseFloat(value));
     if (previous) {
-      if (Math.hypot(px - previous[0], py - previous[1]) < 2.5) stable += 1;
+      if (arrived && Math.hypot(px - previous[0], py - previous[1]) < 2.5) stable += 1;
       else stable = 0;
     }
     previous = [px, py];
@@ -247,7 +268,7 @@ async function waitSettled(timeoutMs = 20000) {
 const scrollToUnit = (unit, behavior = "instant") => evaluate(`(() => {
   const film = document.querySelector('[class*="__film"]');
   const travel = film.offsetHeight - window.innerHeight;
-  window.scrollTo({ top: Math.round(${progressForUnit(unit)} * travel), behavior: "${behavior}" });
+  window.scrollTo({ top: Math.round(film.getBoundingClientRect().top + scrollY + ${progressForUnit(unit)} * travel), behavior: "${behavior}" });
   return Math.round(window.scrollY);
 })()`);
 
@@ -262,8 +283,7 @@ const probe = () => evaluate(`JSON.stringify({
   })(),
   h1: document.querySelector('h1')?.textContent?.trim() ?? null,
   chapter: (() => {
-    const containers = Array.from(document.querySelectorAll('[class*="__chapter"]'))
-      .filter((node) => node.querySelector('[class*="__chapterBadge"]'));
+    const containers = Array.from(document.querySelectorAll('[data-chapter]'));
     const visible = containers.find((node) => Number(node.style.opacity || 0) > 0.5);
     return visible ? {
       opacity: Number(Number(visible.style.opacity).toFixed(3)),
@@ -271,10 +291,9 @@ const probe = () => evaluate(`JSON.stringify({
       title: visible.querySelector('h1, h2')?.textContent?.trim() ?? null,
     } : null;
   })(),
-  chapterSum: Number(Array.from(document.querySelectorAll('[class*="__chapter"]'))
-    .filter((node) => node.querySelector('[class*="__chapterBadge"]'))
+  chapterSum: Number(Array.from(document.querySelectorAll('[data-chapter]'))
     .reduce((sum, node) => sum + Number(node.style.opacity || 0), 0).toFixed(3)),
-  galleryOpacity: Number(document.querySelector('[class*="__galleryBar"]')?.style.opacity ?? 1),
+  galleryOpacity: Number(document.querySelector('[data-template-gallery]')?.style.opacity ?? 0),
 })`).then(JSON.parse);
 
 // ── 1. Rest poses: scene index, clean URL, chapter header, world fit ─────────
@@ -282,6 +301,7 @@ await setViewport(width, height);
 await navigate(url);
 
 for (const scene of sceneList) {
+  console.log(`Checking scene ${scene}…`);
   await scrollToUnit(scene - 1);
   await sleep(500);
   await waitSettled();
@@ -290,7 +310,7 @@ for (const scene of sceneList) {
   check(`scene ${scene}: live index`, state.scene === String(index), `got ${state.scene}`);
   check(`scene ${scene}: URL stays clean`, state.hash === "", `got ${state.hash}`);
   check(`scene ${scene}: chapter visible`, state.chapter !== null && state.chapter.opacity >= 0.98, `got ${JSON.stringify(state.chapter)}`);
-  check(`scene ${scene}: chapter badge`, state.chapter?.badge === String(scene).padStart(2, "0"), `got ${state.chapter?.badge}`);
+  check(`scene ${scene}: chapter number removed`, state.chapter?.badge === null, `got ${state.chapter?.badge}`);
   check(`scene ${scene}: chapter copy`, state.chapter?.title === CHAPTER_TITLES[index], `got ${state.chapter?.title}`);
   check(`scene ${scene}: single narrative block`, state.chapterSum <= 1.001, `combined opacity ${state.chapterSum}`);
   const expectedScale = FIT.find((entry) => entry.w === width && entry.h === height)?.scale ?? null;
@@ -300,24 +320,125 @@ for (const scene of sceneList) {
   if (scene === 1) {
     check("scene 1: page h1 is the hero headline", state.h1 === CHAPTER_TITLES[0], `got ${state.h1}`);
     const mid = await evaluate(`Number(document.querySelector('[class*="midCta"]')?.style.opacity ?? 1)`);
-    check("scene 1: persistent CTA visible", mid >= 0.98, `got ${mid}`);
+    check("scene 1: persistent CTA waits for the hero", mid <= 0.02, `got ${mid}`);
     const demo = await evaluate(`document.querySelector('[class*="heroDemo"]')?.tagName ?? null`);
     check("scene 1: tour control present", demo === "BUTTON", `got ${demo}`);
   }
+  if (scene === 3) {
+    const graph = await evaluate(`(() => {
+      const graph = document.querySelector('[data-neural-graph]');
+      return { opacity: Number(graph?.style.opacity), inert: graph?.inert,
+        neurons: graph?.querySelectorAll('[data-neuron]').length,
+        inputs: graph?.querySelectorAll('[data-neural-input]').length,
+        outputs: graph?.querySelectorAll('[data-neural-output]').length,
+        selected: graph?.dataset.selectedInput,
+        route: graph?.querySelector('[data-neural-route]')?.getAttribute('d') };
+    })()`);
+    check("neural: graph holds at the evidence scene", graph.opacity >= .99 && graph.inert === false);
+    check("neural: five layers contain forty neurons", graph.neurons === 40);
+    check("neural: eight real source inputs", graph.inputs === 8);
+    check("neural: six career outputs", graph.outputs === 6);
+    check("neural: metric evidence is selected initially", graph.selected === "chip-metric");
+    await evaluate(`document.querySelector('[data-neural-input="chip-react"]').click()`);
+    await sleep(180);
+    const selected = await evaluate(`(() => ({
+      input: document.querySelector('[data-neural-graph]')?.dataset.selectedInput,
+      output: document.querySelector('[data-neural-output="card-skills"]')?.getAttribute('aria-pressed'),
+      source: document.querySelector('[data-neural-graph] [aria-live]')?.textContent,
+      route: document.querySelector('[data-neural-route]')?.getAttribute('d'),
+    }))()`);
+    check("neural: source selection updates the active output", selected.input === "chip-react" && selected.output === "true");
+    check("neural: source detail follows the selected evidence", selected.source?.includes("Customer Dashboard") === true);
+    check("neural: source selection changes its path", selected.route !== graph.route);
+    await evaluate(`document.querySelector('[data-neural-input="chip-typescript"]').focus()`);
+    await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, text: "\r" });
+    await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+    await sleep(180);
+    check("neural: sources work with the keyboard", await evaluate(`document.querySelector('[data-neural-graph]')?.dataset.selectedInput`) === "chip-typescript");
+    await evaluate(`document.querySelector('[data-neural-output="card-projects"]').click()`);
+    await sleep(180);
+    check("neural: output selection traces back to a source", await evaluate(`document.querySelector('[data-neural-graph]')?.dataset.selectedInput`) === "chip-python");
+    await evaluate(`document.querySelector('[data-neural-input="chip-metric"]').click()`);
+  }
+  if (scene === 1 || scene === 4) {
+    const graphHidden = await evaluate(`(() => { const graph=document.querySelector('[data-neural-graph]'); return Number(graph?.style.opacity) === 0 && graph?.inert === true; })()`);
+    check(`scene ${scene}: neural controls retire outside their scene`, graphHidden);
+  }
+  if (scene === 4) {
+    const alignment = await evaluate(`(() => {
+      const root = document.querySelector('[data-alignment]');
+      return { opacity: Number(root?.style.opacity), inert: root?.inert,
+        cards: root?.querySelectorAll('[data-alignment-card]').length,
+        rows: root?.querySelectorAll('[data-alignment-row]').length,
+        routes: root?.querySelectorAll('[data-alignment-route]').length,
+        source: root?.querySelector('[data-alignment-source]')?.textContent };
+    })()`);
+    check("alignment: approved cards and job panel hold at rest", alignment.opacity >= .99 && alignment.inert === false);
+    check("alignment: five evidence cards", alignment.cards === 5);
+    check("alignment: five job requirements", alignment.rows === 5);
+    check("alignment: four supported connections", alignment.routes === 4);
+    check("alignment: selected match includes its source", alignment.source?.includes("Customer Dashboard") === true);
+    check("alignment: missing evidence has no connector", await evaluate(`!document.querySelector('[data-alignment-route="3"]')`) === true);
+    await evaluate(`document.querySelector('[data-alignment-row="1"]').click()`);
+    await sleep(200);
+    check("alignment: requirement selects its supporting card", await evaluate(`document.querySelector('[data-alignment]')?.dataset.selectedCard`) === "card-experience");
+    await evaluate(`document.querySelector('[data-alignment-row="3"]').click()`);
+    await sleep(200);
+    const missing = await evaluate(`(() => ({card:document.querySelector('[data-alignment]')?.dataset.selectedCard, source:document.querySelector('[data-alignment-source]')?.textContent}))()`);
+    check("alignment: evidence gap stays explicit", missing.card === "none" && missing.source?.includes("No supporting source") === true);
+    await evaluate(`document.querySelector('[data-alignment-row="2"]').focus({preventScroll:true})`);
+    await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, text: "\r" });
+    await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+    await sleep(200);
+    check("alignment: requirement works with the keyboard", await evaluate(`document.querySelector('[data-alignment]')?.dataset.selectedCard`) === "card-projects");
+    await evaluate(`document.querySelector('[data-alignment-card="card-education"]').click()`);
+    await sleep(200);
+    check("alignment: unused evidence creates no invented match", await evaluate(`document.querySelector('[data-alignment]')?.dataset.selectedRow`) === "none");
+    await evaluate(`document.querySelector('[data-alignment-row="0"]').click()`);
+  }
+  if (scene === 1 || scene === 5) {
+    check(`scene ${scene}: alignment controls retire outside their scene`, await evaluate(`(() => { const root=document.querySelector('[data-alignment]');return Number(root?.style.opacity)===0 && root?.inert===true; })()`));
+  }
   if (scene === 5) {
+    const tailoring = await evaluate(`(() => {const root=document.querySelector('[data-tailoring]');return {opacity:Number(root?.style.opacity),inert:root?.inert,source:root?.querySelector('[data-tailoring-evidence]')?.textContent,routes:root?.querySelectorAll('[data-tailoring-route]').length,core:root?.querySelector('[data-tailoring-core]')?.textContent};})()`);
+    check("tailoring: approved workbench is fully readable", tailoring.opacity >= .99 && tailoring.inert === false);
+    check("tailoring: original wording is preserved", await evaluate(`document.querySelector('[data-tailoring] [data-panel="original"] blockquote')?.textContent`) === "Worked on frontend development tasks and fixed bugs.");
+    check("tailoring: source evidence remains visible", tailoring.source?.includes("Customer Dashboard") && tailoring.source?.includes("Improved 31%"));
+    check("tailoring: original and evidence meet the AI node", tailoring.routes === 3 && tailoring.core?.includes("Grounded in your evidence"));
+    check("tailoring: old orbiting sphere retires", await evaluate(`getComputedStyle(document.querySelector('[data-object="orb"]')).visibility`) === "hidden");
     const marks = await evaluate(`document.querySelectorAll('[data-panel="suggestion"] [class*="__diffNew"]').length`);
     check("scene 5: two evidence highlights", marks === 2, `got ${marks}`);
     const mid = await evaluate(`Number(document.querySelector('[class*="midCta"]')?.style.opacity ?? 0)`);
     check("scene 5: persistent CTA visible", mid >= 0.98, `got ${mid}`);
   }
+  if (scene === 4 || scene === 6) check(`scene ${scene}: tailoring controls retire outside their scene`, await evaluate(`(() => {const root=document.querySelector('[data-tailoring]');return Number(root?.style.opacity)===0 && root?.inert===true;})()`));
   if (scene === 6) check("scene 6: gallery visible", state.galleryOpacity >= 0.98, `got ${state.galleryOpacity}`);
+
+  if (scene === 7) {
+    const assembly = await evaluate(`(() => {const root=document.querySelector('[data-assembly]'),room=document.querySelector('[data-template-gallery]');return {opacity:Number(root?.style.opacity),inert:root?.inert,placed:root?.dataset.placed,active:root?.dataset.activeSection,phases:[...root.querySelectorAll('[data-assembly-card]')].map(card=>card.dataset.phase),progress:root.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow'),mode:room?.dataset.mode,floor:Number(room.style.getPropertyValue('--gallery-floor')),canvases:document.querySelectorAll('[data-gallery-canvas]').length};})()`);
+    check("assembly: approved interface fully visible", assembly.opacity >= .99 && assembly.inert === false);
+    check("assembly: actual section counter matches progress", assembly.placed === "2" && assembly.progress === "40" && assembly.active === "projects");
+    check("assembly: two placed, one active, two next", assembly.phases.join(",") === "placed,placed,placing,next,next");
+    check("assembly: gallery paper and floor remain in one room", assembly.mode === "assembly" && assembly.floor === 1 && assembly.canvases === 1);
+    check("assembly: old blocks and sphere retire", await evaluate(`[...document.querySelectorAll('[data-object^="block-"],[data-object="orb"]')].every(node=>getComputedStyle(node).visibility==='hidden')`));
+    await evaluate(`document.querySelector('[data-assembly-card="skills"]').focus({preventScroll:true})`);
+    await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, text: "\r" });
+    await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+    for (let attempt = 0; attempt < 12; attempt += 1) {
+      if (await evaluate(`document.querySelector('[data-assembly]')?.dataset.inspected`) === "skills") break;
+      await send("Page.captureScreenshot", { format: "jpeg", quality: 10, captureBeyondViewport: false });
+      await sleep(160);
+    }
+    check("assembly: native keyboard inspects a section", await evaluate(`document.querySelector('[data-assembly]')?.dataset.inspected`) === "skills");
+    check("assembly: inspection preserves actual progress", await evaluate(`document.querySelector('[data-assembly]')?.dataset.placed`) === "2");
+  }
   if (scene === 8) {
     const cta = await evaluate(`(() => {
-      const obj = Array.from(document.querySelectorAll('[class*="__obj"]')).find((node) => (node.textContent || '').includes('Your experience.'));
+      const obj = document.querySelector('[data-resume-preview]');
       return obj ? Number(Number(obj.style.opacity || 0).toFixed(3)) : null;
     })()`);
     check("scene 8: closing panel visible", cta !== null && cta >= 0.98, `got ${cta}`);
-    const rows = await evaluate(`Array.from(document.querySelectorAll('[class*="outputRow"]')).map((node) => node.tagName).join(',')`);
+    const rows = await evaluate(`Array.from(document.querySelectorAll('[data-preview-output]')).map((node) => node.tagName).join(',')`);
     check("scene 8: four action rows", rows === "BUTTON,BUTTON,BUTTON,BUTTON", `got ${rows}`);
     const scrub = await evaluate(`getComputedStyle(document.querySelector('[class*="scrubber"]')).display`);
     check("scrubber hidden without ?scrub", scrub === "none", `got ${scrub}`);
@@ -356,25 +477,13 @@ await waitSettled();
   check("story jump: URL stays clean", state.hash === "", `got ${state.hash}`);
 }
 
-// ── 3b. Chrome: 01 / 08 counter and motion pause ────────────────────────────
+// ── 3b. The film has no corner metadata or page progress dots ──────────────
 await scrollToUnit(6);
 await sleep(500);
 await waitSettled();
 {
-  const counter = await evaluate(`document.querySelector('[class*="progressCount"]')?.textContent?.trim() ?? null`);
-  check("progress: counter reads 07 / 08", counter === "07 / 08", `got ${counter}`);
-  await evaluate(`document.querySelector('[class*="motionToggle"]')?.click()`);
-  await sleep(300);
-  const paused = await evaluate(`document.querySelector('[class*="__stage"]')?.dataset.motion ?? null`);
-  const pressed = await evaluate(`document.querySelector('[class*="motionToggle"]')?.getAttribute('aria-pressed')`);
-  check("pause: stage enters calm mode", paused === "paused", `got ${paused}`);
-  check("pause: control reports pressed", pressed === "true", `got ${pressed}`);
-  await evaluate(`document.querySelector('[class*="motionToggle"]')?.click()`);
-  await sleep(300);
-  const running = await evaluate(`document.querySelector('[class*="__stage"]')?.dataset.motion ?? null`);
-  const released = await evaluate(`document.querySelector('[class*="motionToggle"]')?.getAttribute('aria-pressed')`);
-  check("pause: control resumes", running === "run", `got ${running}`);
-  check("pause: control reports released", released === "false", `got ${released}`);
+  const chrome = await evaluate(`document.querySelectorAll('[class*="progressCount"],[class*="motionToggle"],[class*="metaRow"],[class*="metaSkip"],.story-spine').length`);
+  check("film: removed corner controls stay absent", chrome === 0, `got ${chrome}`);
 }
 
 // ── 3c. Auto-demo: play starts the tour, any input cancels ──────────────────
@@ -405,24 +514,33 @@ await waitSettled();
 {
   const before = await evaluate(`document.querySelector('[class*="__galleryMeta"] strong')?.textContent ?? null`);
   await evaluate(`(() => {
-    const dots = Array.from(document.querySelectorAll('[class*="__galleryDots"] button'));
-    const next = dots.find((dot) => dot.getAttribute('aria-pressed') !== 'true');
+    const choices = Array.from(document.querySelectorAll('[data-gallery-choice]'));
+    const next = choices.find((choice) => choice.getAttribute('aria-pressed') !== 'true');
     next?.click();
     return !!next;
   })()`);
   await sleep(1400);
   const after = await evaluate(`document.querySelector('[class*="__galleryMeta"] strong')?.textContent ?? null`);
-  const pressed = await evaluate(`Array.from(document.querySelectorAll('[class*="__galleryDots"] button')).map((dot) => dot.getAttribute('aria-pressed')).join(',')`);
-  check("gallery dot: template changed", before && after && before !== after, `${before} → ${after}`);
-  check("gallery dot: exactly one pressed", (pressed.match(/true/g) ?? []).length === 1, `got ${pressed}`);
+  const pressed = await evaluate(`Array.from(document.querySelectorAll('[data-gallery-choice]')).map((choice) => choice.getAttribute('aria-pressed')).join(',')`);
+  check("gallery choice: template changed", before && after && before !== after, `${before} → ${after}`);
+  check("gallery choice: exactly one pressed", (pressed.match(/true/g) ?? []).length === 1, `got ${pressed}`);
+  check("gallery: seven actual catalog designs", await evaluate(`document.querySelectorAll('[data-gallery-choice]').length`) === 7);
+  check("gallery: removed progress dots stay absent", await evaluate(`document.querySelectorAll('[class*="__galleryDots"]').length`) === 0);
 
-  await evaluate(`document.querySelector('[class*="__galleryBar"] > button:last-child')?.focus()`);
+  await evaluate(`document.querySelector('[data-template-gallery] [class*="__controls"] > button:last-child')?.focus({preventScroll:true})`);
   await send("Input.dispatchKeyEvent", { type: "rawKeyDown", key: "ArrowLeft", code: "ArrowLeft", windowsVirtualKeyCode: 37 });
   await send("Input.dispatchKeyEvent", { type: "keyUp", key: "ArrowLeft", code: "ArrowLeft", windowsVirtualKeyCode: 37 });
   await sleep(1400);
   const afterKey = await evaluate(`document.querySelector('[class*="__galleryMeta"] strong')?.textContent ?? null`);
   check("gallery ArrowLeft: steps back round-robin", afterKey !== after, `stayed at ${afterKey}`);
 }
+
+// The gallery selection is the physical page used by the next stage.
+const chosenCatalog = await evaluate(`document.querySelector('[data-template-gallery]').dataset.selectedTemplate`);
+await scrollToUnit(6); await sleep(500); await waitSettled();
+check("assembly: gallery selection carries forward", await evaluate(`document.querySelector('[data-assembly]')?.dataset.selectedTemplate`) === chosenCatalog);
+await scrollToUnit(6.4); await sleep(300); await waitSettled();
+check("assembly: final section completes before handoff", await evaluate(`document.querySelector('[data-assembly]')?.dataset.placed==='5' && document.querySelector('[data-assembly] [role="progressbar"]')?.getAttribute('aria-valuenow')==='100'`));
 
 // ── 5. Accept / reject review state ─────────────────────────────────────────
 await scrollToUnit(4);
@@ -433,17 +551,26 @@ await sleep(600);
 {
   const state = await probe();
   check("accept: stage state", state.review === "accepted", `got ${state.review}`);
+  check("accept: native tailoring state", await evaluate(`document.querySelector('[data-tailoring]')?.dataset.decision`) === "accepted");
   const chip = await evaluate(`!!document.querySelector('[data-panel="suggestion"] [class*="__acceptChip"]')`);
   check("accept: confirmation chip", chip === true, `got ${chip}`);
   const pressed = await evaluate(`document.querySelectorAll('[data-panel="suggestion"] [class*="__reviewActions"] button')[1]?.getAttribute('aria-pressed')`);
   check("accept: button pressed", pressed === "true", `got ${pressed}`);
+  check("accept: catalog preview contains the reviewed sentence", await evaluate(`(() => {const source=document.querySelector('[data-catalog-template] img')?.getAttribute('src') ?? '';return source.startsWith('data:image/svg+xml') && decodeURIComponent(source).includes('reusable React components') && decodeURIComponent(source).includes('improving load performance by 31%');})()`));
 }
 await evaluate(`document.querySelectorAll('[data-panel="suggestion"] [class*="__reviewActions"] button')[0]?.click()`);
 await sleep(600);
 {
   const state = await probe();
   check("reject: stage state", state.review === "rejected", `got ${state.review}`);
+  check("reject: native tailoring state", await evaluate(`document.querySelector('[data-tailoring]')?.dataset.decision`) === "rejected");
+  check("reject: catalog preview restores the original content", await evaluate(`document.querySelector('[data-catalog-template] img')?.getAttribute('src')?.startsWith('/templates/story/')`) === true);
 }
+await evaluate(`document.querySelectorAll('[data-panel="suggestion"] [class*="__reviewActions"] button')[1]?.focus({preventScroll:true})`);
+await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, text: "\r" });
+await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+await sleep(200);
+check("tailoring: keyboard accepts a reviewed suggestion", await evaluate(`document.querySelector('[data-tailoring]')?.dataset.decision`) === "accepted");
 
 // ── 6. Deep link opens at the right chapter (cold load) ─────────────────────
 await navigate("about:blank");
@@ -455,7 +582,7 @@ await navigate(`${url}#scene-04`);
   check("deep link: URL cleaned", state.hash === "", `got ${state.hash}`);
   const expected = await evaluate(`(() => {
     const film = document.querySelector('[class*="__film"]');
-    return Math.round(${progressForUnit(3)} * (film.offsetHeight - window.innerHeight));
+    return Math.round(film.getBoundingClientRect().top + scrollY + ${progressForUnit(3)} * (film.offsetHeight - window.innerHeight));
   })()`);
   check("deep link: scroll position", Math.abs(state.scrollY - expected) < 80, `got ${state.scrollY}, want ~${expected}`);
 }
@@ -473,7 +600,7 @@ await waitSettled();
   check("personal: sheet carries the user name", sheetName === "RIFAT AHMED", `got ${sheetName}`);
   const note = await evaluate(`document.querySelector('[class*="__hero"] small')?.textContent ?? ""`);
   check("personal: hero note is signed-in", note.includes("Rifat"), note);
-  const status = await evaluate(`document.querySelector('[class*="__finalPanel"] p[aria-live]')?.textContent ?? ""`);
+  const status = await evaluate(`document.querySelector('[data-preview-actions] p[aria-live]')?.textContent ?? ""`);
   check("personal: final status is signed-in", status.includes("Rifat"), status);
   const cta = JSON.parse(await evaluate(`(() => {
     const link = document.querySelector('a.bottom-cta-button');
@@ -492,19 +619,24 @@ await waitSettled();
 {
   const state = await probe();
   check("locale bn: chapter title", state.chapter?.title === "অভিজ্ঞতা থেকে তৈরি হোক চাকরির রেজুমে।", `got ${state.chapter?.title}`);
-  check("locale bn: badge numerals", state.chapter?.badge === "০১", `got ${state.chapter?.badge}`);
+  check("locale bn: scene numbers stay removed", state.chapter?.badge === null, `got ${state.chapter?.badge}`);
   const demo = await evaluate(`document.querySelector('[class*="heroDemo"]')?.textContent?.trim() ?? null`);
   check("locale bn: tour control label", demo === "ট্যুর চালান", `got ${demo}`);
   const storedParam = await evaluate(`window.localStorage.getItem('profileai:story-locale')`);
   check("locale bn: url param does not persist", storedParam === null, `got ${storedParam}`);
+  await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
   await evaluate(`document.querySelectorAll('[class*="localeSwitch"] button')[1]?.click()`);
   await sleep(300);
   const storedClick = await evaluate(`window.localStorage.getItem('profileai:story-locale')`);
   check("locale: pill choice persists", storedClick === "bn", `got ${storedClick}`);
   await evaluate(`document.querySelectorAll('[class*="localeSwitch"] button')[0]?.click()`);
   await sleep(400);
+  await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "no-preference" }] });
+  await sleep(150);
+  await scrollToUnit(0);
+  await waitSettled();
   const state2 = await probe();
-  check("locale: switch back to EN title", state2.chapter?.title === "Turn your experience into a resume built for the role.", `got ${state2.chapter?.title}`);
+  check("locale: switch back to EN title", state2.chapter?.title === CHAPTER_TITLES[0], `got ${state2.chapter?.title}`);
   const storedEn = await evaluate(`window.localStorage.getItem('profileai:story-locale')`);
   check("locale: EN choice persisted", storedEn === "en", `got ${storedEn}`);
 }
@@ -547,15 +679,16 @@ const waitExit = async (want, attempts = 24) => {
 {
   const flagged = await waitExit("1");
   check("exit: stage flags the run-out tail", flagged, `stayed null`);
+  await waitSettled();
   await evaluate(`window.scrollY > -1 && void 0`);
   await sleep(500);
   const exit = JSON.parse(await evaluate(`JSON.stringify({
     exit: document.querySelector('[class*="__stage"]')?.dataset.exit ?? null,
-    rail: Number(getComputedStyle(document.querySelector('[class*="progressRail"]')).opacity),
+    rail: document.querySelectorAll('[class*="progressRail"]').length,
     cta: Number(getComputedStyle(document.querySelector('[class*="midCta"]')).opacity),
     scale: Number((document.querySelector('[class*="__world"]')?.style.transform ?? '').match(/^scale\\(([\\d.]+)\\)/)?.[1] ?? 1),
   })`));
-  check("exit: progress line fades out with the world", exit.rail < 0.06, `got ${exit.rail}`);
+  check("exit: removed progress line stays absent", exit.rail === 0, `got ${exit.rail}`);
   check("exit: persistent CTA fades out with the world", exit.cta < 0.06, `got ${exit.cta}`);
   check("exit: world eases back before the handoff", exit.scale < 0.99, `got ${exit.scale}`);
 }
@@ -572,8 +705,8 @@ await sleep(900);
     const style = section ? getComputedStyle(section) : null;
     return JSON.stringify({
       cv: style?.contentVisibility ?? null,
-      timeline: style ? String(style.animationTimeline) : null,
-      bridge: document.querySelector('.static-zone__bridge')?.textContent.includes('THE PRODUCT') ?? false,
+      timeline: String(getComputedStyle(document.querySelector('.static-section-heading')).animationTimeline),
+      bridge: document.querySelector('#static-zone')?.firstElementChild?.classList.contains('trust-section') ?? false,
       proof: document.querySelectorAll('.showcase-section, .story-section, .templates-section').length,
       proofHeadings: ['showcase-title', 'story-title', 'templates-title'].every((id) => (document.getElementById(id)?.textContent?.trim().length ?? 0) > 0),
       proofPapers: document.querySelectorAll('.template-paper').length,
@@ -581,13 +714,13 @@ await sleep(900);
       footerCta: document.querySelector('a.bottom-cta-button')?.getAttribute('href') ?? null,
     });
   })()`));
-  check("reading zone: offscreen sections skip layout", zone.cv === "auto", `got ${zone.cv}`);
+  check("reading zone: sections retain natural heights", zone.cv === "visible", `got ${zone.cv}`);
   check("reading zone: entrances are scroll-linked", zone.timeline?.includes("view()") === true, `got ${zone.timeline}`);
-  check("reading zone: floor bridge leads the way", zone.bridge === true, `got ${zone.bridge}`);
+  check("reading zone: the evidence claim leads the way", zone.bridge === true, `got ${zone.bridge}`);
   check("reading zone: proof sections present", zone.proof === 3, `got ${zone.proof}`);
   check("reading zone: proof headings are labelled", zone.proofHeadings === true, `got ${zone.proofHeadings}`);
   check("reading zone: three template papers", zone.proofPapers === 3, `got ${zone.proofPapers}`);
-  check("reading zone: progress spine covers the page", zone.spine >= 12, `got ${zone.spine}`);
+  check("reading zone: progress dots stay removed", zone.spine === 0, `got ${zone.spine}`);
   check("reading zone: guest CTA routes to registration", zone.footerCta === "/register", `got ${zone.footerCta}`);
 }
 

@@ -1,0 +1,34 @@
+{
+  "source": "profileai_backend/src/scripts/uniqueTemplateCatalog.ts",
+  "sample": "src/lib/home-resume-sample.json",
+  "templates": [
+    {
+      "slug": "kinship",
+      "sourceHash": "1a93ceff05f69cf65d14b872e1d83f37f8985b177ca72692adb76f4dd0685dfd"
+    },
+    {
+      "slug": "gridline",
+      "sourceHash": "9f42f4bc17452ff209c002218ee771d5a77a323393edf97e8523d99782d19733"
+    },
+    {
+      "slug": "harbor",
+      "sourceHash": "44b6c61e0e446ad81930c6233c13c2156831bcda518bb1d1ae440f3efdf2c3e9"
+    },
+    {
+      "slug": "orbit",
+      "sourceHash": "c96fb809046736f593c9c79ff668678ef8bacb4469782ef9215c8ebec36d5eed"
+    },
+    {
+      "slug": "apex",
+      "sourceHash": "5d53b66b07185d26360519c22e19438f14c068db8b9ebfb05b7d97f9ec0eb1c6"
+    },
+    {
+      "slug": "editorial-cut",
+      "sourceHash": "a8b199cbea18c4f32ea03b318fb968c8d2114ce5e782dc3ce6f424f67abe8a6c"
+    },
+    {
+      "slug": "oblique",
+      "sourceHash": "ba1f47dffb070b27af5298740304b54c860ac964f73e811aed5799add9399e04"
+    }
+  ]
+}

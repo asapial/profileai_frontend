@@ -1,0 +1,148 @@
+.alignment {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  color: var(--cg-ink);
+  pointer-events: none;
+  contain: layout style;
+  --alignment-teal: #15765f;
+  --alignment-matched-bg: #e1f1e8;
+  --alignment-missing-bg: #f8e7ee;
+  --alignment-partial-bg: #f6ecd3;
+  --alignment-selected: #ede6fa;
+}
+:global(.dark) .alignment { --alignment-teal: #82e2bb; --alignment-matched-bg: #25463e; --alignment-missing-bg: #472b3c; --alignment-partial-bg: #433b29; --alignment-selected: #332a4b; }
+.connections { position: absolute; inset: 0; z-index: 2; overflow: visible; opacity: var(--alignment-lines, 0); pointer-events: none; }
+.evidenceCard, .jobPanel, .mobileEvidence { z-index: 1; }
+.route path { fill: none; stroke: var(--alignment-teal); stroke-width: 2; stroke-linecap: round; }
+.route[data-tone="partial"] path { stroke: var(--cg-partial); }
+.route[data-active="1"] path { stroke: var(--cg-accent); stroke-width: 2.8; }
+.route[data-active] .signal { stroke: var(--cg-bg); stroke-width: 3.4; stroke-dasharray: .8 49.2; animation: alignmentSignal 3.5s linear infinite; }
+.alignment[data-calm="1"] .signal { animation: none; opacity: 0; }
+@keyframes alignmentSignal { to { stroke-dashoffset: -100; } }
+.evidenceCard {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  padding: 18px 22px;
+  border: 1px solid var(--cg-edge);
+  border-radius: 17px;
+  background: var(--cg-glass);
+  color: var(--cg-ink);
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  transform-origin: right center;
+  will-change: transform;
+}
+.evidenceCard[aria-pressed="true"] { border: 2px solid var(--cg-accent); background: var(--alignment-selected); padding-inline: 21px; }
+.cardContent { display: flex; align-items: center; gap: 16px; width: 100%; opacity: var(--alignment-copy, 0); }
+.cardContent > span:last-child { min-width: 0; }
+.cardContent strong { display: block; font-size: 20px; line-height: 1.25; font-weight: 650; }
+.cardContent small { display: block; margin-top: 6px; color: var(--cg-muted); font-size: 15px; line-height: 1.4; }
+.cardIcon { display: grid; place-items: center; width: 42px; height: 42px; flex: none; border-radius: 11px; background: color-mix(in srgb, var(--cg-accent) 12%, var(--cg-glass)); color: var(--cg-accent); }
+.cardIcon[data-tone="orange"] { color: var(--cg-partial); }
+.cardIcon[data-tone="pink"] { color: var(--cg-missing); }
+.cardIcon[data-tone="blue"] { color: #286ca6; background: #e1edfa; }
+:global(.dark) .cardIcon[data-tone="blue"] { color: #9acaff; background: #2d3b52; }
+.port, .requirementPort { position: absolute; right: -7px; top: 50%; width: 12px; height: 12px; border-radius: 50%; transform: translateY(-50%); border: 2px solid #7496bf; background: #d7e8fa; }
+.evidenceCard[aria-pressed="true"] .port { border-color: var(--cg-accent); background: var(--cg-action); }
+.jobPanel { position: absolute; top: 0; left: 0; border: 1px solid var(--cg-edge-strong); border-radius: 20px; padding: var(--alignment-padding); background: var(--cg-glass); color: var(--cg-ink); pointer-events: auto; transform-origin: center; will-change: transform; opacity: var(--alignment-panel, 0); }
+.panelContent { height: 100%; opacity: var(--alignment-copy, 0); }
+.jobHeader { display: flex; align-items: center; justify-content: space-between; gap: 14px; height: var(--alignment-header); }
+.jobHeader h3 { margin: 0; font-size: 25px; font-weight: 650; line-height: 1.2; }
+.jobHeader > span { flex: none; padding: 7px 10px; border-radius: 8px; color: var(--cg-muted); background: var(--cg-glass-soft); font-size: 13px; line-height: 1.3; }
+.requirement { position: relative; display: flex; flex-direction: column; justify-content: center; width: 100%; height: var(--alignment-row); padding: 8px 10px; border: 1px solid transparent; border-bottom-color: var(--cg-edge); border-radius: 0; color: var(--cg-ink); background: transparent; font-family: inherit; text-align: left; cursor: pointer; }
+.requirement[aria-pressed="true"] { height: calc(var(--alignment-row) + var(--alignment-detail)); border: 1.5px solid var(--cg-accent); border-radius: 12px; background: var(--alignment-selected); }
+.requirement[aria-pressed="true"][data-tone="missing"] { border-color: var(--cg-missing); background: var(--alignment-missing-bg); }
+.rowMain { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; align-items: center; gap: 12px; width: 100%; }
+.rowMain > svg { color: var(--alignment-teal); }
+.requirement[data-tone="partial"] .rowMain > svg { color: var(--cg-partial); }
+.requirement[data-tone="missing"] .rowMain > svg { color: var(--cg-missing); }
+.rowMain > strong { font-size: 17px; line-height: 1.3; font-weight: 560; }
+.rowState { padding: 5px 10px; border-radius: 999px; color: var(--cg-matched); background: var(--alignment-matched-bg); font-size: 14px; line-height: 1.3; font-weight: 650; white-space: nowrap; }
+.requirement[data-tone="missing"] .rowState { color: var(--cg-missing); background: var(--alignment-missing-bg); }
+.requirement[data-tone="partial"] .rowState { color: var(--cg-partial); background: var(--alignment-partial-bg); }
+.requirementPort { right: auto; left: -7px; border-color: var(--alignment-teal); background: var(--cg-glass); }
+.requirement[data-tone="partial"] .requirementPort { border-color: var(--cg-partial); }
+.requirement[aria-pressed="true"] .requirementPort { border-color: var(--cg-accent); background: var(--cg-action); }
+.sourceDetail { display: flex; align-items: center; gap: 8px; height: var(--alignment-detail); margin-left: 32px; overflow: hidden; color: var(--cg-muted); font-size: 13px; line-height: 1.35; }
+.sourceDetail > svg { flex: none; }
+.verified { display: flex; align-items: center; gap: 4px; margin-left: auto; color: var(--alignment-teal); white-space: nowrap; }
+.verified > svg { flex: none; }
+.panelNote { display: flex; align-items: center; height: var(--alignment-footer); margin: 0; color: var(--cg-muted); font-size: 14px; line-height: 1.4; }
+.evidenceCard:focus-visible, .requirement:focus-visible, .mobileEvidence select:focus-visible { outline: 3px solid var(--cg-accent); outline-offset: 4px; }
+.mobileEvidence { display: none; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+@media (max-width: 1099px) and (min-width: 520px) {
+  .evidenceCard { padding: 14px; }
+  .evidenceCard[aria-pressed="true"] { padding-inline: 13px; }
+  .cardContent { gap: 10px; }
+  .cardContent strong { font-size: 17px; }
+  .cardContent small { font-size: 14px; }
+  .cardIcon { width: 32px; height: 32px; }
+  .cardIcon svg { width: 21px; height: 21px; }
+  .jobHeader { gap: 8px; }
+  .jobHeader h3 { font-size: 20px; }
+  .jobHeader > span { max-width: 110px; font-size: 13px; }
+  .rowMain { grid-template-columns: 18px minmax(0, 1fr) auto; gap: 8px; }
+  .rowMain > strong { font-size: 15px; }
+  .rowState { justify-self: start; font-size: 13px; padding: 3px 8px; }
+  .sourceDetail { margin-left: 26px; }
+  .verified { display: none; }
+  .panelNote { font-size: 13px; }
+}
+@media (max-width: 519px) {
+  .evidenceCard { display: none; }
+  .mobileEvidence { position: absolute; display: grid; grid-template-columns: 1fr auto; align-content: center; gap: 5px 10px; left: 20px; right: 20px; padding: 8px 12px; border: 1px solid var(--cg-accent); border-radius: 12px; background: var(--alignment-selected); opacity: var(--alignment-copy, 0); pointer-events: auto; }
+  .mobileEvidence label { color: var(--cg-muted); font-size: 13px; }
+  .mobileEvidence select { min-height: 32px; max-width: 175px; padding: 4px 6px; border: 0; background: var(--cg-glass); color: var(--cg-ink); border-radius: 6px; font-size: 14px; }
+  .mobileEvidence p { grid-column: 1 / -1; margin: 0; color: var(--cg-muted); font-size: 13px; line-height: 1.3; }
+  .mobileEvidence .port { right: auto; left: -7px; }
+  .jobPanel { border-radius: 15px; }
+  .jobHeader { gap: 8px; }
+  .jobHeader h3 { font-size: 20px; }
+  .jobHeader > span { padding: 5px 7px; font-size: 13px; }
+  .requirement { padding-inline: 6px; }
+  .rowMain { grid-template-columns: 16px minmax(0, 1fr) auto; gap: 6px; }
+  .rowMain > svg { width: 16px; height: 16px; }
+  .rowMain > strong { font-size: 14px; line-height: 1.3; }
+  .rowState { padding: 4px 6px; font-size: 13px; }
+  .sourceDetail { margin-left: 22px; font-size: 13px; }
+  .verified { display: none; }
+  .panelNote { font-size: 13px; }
+  .requirementPort { width: 10px; height: 10px; left: -6px; }
+}
+.alignment[data-layout="short"] .cardContent small { display: none; }
+.alignment[data-layout="short"] .cardContent strong { font-size: 14px; }
+.alignment[data-layout="short"] .cardIcon { width: 22px; height: 22px; }
+.alignment[data-layout="short"] .cardIcon svg { width: 16px; height: 16px; }
+.alignment[data-layout="short"] .evidenceCard { padding: 8px 10px; }
+.alignment[data-layout="short"] .cardContent { gap: 8px; }
+.alignment[data-layout="short"] .jobHeader h3 { font-size: 18px; }
+.alignment[data-layout="short"] .jobHeader > span { max-width: none; font-size: 13px; }
+.alignment[data-layout="short"] .rowMain { grid-template-columns: 16px minmax(0, 1fr) auto; gap: 6px; }
+.alignment[data-layout="short"] .rowMain > strong { font-size: 13px; }
+.alignment[data-layout="short"] .rowState { grid-column: auto; font-size: 13px; padding: 3px 6px; }
+.alignment[data-layout="short"] .requirement { padding-block: 2px; }
+.alignment[data-layout="short"] .sourceDetail, .alignment[data-compact="1"] .sourceDetail { display: none; }
+.alignment[data-layout="short"] .panelNote { font-size: 13px; }
+.alignment[data-compact="1"] .requirement { padding-block: 2px; }
+.alignment[data-compact="1"] .mobileEvidence { padding-block: 4px; row-gap: 1px; }
+.alignment[data-compact="1"] .mobileEvidence select { min-height: 28px; }
+@media (max-height: 850px) and (min-width: 520px) {
+  .evidenceCard { padding: 10px 16px; }
+  .evidenceCard[aria-pressed="true"] { padding-inline: 15px; }
+  .cardContent { gap: 12px; }
+  .cardContent strong { font-size: 18px; line-height: 1.2; }
+  .cardContent small { margin-top: 4px; font-size: 14px; line-height: 1.35; }
+  .cardIcon { width: 34px; height: 34px; }
+}
+@media (max-width: 359px) {
+  .jobHeader h3 { font-size: 18px; }
+  .jobHeader > span { max-width: 96px; line-height: 1.2; }
+}
+@media (prefers-reduced-motion: reduce) { .signal { animation: none; } }

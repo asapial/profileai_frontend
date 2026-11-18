@@ -1,0 +1,283 @@
+/* Approved continuation of the evidence inspector: solid panels, violet accents and physical paper. */
+.section:global(.static-section),.section:global(.bottom-cta),.footer:global(.story-footer) {
+  --rd-surface:#fff; --rd-inset:#eeeaf6; --rd-edge:#d9cee7; --rd-accent:#7130cf; --rd-tile:#eadef8; --rd-band:#ede5f8; --rd-shadow:#36214e24;
+  display:block; width:min(1600px,calc(100% - var(--story-gutter)*2)); margin:0 auto; padding-block:clamp(64px,6vw,96px); color:var(--story-ink);
+}
+:global(.dark) :is(.section,.footer) { --rd-surface:#242838; --rd-inset:#1b1e2e; --rd-edge:#514662; --rd-accent:#bf84ff; --rd-tile:#3b2d50; --rd-band:#252036; --rd-shadow:#0005; }
+.section:global(.bottom-cta) { background:transparent; }
+.section .heading { max-width:none; margin:0; font-size:clamp(36px,4.1vw,60px); line-height:1.06; letter-spacing:-.045em; font-weight:650; }
+.lede { max-width:56ch; margin:24px 0 0; color:var(--story-soft); font-size:16px; line-height:1.7; }
+.sectionHeading { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.8fr); gap:48px; align-items:end; margin:0 0 48px; }
+.sectionHeading .lede { margin:0; }
+.split { display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); align-items:center; gap:clamp(36px,5vw,80px); }
+.intro > a { margin-top:28px; }
+.section :is(h3,h4,p) { overflow-wrap:break-word; }
+.section h3 { margin:0; font-size:24px; line-height:1.25; font-weight:650; letter-spacing:-.025em; }
+.section h4 { margin:24px 0 12px; font-size:22px; line-height:1.25; font-weight:650; letter-spacing:-.025em; }
+.panel { min-width:0; overflow:hidden; border:1px solid var(--rd-edge); border-radius:24px; padding:28px; background:var(--rd-surface); box-shadow:0 18px 44px -30px var(--rd-shadow); } /* taste-skill-ignore: User-approved tactile product surfaces. */
+.panelHeader { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px 20px; font-size:14px; margin-bottom:28px; font-weight:600; }
+.quiet,.small { color:var(--story-soft); font-size:14px; line-height:1.6; font-weight:400; }
+.small { margin:18px 0 0; }
+.iconTile { display:inline-grid; place-items:center; flex:none; width:48px; height:48px; border-radius:13px; background:var(--rd-tile); color:var(--story-purple); }
+.sourceStamp { display:flex; align-items:center; gap:16px; margin-top:48px; color:var(--story-purple); font-size:14px; line-height:1.6; }
+.sourceStamp > svg { flex:none; width:48px; height:48px; padding:12px; border-radius:50%; background:var(--rd-tile); }
+.sourceStamp strong { color:var(--story-ink); font-size:16px; font-weight:600; }
+.journeyTabs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; padding:6px; background:var(--rd-inset); border-radius:18px; }
+.journeyTabs button { display:grid; justify-items:center; align-content:center; gap:10px; min-height:94px; border:0; padding:14px 6px; border-radius:13px; color:var(--story-soft); background:transparent; font-size:14px; font-weight:600; cursor:pointer; transition:transform 180ms ease; }
+.journeyTabs button[aria-selected="true"] { color:var(--story-purple); background:var(--rd-surface); }
+.journeyTabs button:active { transform:scale(.97); }
+.journeyPanel { min-height:332px; padding-top:28px; animation:panel-enter 200ms ease-out; }
+.demoTitle { display:flex; gap:13px; align-items:flex-start; margin-bottom:24px; }
+.demoTitle > svg { color:var(--story-purple); flex:none; margin-top:5px; }
+.demoTitle p { color:var(--story-soft); font-size:14px; line-height:1.6; margin:6px 0 0; }
+.draft,.interview,.documentSample { background:var(--rd-inset); border-radius:16px; padding:24px; }
+.draft > p { margin:12px 0 0; font-size:16px; line-height:1.7; }
+.docHeading { display:flex; flex-wrap:wrap; align-items:center; gap:10px; font-size:14px; }
+.docHeading svg { color:var(--story-purple); }
+.status { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:8px; background:var(--story-matched-bg); color:var(--story-matched); font-size:14px; line-height:1.45; font-weight:600; }
+.docHeading .status { margin-left:auto; }
+.status[data-tone="missing"] { background:var(--story-missing-bg); color:var(--story-missing); }
+.status[data-tone="partial"] { background:var(--story-related-bg); color:var(--story-purple); }
+.section mark { padding:2px 4px; border-radius:4px; color:var(--story-purple); background:var(--rd-tile); box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+.sourceStrip { display:flex; align-items:center; gap:9px; margin-top:22px; color:var(--story-purple); font-size:14px; line-height:1.6; }
+.sourceStrip svg { flex:none; }
+.requirements { display:grid; gap:12px; }
+.requirements > div { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:18px; border-radius:12px; background:var(--rd-inset); font-size:16px; }
+.interview > div:not(:last-child) { display:grid; grid-template-columns:72px minmax(0,1fr); gap:16px; margin-bottom:16px; }
+.interview > div > span { color:var(--story-purple); font-size:14px; font-weight:600; }
+.interview p { margin:0; font-size:16px; line-height:1.6; }
+.panelFooter { display:flex; align-items:center; gap:9px; margin-top:24px; color:var(--story-soft); font-size:14px; line-height:1.6; }
+.panelFooter svg { flex:none; color:var(--story-purple); }
+.workbench { display:grid; grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr); gap:32px; align-items:start; }
+.viewTabs { display:grid; gap:14px; }
+.viewTabs button { position:relative; display:flex; align-items:flex-start; gap:16px; padding:24px; border:0; border-radius:18px; text-align:left; background:transparent; color:var(--story-ink); cursor:pointer; }
+.viewTabs button[aria-selected="true"] { background:var(--rd-band); }
+.viewTabs button[aria-selected="true"]::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--rd-accent); border-radius:18px 0 0 18px; }
+.viewTabs button > span:nth-child(2) { display:grid; gap:9px; min-width:0; }
+.viewTabs strong { font-size:24px; line-height:1.25; letter-spacing:-.025em; font-weight:650; }
+.viewTabs button > span > span { font-size:16px; line-height:1.6; color:var(--story-soft); }
+.viewTabs button > svg:last-child { flex:none; color:var(--story-purple); margin-top:10px; }
+.section .workbenchPanel { padding:32px; min-height:470px; gap:0; background:var(--rd-surface); }
+.documentSample h3 { margin:24px 0 20px; }
+.claimLine { margin:12px 0; font-size:16px; line-height:1.7; }
+.evidenceDisclosure { margin-top:24px; padding:20px; border-radius:16px; border:1px solid var(--rd-accent); background:var(--rd-band); }
+.evidenceDisclosure summary { display:flex; align-items:center; gap:12px; min-height:44px; cursor:pointer; font-size:16px; font-weight:600; list-style:none; }
+.evidenceDisclosure summary::-webkit-details-marker { display:none; }
+.evidenceDisclosure summary svg { flex:none; color:var(--story-purple); }
+.evidenceDisclosure summary svg:last-child { margin-left:auto; }
+.evidenceDisclosure blockquote { margin:16px 0 0; font-size:16px; line-height:1.65; }
+.exportList { display:grid; gap:18px; padding-top:8px; }
+.exportList > div { display:flex; align-items:center; gap:16px; padding:18px; border-radius:14px; background:var(--rd-inset); font-size:16px; }
+.exportList .status { margin-left:auto; }
+.exportList > a { justify-self:start; margin-top:14px; }
+.storyCanvas { padding:clamp(28px,4.5vw,64px); border-radius:28px; background:var(--rd-band); }
+.storyTop { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; }
+.storyTop blockquote { font-size:24px; line-height:1.5; letter-spacing:-.02em; margin:0; }
+.storyTop figcaption { margin-top:20px; font-size:14px; line-height:1.65; color:var(--story-soft); }
+.storyTop figure { margin:0; }
+.storyPath { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:32px; padding:0; margin:48px 0 0; list-style:none; }
+.storyPath li { position:relative; min-width:0; }
+.storyPath .iconTile { margin-bottom:22px; background:var(--rd-surface); }
+.storyPath p { margin:12px 0 0; font-size:16px; line-height:1.65; }
+.storyPath h3 { font-size:22px; }
+.section .gallery { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:40px; margin-top:0; padding:40px 36px 28px; border-radius:28px; background:var(--rd-band); }
+.section .templateCard { display:block; min-width:0; color:var(--story-ink); text-decoration:none; }
+.paperStage { position:relative; width:100%; max-width:320px; margin:auto; padding-bottom:44px; perspective:1100px; }
+.section .paper { position:relative; display:block; width:100%; aspect-ratio:210/297; height:auto; min-height:0; padding:0; overflow:hidden; border:1px solid var(--rd-edge); border-radius:5px; background:#fff; box-shadow:0 16px 30px -17px var(--rd-shadow); transform:none; transition:transform 240ms ease; } /* taste-skill-ignore: Actual A4 catalog papers stand above their approved reflective floor. */
+.paper img { display:block; width:100%; height:100%; object-fit:contain; }
+.templateCard:hover .paper { transform:translateY(-6px); }
+.reflection { position:absolute; bottom:0; left:0; right:0; height:38px; overflow:hidden; pointer-events:none; opacity:.22; mask-image:linear-gradient(#000,transparent); } /* taste-skill-ignore: User-requested paper reflection. */
+.reflection img { display:block; width:100%; height:auto; transform:scaleY(-1); transform-origin:center; }
+.templateBody { display:grid; gap:9px; padding:18px 4px 0; }
+.templateBody p { color:var(--story-soft); font-size:16px; line-height:1.6; margin:0; }
+.templateBody > span { display:inline-flex; align-items:center; gap:8px; min-height:44px; color:var(--story-purple); font-weight:600; font-size:16px; }
+.allowancePanel { margin-top:40px; overflow:hidden; padding:8px 28px; border-radius:24px; background:var(--rd-surface); }
+.section .allowanceTable { width:100%; border-collapse:collapse; }
+.section .allowanceTable :is(th,td) { padding:24px 20px; font-size:16px; text-align:left; }
+.section .allowanceTable thead th { color:var(--story-soft); font-weight:600; background:transparent; }
+.section .allowanceTable tbody th { font-weight:600; }
+.section .allowanceTable tbody tr:nth-child(even) { background:transparent; }
+.section .allowanceTable tbody tr + tr { border-top:1px solid var(--rd-edge); }
+.section .allowanceTable .pro { color:var(--story-purple); background:var(--rd-band); }
+.allowanceTable td strong { font-size:24px; font-weight:650; font-variant-numeric:tabular-nums; }
+.allowanceTable td span { color:var(--story-soft); font-size:14px; margin-left:4px; }
+.section .pricingGrid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; margin-top:40px; }
+.section .priceCard { display:flex; flex-direction:column; gap:0; padding:32px; min-width:0; border-radius:24px; background:var(--rd-surface); }
+.section .featured { background:var(--rd-band); }
+.planDescription { color:var(--story-soft); font-size:16px; line-height:1.6; margin:14px 0 0; min-height:52px; }
+.section .price { display:flex; align-items:baseline; flex-wrap:wrap; gap:10px; margin:28px 0 0; }
+.price strong { color:var(--story-ink); font-size:64px; line-height:1; font-weight:650; letter-spacing:-.05em; }
+.price > span { font-size:14px; color:var(--story-soft); }
+.section .featureList { display:grid; gap:15px; margin:32px 0; padding:0; list-style:none; font-size:16px; line-height:1.5; }
+.featureList li { display:flex; align-items:flex-start; gap:10px; }
+.featureCheck { width:12px; height:7px; margin-top:6px; color:var(--story-purple); flex:none; border-left:2px solid currentColor; border-bottom:2px solid currentColor; transform:rotate(-45deg); }
+.section .priceCard > a { min-height:50px; margin-top:auto; width:100%; gap:12px; }
+.section .secondaryButton { display:inline-flex; justify-content:center; align-items:center; padding:13px 20px; border-radius:999px; background:var(--rd-inset); color:var(--story-ink); font-size:16px; line-height:1.5; font-weight:600; }
+.faqLayout { display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:clamp(36px,6vw,96px); align-items:start; }
+.helpCard { display:flex; gap:16px; align-items:center; margin-top:32px; padding:22px; border-radius:18px; background:var(--rd-band); }
+.helpCard p { margin:0 0 8px; font-size:16px; }
+.helpCard a { display:inline-flex; align-items:center; min-height:44px; gap:8px; color:var(--story-purple); font-size:16px; font-weight:600; }
+.section .faqList { display:grid; gap:12px; }
+.section .faqItem { padding:0 24px; border:0 !important; border-left:4px solid transparent !important; border-radius:18px; background:var(--rd-surface); overflow:visible; }
+.section .faqItem[data-state="open"] { border-left-color:var(--rd-accent) !important; background:var(--rd-band); }
+.section .faqTrigger { gap:20px; min-height:78px; padding:20px 0 !important; font-size:16px !important; line-height:1.55; }
+.section .faqTrigger > svg { display:none; }
+.faqIndicator { flex:none; color:var(--story-purple); font-size:24px; line-height:1; }
+.faqIndicator::before { content:"+"; }
+.faqTrigger[data-state="open"] .faqIndicator::before { content:"−"; }
+.section .faqAnswer { padding:0 28px 24px 0 !important; color:var(--story-soft); font-size:16px; line-height:1.7; }
+.closing { padding:clamp(28px,5vw,72px); display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); gap:48px; align-items:center; border-radius:28px; background:var(--rd-band); }
+.closingCopy .lede { max-width:43ch; }
+.closingCopy > a { margin-top:30px; min-height:52px; }
+.closingChecks { display:flex; flex-wrap:wrap; gap:14px 22px; color:var(--story-soft); font-size:14px; margin-top:28px; }
+.closingChecks span { display:flex; align-items:center; gap:6px; }
+.closingChecks svg { color:var(--story-purple); }
+.section .closingPaper { width:min(100%,270px); margin:0 auto; padding:0; background:transparent; }
+.closingPaperInner { position:relative; padding-bottom:42px; }
+.closingPaperInner > img { display:block; width:100%; height:auto; aspect-ratio:210/297; background:#fff; border-radius:4px; box-shadow:0 18px 35px -20px var(--rd-shadow); transform:rotate(-4deg); } /* taste-skill-ignore: The approved standing A4 document and contact shadow. */
+.closingPaper :global(.cta-resume-preview__sheet) { margin-bottom:16px; display:grid; gap:4px; font-size:14px; background:transparent; padding:0; color:var(--story-ink); }
+.closingPaper :global(.cta-resume-preview__sheet) strong { font-size:16px; }
+.closingPaper :global(.cta-resume-preview__sheet) > span { color:var(--story-soft); }
+.footer:global(.story-footer) { padding-top:40px; padding-bottom:28px; }
+.footerMain { display:grid; grid-template-columns:minmax(0,1.5fr) 1fr 1fr; gap:56px; padding:40px 0; }
+.footer :global(.story-brand) { display:flex; align-items:center; gap:12px; font-size:26px; font-weight:650; letter-spacing:-.035em; }
+.footer :global(.footer-brand) p { color:var(--story-soft); font-size:16px; line-height:1.7; margin-top:20px; }
+.footer nav { gap:0; }
+.footer nav strong { font-size:16px; }
+.footer nav a { font-size:16px; }
+.wordmark { margin:24px 0 32px; color:var(--story-purple); font-size:clamp(58px,14vw,210px); font-weight:650; line-height:.9; letter-spacing:-.065em; }
+.footer :global(.footer-bottom) { margin:0; padding-top:24px; font-size:14px; }
+@supports(animation-timeline:view()) {
+  .section :is(.intro,.sectionHeading,.panel,.storyCanvas,.gallery,.allowancePanel,.pricingGrid,.faqLayout,.closing) { animation:reading-rise linear both; animation-timeline:view(); animation-range:entry 0% entry 35%; }
+}
+@keyframes reading-rise { from { transform:translate3d(0,20px,0); } to { transform:none; } }
+@keyframes panel-enter { from { transform:translateY(7px); } to { transform:none; } }
+@media(max-width:1100px) {
+  .split { grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:32px; }
+  .panel { padding:24px; }
+  .journeyTabs button { font-size:14px; padding-inline:2px; }
+  .workbench { grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); gap:24px; }
+  .viewTabs button { padding:20px 16px; gap:12px; }
+  .viewTabs button > svg:last-child { display:none; }
+  .viewTabs strong { font-size:22px; }
+  .section .workbenchPanel { padding:24px; }
+  .section .gallery { gap:24px; padding:28px; }
+  .section .priceCard { padding:24px; }
+}
+@media(max-width:900px) {
+  .split,.sectionHeading,.workbench,.storyTop,.faqLayout { grid-template-columns:minmax(0,1fr); gap:32px; }
+  .intro { max-width:680px; }
+  .sourceStamp { margin-top:28px; }
+  .sectionHeading { margin-bottom:32px; }
+  .viewTabs { grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+  .viewTabs button { display:grid; padding:18px; gap:14px; }
+  .viewTabs strong { font-size:20px; }
+  .viewTabs button > span > span { display:none; }
+  .section .pricingGrid { grid-template-columns:1fr; gap:20px; }
+  .section .priceCard { display:grid; grid-template-columns:1fr 1.2fr; gap:0 32px; padding:32px; }
+  .section .priceCard .featureList { grid-column:2; grid-row:1 / span 4; margin:0; }
+  .section .priceCard > a { grid-column:1; margin-top:24px; }
+  .planDescription { min-height:0; }
+  .storyPath { gap:24px; }
+  .storyPath h3 { font-size:20px; }
+  .section .gallery { gap:20px; padding:24px; }
+  .section .gallery h3 { font-size:22px; }
+  .templateBody p { font-size:14px; }
+  .closing { padding:32px; gap:32px; }
+  .footerMain { gap:32px; }
+}
+@media(max-width:620px) {
+  .section:global(.static-section),.section:global(.bottom-cta) { padding-block:48px; }
+  .section .heading { font-size:clamp(32px,8.8vw,42px); }
+  .sectionHeading { gap:24px; }
+  .journeyTabs { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .journeyTabs button { min-height:74px; display:flex; justify-content:center; padding:12px 8px; gap:8px; }
+  .panel { padding:20px; border-radius:20px; }
+  .panelHeader { gap:8px; margin-bottom:22px; }
+  .journeyPanel { min-height:0; padding-top:24px; }
+  .draft,.interview,.documentSample { padding:20px; }
+  .docHeading .status { margin-left:0; }
+  .interview > div:not(:last-child) { grid-template-columns:minmax(0,1fr); gap:6px; }
+  .viewTabs { grid-template-columns:minmax(0,1fr); }
+  .viewTabs button { display:flex; align-items:center; padding:16px; }
+  .viewTabs strong { font-size:22px; }
+  .section .workbenchPanel { padding:20px; min-height:0; }
+  .evidenceDisclosure { padding:16px; }
+  .evidenceDisclosure summary { gap:9px; }
+  .exportList > div { flex-wrap:wrap; gap:12px; padding:14px; }
+  .exportList .status { margin-left:0; }
+  .storyCanvas { padding:28px 22px; border-radius:22px; }
+  .storyTop { gap:28px; }
+  .storyTop blockquote { font-size:22px; }
+  .storyPath { grid-template-columns:minmax(0,1fr); gap:28px; margin-top:36px; }
+  .storyPath li { display:grid; grid-template-columns:48px minmax(0,1fr); gap:0 16px; }
+  .storyPath .iconTile { grid-row:1 / span 2; margin:0; }
+  .storyPath p { margin-top:10px; }
+  .section .gallery { grid-template-columns:minmax(0,1fr); gap:40px; padding:28px; }
+  .paperStage { max-width:250px; }
+  .templateBody { max-width:300px; margin:auto; }
+  .templateBody p { font-size:16px; }
+  .allowancePanel { padding:0; margin-top:28px; border:0; background:transparent; }
+  .section .allowanceTable { border-collapse:separate; }
+  .allowanceTable thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+  .allowanceTable tbody { display:grid; gap:20px; }
+  .section .allowanceTable tr { display:grid; overflow:hidden; border:1px solid var(--rd-edge) !important; border-radius:18px; background:var(--rd-surface); }
+  .section .allowanceTable tbody th { padding:20px; background:var(--rd-inset); }
+  .section .allowanceTable :is(th,td) { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 20px; }
+  .allowanceTable td::before { content:attr(data-plan); font-size:16px; font-weight:600; color:var(--story-ink); margin-right:auto; }
+  .allowanceTable td > span { margin-left:-12px; }
+  .section .priceCard { display:flex; padding:28px; }
+  .section .priceCard .featureList { margin:28px 0; }
+  .section .priceCard > a { margin-top:auto; }
+  .price strong { font-size:56px; }
+  .section .faqItem { padding-inline:20px; }
+  .section .faqTrigger { gap:16px; }
+  .section .faqAnswer { padding-right:0 !important; }
+  .helpCard { padding:20px; }
+  .closing { grid-template-columns:minmax(0,1fr); gap:36px; padding:32px 24px; border-radius:22px; }
+  .closingCopy > a { width:100%; }
+  .section .closingPaper { max-width:230px; }
+  .footerMain { grid-template-columns:1fr 1fr; gap:32px; padding-top:12px; }
+  .footer :global(.footer-brand) { grid-column:1 / -1; }
+  .wordmark { margin-block:16px 32px; }
+}
+@media(prefers-reduced-motion:reduce) { .section *, .section *::before,.section *::after { animation:none !important; transition:none !important; } }
+:global(.story-page--reduced) .section * { animation:none !important; transition:none !important; }
+@media(max-width:359px) { .storyCanvas { padding-inline:18px; } .storyCanvas .heading { font-size:30px; } }
+
+/* Full-width approved environments replace the former inset colored fields. */
+.section .storyCanvas { background:transparent; padding:0; border-radius:0; }
+.section .gallery { background:transparent; }
+.section .closing { background:transparent; }
+.section .pricingGrid { padding-bottom:36px; row-gap:64px; }
+.section .priceCard { position:relative; isolation:isolate; box-shadow:0 16px 28px -24px var(--rd-shadow); } /* taste-skill-ignore: Plan cards stand on the approved architectural platforms. */
+.priceCard::before { content:""; position:absolute; z-index:-1; left:-12px; right:-12px; bottom:-27px; height:30px; border-radius:50% / 24%; background:linear-gradient(90deg,var(--environment-face),var(--environment-floor) 32%,var(--environment-fold) 75%,var(--environment-floor)); box-shadow:0 18px 25px -16px var(--rd-shadow); } /* taste-skill-ignore: The approved plan-stage front faces and floor contact. */
+.priceCard::after { content:""; position:absolute; z-index:-1; left:-12px; right:-12px; bottom:-10px; height:24px; border-radius:50%; background:linear-gradient(110deg,var(--environment-face),var(--environment-floor)); } /* taste-skill-ignore: Elliptical top face of each pricing platform. */
+.featured::before { background:linear-gradient(90deg,var(--environment-fold),var(--story-action),var(--environment-fold)); } /* taste-skill-ignore: The approved violet front face of the Pro platform. */
+.featured::after { background:linear-gradient(110deg,var(--environment-face),var(--story-action)); box-shadow:0 0 24px -6px var(--rd-accent); } /* taste-skill-ignore: The approved focused violet Pro platform. */
+.section .closingPaperInner { padding-bottom:66px; isolation:isolate; }
+.closingPaperInner > img { position:relative; z-index:3; transform:perspective(1100px) rotateY(-5deg); }
+.closingPaperInner::before { content:""; position:absolute; z-index:1; bottom:20px; left:-11%; width:122%; height:42px; border-radius:0 0 50% 50% / 0 0 40% 40%; background:linear-gradient(90deg,var(--environment-fold),var(--story-action) 35%,var(--environment-floor) 70%,var(--environment-fold)); box-shadow:0 20px 26px -16px var(--rd-shadow); } /* taste-skill-ignore: The requested round resume dais and contact shadow. */
+.closingPaperInner::after { content:""; position:absolute; z-index:2; bottom:52px; left:-11%; width:122%; height:22px; border-radius:50%; background:radial-gradient(ellipse,var(--environment-face),var(--environment-fold) 65%,var(--rd-accent)); box-shadow:0 0 28px -7px var(--rd-accent); } /* taste-skill-ignore: The requested illuminated circular top face. */
+.footer .wordmark { position:relative; isolation:isolate; }
+.footer .wordmark::before { content:"ProfileAI"; position:absolute; inset:0; z-index:-1; color:var(--environment-extrusion); transform:translate(4px,6px); }
+@media(max-width:620px) { .section .gallery { padding-inline:20px; } .section .closing { padding:24px 12px; } }
+
+/* The approved plinths are rendered solids; their width follows the real cards. */
+.section .pricingGrid { padding-bottom:64px; row-gap:90px; }
+.priceCard::before { left:-20px; right:-20px; bottom:-43px; height:auto; aspect-ratio:871/160; border-radius:0; box-shadow:none; background:url('/art/environments-v2/plinth-light.webp') center / 100% 100% no-repeat; }
+:global(.dark) .priceCard::before { background-image:url('/art/environments-v2/plinth-dark.webp'); }
+.priceCard::after { display:none; }
+.priceCard::before { filter:hue-rotate(-25deg) saturate(.5) brightness(.8); }
+.featured::before { filter:brightness(.8); }
+.section .closingPaperInner { padding-bottom:100px; }
+.closingPaperInner::before { top:calc(100% - 140px); bottom:auto; left:-15%; width:130%; height:auto; aspect-ratio:714/235; border-radius:0; box-shadow:none; background:url('/art/environments-v2/dais-light.webp') center / 100% 100% no-repeat; }
+:global(.dark) .closingPaperInner::before { background-image:url('/art/environments-v2/dais-dark.webp'); }
+.closingPaperInner::after { display:none; }
+.templateBody { position:relative; isolation:isolate; }
+:global(.dark) .templateBody::before { content:none; } /* The quiet caption field lives in the shared floor lighting, preserving an uninterrupted studio. */
+/* The card face occludes the back of the physical plinth, including on wide tablet cards. */
+.section .priceCard { background:transparent; }
+.priceCard::before { z-index:-2; }
+.priceCard::after { content:""; display:block; position:absolute; inset:0; z-index:-1; height:auto; border-radius:inherit; background:var(--rd-surface); box-shadow:none; }
+.featured::after { background:var(--rd-band); }

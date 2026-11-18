@@ -1,0 +1,46 @@
+/* The approved nine environments are native artwork, with opaque product UI above it. */
+.surface {
+  --story-soft:#30394d;
+  --environment-ground:#eee9f3; --environment-floor:#d8cfe5; --environment-face:#d7c7e4; --environment-fold:#b9a5c8;
+  --environment-edge:#8156b0; --environment-light:#e8cffb; --environment-paper:#f9f5ed; --environment-extrusion:#9b7fba;
+}
+:global(.story-page) .surface[data-reading-section],:global(.story-page) .surface[data-trust-evidence] { position:relative; isolation:isolate; background:transparent; }
+.surface[data-trust-evidence] { --environment-ground:#ebe6f1; --environment-floor:#d7cbe2; }
+.surface[data-reading-section="workspace"] { --environment-ground:#e4edf6; --environment-floor:#c7d6e7; --environment-face:#b7c9e1; --environment-edge:#708fc0; --environment-light:#d2c5fa; }
+.surface[data-reading-section="showcase"] { --environment-ground:#efece7; --environment-floor:#dfdbd7; --environment-face:#d7d0d0; --environment-fold:#cfc3cf; --environment-light:#e5d7eb; }
+.surface[data-reading-section="story"] { --environment-ground:#deece8; --environment-floor:#bdd6d2; --environment-face:#bfd5d2; --environment-fold:#bfd9d4; --environment-edge:#5a9695; --environment-light:#d3ede7; }
+.surface[data-reading-section="templates"] { --environment-ground:#eee5f0; --environment-floor:#d3c5db; --environment-face:#c8b7d5; --environment-fold:#bc9dcf; --environment-light:#fbf3fc; }
+.surface[data-reading-section="pricing"] { --environment-ground:#e3eaf3; --environment-floor:#c0ccdf; --environment-face:#b8c6d8; --environment-fold:#b3c0d5; --environment-light:#c5b1e9; }
+.surface[data-reading-section="faq"] { --environment-ground:#eee6ef; --environment-face:#cfb9d3; --environment-fold:#b89ec3; --environment-floor:#e4d6e7; }
+.surface[data-reading-section="closing"] { --environment-ground:#ede5f4; --environment-floor:#d5c5e6; --environment-face:#bda3d9; --environment-light:#dcb5ff; }
+.surface[data-reading-section="footer"] { --environment-ground:#e9e6ef; --environment-floor:#dcd4e7; --environment-light:#d2b8ec; }
+:global(.dark) .surface {
+  --story-soft:#d2d9e8;
+  --story-purple:#cfb4ff;
+  --environment-ground:#191627; --environment-floor:#302341; --environment-face:#453453; --environment-fold:#59436e;
+  --environment-edge:#a579d7; --environment-light:#6c408d; --environment-paper:#4e405f; --environment-extrusion:#65417e;
+}
+:global(.dark) .surface[data-trust-evidence] { --environment-ground:#191627; --environment-floor:#2f2341; }
+:global(.dark) .surface[data-reading-section="workspace"] { --environment-ground:#111f2e; --environment-floor:#20364b; --environment-face:#30485e; --environment-edge:#7fa7d3; --environment-light:#56407e; }
+:global(.dark) .surface[data-reading-section="showcase"] { --environment-ground:#1b1a24; --environment-floor:#282936; --environment-face:#37313d; --environment-fold:#4c4457; --environment-light:#604970; }
+:global(.dark) .surface[data-reading-section="story"] { --environment-ground:#142c33; --environment-floor:#1c404b; --environment-face:#28515b; --environment-fold:#27525b; --environment-edge:#639baf; --environment-light:#365b6b; }
+:global(.dark) .surface[data-reading-section="templates"] { --environment-ground:#241b2d; --environment-floor:#39294a; --environment-face:#50325f; --environment-fold:#6c477f; --environment-light:#754f8b; }
+:global(.dark) .surface[data-reading-section="pricing"] { --environment-ground:#142132; --environment-floor:#263750; --environment-face:#33475f; --environment-fold:#415977; --environment-light:#604186; }
+:global(.dark) .surface[data-reading-section="faq"] { --environment-ground:#221b2c; --environment-floor:#36273d; --environment-face:#4f385c; --environment-fold:#6e4c7c; }
+:global(.dark) .surface[data-reading-section="closing"] { --environment-ground:#20152e; --environment-floor:#39234e; --environment-face:#79538c; --environment-light:#8a4fbb; }
+:global(.dark) .surface[data-reading-section="footer"] { --environment-ground:#14131f; --environment-floor:#272034; --environment-light:#4b325e; }
+.environment { position:absolute; z-index:-1; top:0; bottom:0; left:50%; width:100vw; transform:translateX(-50%); overflow:hidden; pointer-events:none; background:var(--environment-ground); mask-image:linear-gradient(to bottom,transparent,#000 40px,#000 calc(100% - 40px),transparent); } /* taste-skill-ignore: User-approved environmental art and softened section boundaries. */
+/* Foreground entrance animations must not replace the full-width scenery's centering transform. */
+.surface > .environment { animation:none !important; }
+.environment::after { content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(180deg,var(--environment-ground),transparent 38%,transparent 62%,var(--environment-ground)); opacity:.78; } /* taste-skill-ignore: Quiet ink fields protect headings and floor captions while the physical room stays visible. */
+:global(.dark) .environment[data-environment="templates"]::after { background:linear-gradient(180deg,var(--environment-ground),transparent 35%,transparent 58%,var(--environment-ground) 76%,var(--environment-ground)); opacity:.8; } /* taste-skill-ignore: Continuous floor lighting protects captions without adding boxes over the real reflections. */
+/* These are actual perspective-lit 3D renders, rather than stretched SVG planes. */
+.plate { position:absolute; inset:0; background-image:var(--room-light); background-size:cover; background-position:center; background-repeat:no-repeat; }
+:global(.dark) .plate { background-image:var(--room-dark); }
+:global(.dark) .surface[data-trust-evidence] .plate { filter:brightness(.7); }
+:global(.dark) .surface[data-reading-section="story"] .plate { filter:brightness(.5); }
+@media(max-width:620px) {
+  .plate { background-image:var(--room-light-mobile); }
+  :global(.dark) .plate { background-image:var(--room-dark-mobile); }
+  .environment { mask-image:linear-gradient(to bottom,transparent,#000 28px,#000 calc(100% - 28px),transparent); } /* taste-skill-ignore: The approved soft section boundary, shortened for phones. */
+}

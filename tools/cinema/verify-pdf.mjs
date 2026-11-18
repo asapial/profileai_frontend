@@ -58,6 +58,8 @@ const pdf = bytes.toString("latin1");
 
 check("pdf header", pdf.startsWith("%PDF-1.4\n"), JSON.stringify(pdf.slice(0, 12)));
 check("pdf trailer", pdf.trimEnd().endsWith("%%EOF"), JSON.stringify(pdf.slice(-24)));
+const mediaBox = pdf.match(/\/MediaBox \[0 0 ([\d.]+) ([\d.]+)\]/);
+check("PDF is physical A4, 210 × 297 mm", !!mediaBox && Math.abs(Number(mediaBox[1]) * 25.4 / 72 - 210) < .001 && Math.abs(Number(mediaBox[2]) * 25.4 / 72 - 297) < .001);
 
 const xrefMatch = pdf.match(/startxref\n(\d+)\n%%EOF/);
 check("startxref present", xrefMatch !== null);

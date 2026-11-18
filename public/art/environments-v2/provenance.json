@@ -1,0 +1,271 @@
+{
+  "generator": "tools/cinema/environment-scene.mjs",
+  "renderer": "Three.js physical geometry, studio lighting, shadow maps and planar reflections",
+  "inputPapers": "public/templates/story",
+  "assets": [
+    {
+      "file": "closing-dark-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 22890
+    },
+    {
+      "file": "closing-dark.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 61236
+    },
+    {
+      "file": "closing-light-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 16108
+    },
+    {
+      "file": "closing-light.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 52318
+    },
+    {
+      "file": "dais-dark.webp",
+      "width": 714,
+      "height": 235,
+      "bytes": 13646
+    },
+    {
+      "file": "dais-light.webp",
+      "width": 714,
+      "height": 234,
+      "bytes": 10300
+    },
+    {
+      "file": "faq-dark-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 12368
+    },
+    {
+      "file": "faq-dark.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 16434
+    },
+    {
+      "file": "faq-light-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 8828
+    },
+    {
+      "file": "faq-light.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 12872
+    },
+    {
+      "file": "footer-dark-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 26938
+    },
+    {
+      "file": "footer-dark.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 49112
+    },
+    {
+      "file": "footer-light-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 17446
+    },
+    {
+      "file": "footer-light.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 33708
+    },
+    {
+      "file": "graph-dark-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 10420
+    },
+    {
+      "file": "graph-dark.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 26380
+    },
+    {
+      "file": "graph-light-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 7656
+    },
+    {
+      "file": "graph-light.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 19468
+    },
+    {
+      "file": "plinth-dark.webp",
+      "width": 871,
+      "height": 160,
+      "bytes": 12524
+    },
+    {
+      "file": "plinth-light.webp",
+      "width": 871,
+      "height": 160,
+      "bytes": 11144
+    },
+    {
+      "file": "pricing-dark-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 11250
+    },
+    {
+      "file": "pricing-dark.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 28536
+    },
+    {
+      "file": "pricing-light-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 8018
+    },
+    {
+      "file": "pricing-light.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 20592
+    },
+    {
+      "file": "showcase-dark-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 23132
+    },
+    {
+      "file": "showcase-dark.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 40314
+    },
+    {
+      "file": "showcase-light-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 15758
+    },
+    {
+      "file": "showcase-light.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 26844
+    },
+    {
+      "file": "story-dark-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 38412
+    },
+    {
+      "file": "story-dark.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 74544
+    },
+    {
+      "file": "story-light-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 31206
+    },
+    {
+      "file": "story-light.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 61436
+    },
+    {
+      "file": "templates-dark-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 17988
+    },
+    {
+      "file": "templates-dark.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 43196
+    },
+    {
+      "file": "templates-light-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 10892
+    },
+    {
+      "file": "templates-light.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 29550
+    },
+    {
+      "file": "trust-dark-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 18326
+    },
+    {
+      "file": "trust-dark.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 29802
+    },
+    {
+      "file": "trust-light-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 11068
+    },
+    {
+      "file": "trust-light.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 18370
+    },
+    {
+      "file": "workspace-dark-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 28806
+    },
+    {
+      "file": "workspace-dark.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 53298
+    },
+    {
+      "file": "workspace-light-mobile.webp",
+      "width": 768,
+      "height": 1400,
+      "bytes": 19226
+    },
+    {
+      "file": "workspace-light.webp",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 36934
+    }
+  ]
+}

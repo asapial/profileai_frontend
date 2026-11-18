@@ -13,10 +13,10 @@ export const SCENE_COUNT = 8;
 export const SCENE_SPAN = SCENE_COUNT;
 /**
  * Per-segment scroll allocation in viewports (rest n → rest n+1). Act 1 opens
- * on a generous 1.2-viewport frame, scenes 2–7 move at 0.6 each, and the finale
- * settles over a full viewport: ≈5.8 viewports of travel for the whole story.
+ * on a generous 1.2-viewport frame. Each transformation then gets nearly a full
+ * viewport so its source, travel and destination can all be followed.
  */
-export const SCENE_DISTANCES = [1.2, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 1.0] as const;
+export const SCENE_DISTANCES = [1.2, 0.9, 0.85, 0.95, 1.0, 1.0, 0.9, 1.0] as const;
 /** Total sticky runway in viewports, including the opening sticky frame. */
 export const RUNWAY = SCENE_DISTANCES.reduce((sum, step) => sum + step, 0) + 1;
 
@@ -112,6 +112,14 @@ export type CinemaLine = {
 export const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 export const smoothstep = (value: number) => value * value * (3 - 2 * value);
 const mix = (a: number, b: number, t: number) => a + (b - a) * t;
+
+/** Scroll-owned material changes stay in step with the object path in both directions. */
+export function sampleEvidence(p: number) {
+  return {
+    form: smoothstep(clamp01((p - 2.18) / 0.72)),
+    match: smoothstep(clamp01((p - 2.52) / 0.4)),
+  };
+}
 
 const poseOf = (key: CinemaKey): Required<CinemaPose> => ({
   x: key.x,
@@ -263,15 +271,15 @@ export const DOCK_LABELS: { label: string; icon: IconName }[] = [
 // ── Camera ───────────────────────────────────────────────────────────────────
 
 export const CAMERA_KEYS: CinemaKey[] = [
-  { at: 0, x: 250, y: 34, z: -40, rx: 6, ry: 0 },
-  { at: 1, x: -360, y: 10, z: -330, rx: 10, ry: -7, arc: 60 },
-  { at: 2, x: 180, y: 0, z: -130, rx: 5, ry: 0, arc: 40 },
-  { at: 3, x: -22, y: 0, z: -205, rx: 4, ry: 5, arc: 26 },
-  { at: 4, x: 0, y: -12, z: -70, rx: 3, ry: 0, arc: 20 },
-  { at: 5, x: 0, y: 12, z: -440, rx: 9, ry: -4, arc: 54 },
-  { at: 6, x: 120, y: 0, z: -250, rx: 3, ry: -7, arc: 30 },
-  { at: 7, x: 0, y: 10, z: -255, rx: 2, ry: 0, arc: 18 },
-  { at: 8, x: 0, y: 8, z: -250, rx: 2, ry: 0 },
+  { at: 0, x: 250, y: 34, z: -40, rx: 3, ry: 0 },
+  { at: 1, x: -200, y: 28, z: -210, rx: 4, ry: -3, arc: 16 },
+  { at: 2, x: 180, y: 14, z: -80, rx: 2, ry: 0, arc: 12 },
+  { at: 3, x: -22, y: 20, z: -120, rx: 2, ry: 2, arc: 10 },
+  { at: 4, x: 0, y: 30, z: -20, rx: 1.5, ry: 0, arc: 10 },
+  { at: 5, x: 0, y: 40, z: -270, rx: 4, ry: -2, arc: 16 },
+  { at: 6, x: 100, y: 34, z: -150, rx: 1.5, ry: -2, arc: 12 },
+  { at: 7, x: 0, y: 22, z: -170, rx: 1, ry: 0, arc: 10 },
+  { at: 8, x: 0, y: 20, z: -170, rx: 1, ry: 0 },
 ];
 
 // ── Object keyframes ─────────────────────────────────────────────────────────
@@ -304,20 +312,20 @@ function groupBands(id: string, group: string | undefined): BandMark[] | undefin
   return undefined;
 }
 
-const chipScenes = (index: number, scenes: ScenePose[]) => expandScenes(CHIPS[index]!.id, "chip", scenes, 6);
+const chipScenes = (index: number, scenes: ScenePose[]) => expandScenes(CHIPS[index]!.id, "chip", scenes, 2);
 
 /** Chips: scattered → clustered → card tags → match tags → stack → gone. */
 const CHIP_SCENES: ScenePose[][] = [
-  [[-440, -170, 120], [-395, -185, 140, 0.58], [-470, -150, 110, 0.42], [-500, -196, 60, 0.36, 0.16], [-180, -56, -150, 0.3, 0.12], null, null, null],
-  [[-260, 110, 170], [-205, -185, 150, 0.58], [-360, -150, 115, 0.42], [-430, -196, 64, 0.36, 0.16], [-158, -47, -156, 0.3, 0.12], null, null, null],
-  [[360, -200, 90], [-300, -35, 130, 0.58], [-470, -75, 105, 0.42], [-360, -196, 58, 0.36, 0.16], [-136, -38, -162, 0.3, 0.12], null, null, null],
-  [[-170, 150, 150], [180, -125, 100, 0.58], [-360, -75, 95, 0.42], [-390, -84, 62, 0.36, 0.16], [-114, -29, -168, 0.3, 0.12], null, null, null],
-  [[330, 120, 70], [360, -230, 110, 0.58], [-470, 0, 100, 0.42], [-470, -84, 66, 0.36, 0.16], [-92, -20, -174, 0.3, 0.12], null, null, null],
-  [[-490, -10, 60], [-500, 30, 90, 0.58], [-360, 0, 100, 0.42], [-470, 28, 60, 0.36, 0.16], [-70, -11, -180, 0.3, 0.12], null, null, null],
-  [[-450, 190, 100], [-345, 30, 80, 0.58], [-470, 75, 95, 0.42], [-390, 28, 58, 0.36, 0.16], [-48, -2, -186, 0.3, 0.12], null, null, null],
-  [[430, -50, 140], [398, 190, 120, 0.58], [-360, 75, 110, 0.42], [-470, 140, 64, 0.36, 0.16], [-26, 7, -192, 0.3, 0.12], null, null, null],
-  [[400, 210, 130], [243, 254, 110, 0.58], [-470, 150, 100, 0.42], [-390, 140, 60, 0.36, 0.16], [-4, 16, -198, 0.3, 0.12], null, null, null],
-  [[150, 162, 90], [40, 330, 100, 0.58], [-360, 150, 90, 0.42], [-430, 252, 60, 0.36, 0.16], [18, 25, -204, 0.3, 0.12], null, null, null],
+  [[-260, -190, 120], [-305, -185, 140, 0.75], [-470, -150, 110, 0.65], [-500, -196, 60, 0.36, 0], [-180, -56, -150, 0.3, 0], null, null, null],
+  [[-250, 110, 170], [-115, -185, 150, 0.75], [-330, -150, 115, 0.65], [-430, -196, 64, 0.36, 0], [-158, -47, -156, 0.3, 0], null, null, null],
+  [[270, -210, 90], [-210, -35, 130, 0.75], [-470, -75, 105, 0.65], [-360, -196, 58, 0.36, 0], [-136, -38, -162, 0.3, 0], null, null, null],
+  [[-100, 210, 150], [90, -125, 100, 0.75], [-330, -75, 95, 0.65], [-390, -84, 62, 0.36, 0], [-114, -29, -168, 0.3, 0], null, null, null],
+  [[290, 100, 70], [250, -230, 110, 0.75], [-470, 0, 100, 0.65], [-470, -84, 66, 0.36, 0], [-92, -20, -174, 0.3, 0], null, null, null],
+  [[-310, -20, 60], [-380, 30, 90, 0.75], [-330, 0, 100, 0.65], [-470, 28, 60, 0.36, 0], [-70, -11, -180, 0.3, 0], null, null, null],
+  [[-310, 250, 100], [-230, 30, 80, 0.75], [-470, 75, 95, 0.65], [-390, 28, 58, 0.36, 0], [-48, -2, -186, 0.3, 0], null, null, null],
+  [[230, -50, 140], [270, 190, 120, 0.75], [-330, 75, 110, 0.65], [-470, 140, 64, 0.36, 0], [-26, 7, -192, 0.3, 0], null, null, null],
+  [[240, 260, 130], [145, 254, 110, 0.75], [-470, 150, 100, 0.65], [-390, 140, 60, 0.36, 0], [-4, 16, -198, 0.3, 0], null, null, null],
+  [[20, 280, 90], [0, 330, 100, 0.75], [-330, 150, 90, 0.65], [-430, 252, 60, 0.36, 0], [18, 25, -204, 0.3, 0], null, null, null],
 ];
 
 export const CHIP_OBJECTS: CinemaObject[] = CHIP_SCENES.map((scenes, index) => chipScenes(index, scenes));
@@ -378,16 +386,16 @@ export const MESH: CinemaObject = {
 };
 
 /** Cards are born as network nodes, become evidence cards, then match rows, then a stack.
- *  Grid at scene 3 is a 2 × 3 evidence layout with the chip cluster on the left, and the
- *  alignment column at scene 4 holds until the split view has been read. */
+ *  These world paths supply the early node anchors. The screen-space neural
+ *  graph and alignment views own the later presentation and its handoff positions. */
 type CardPath = { node: [number, number, number]; grid: [number, number, number]; colY: number | null; ghost: [number, number, number, number]; tail: number };
 const CARD_PATHS: Record<string, CardPath> = {
-  "card-summary": { node: [0, -10, 120], grid: [-90, -190, 60], colY: null, ghost: [-170, -20, -150, 0.1], tail: 4.2 },
-  "card-skills": { node: [-300, -130, 100], grid: [400, -190, 80], colY: -174, ghost: [-152, -17, -150, 0.1], tail: 4.15 },
-  "card-experience": { node: [-350, 80, 60], grid: [-90, 5, 70], colY: 62, ghost: [-140, -8, -160, 0.1], tail: 4.15 },
-  "card-projects": { node: [270, -180, 70], grid: [-90, 200, 66], colY: -56, ghost: [-128, 1, -170, 0.1], tail: 4.15 },
-  "card-achievements": { node: [322, 228, 90], grid: [400, 5, 72], colY: 180, ghost: [-116, 10, -180, 0.1], tail: 4.15 },
-  "card-education": { node: [40, 270, 70], grid: [400, 200, 64], colY: 298, ghost: [-104, 19, -190, 0.1], tail: 4.15 },
+  "card-summary": { node: [0, -10, 120], grid: [-90, -190, 60], colY: null, ghost: [-380, 0, 20, 0], tail: 3.98 },
+  "card-skills": { node: [-250, -130, 100], grid: [300, -190, 80], colY: -190, ghost: [-380, 0, 20, 0], tail: 3.98 },
+  "card-experience": { node: [-300, 80, 60], grid: [-90, 5, 70], colY: 70, ghost: [-380, 0, 20, 0], tail: 3.98 },
+  "card-projects": { node: [150, -180, 70], grid: [-90, 200, 66], colY: -60, ghost: [-380, 0, 20, 0], tail: 3.98 },
+  "card-achievements": { node: [200, 160, 90], grid: [300, 5, 72], colY: 200, ghost: [-380, 0, 20, 0], tail: 3.98 },
+  "card-education": { node: [0, 270, 70], grid: [300, 200, 64], colY: 330, ghost: [-380, 0, 20, 0], tail: 3.98 },
 };
 
 const cardKeys = (path: CardPath): CinemaKey[] => {
@@ -402,8 +410,9 @@ const cardKeys = (path: CardPath): CinemaKey[] => {
       ? [{ at: 1.7, x: -30, y: -140, z: 100, s: 0.9, o: 0 } as CinemaKey]
       : []),
     { at: 2, x: gridX, y: gridY, z: gridZ, s: 1, o: 1 },
-    { at: column === null ? 2.9 : 3, x: -430, y: column ?? -175, z: 40, s: 0.68, o: column === null ? 0 : 1, arc: 40 },
-    { at: 3.42, x: -430, y: column ?? -175, z: 40, s: 0.68, o: column === null ? 0 : 1 },
+    { at: column === null ? 2.9 : 3, x: -430, y: column ?? -175, z: 40, s: 0.74, o: column === null ? 0 : 1, arc: 20 },
+    { at: 3.26, x: -430, y: column ?? -175, z: 40, s: 0.74, o: column === null ? 0 : 1 },
+    { at: 3.72, x: ghostX, y: ghostY, z: ghostZ, s: 0.65, o: column === null ? 0 : 0.8, arc: 20 },
     { at: path.tail, x: ghostX, y: ghostY, z: ghostZ, s: 0.5, o: ghostO, arc: 30 },
     { at: 5.3, x: ghostX, y: ghostY, z: ghostZ, s: 0.5, o: 0 },
     { at: 8, x: ghostX, y: ghostY, z: ghostZ, s: 0.5, o: 0 },
@@ -412,7 +421,7 @@ const cardKeys = (path: CardPath): CinemaKey[] => {
 
 export const CARD_OBJECTS: CinemaObject[] = CARDS.map((card) => ({
   id: card.id,
-  float: 5,
+  float: 1.5,
   bands: groupBands(card.id, "card"),
   keys: cardKeys(CARD_PATHS[card.id]!),
 }));
@@ -455,10 +464,10 @@ const PANELS: PanelSpec[] = [
   {
     id: "panel-analysis",
     keys: [
-      { at: 0.4, x: 440, y: 10, z: 60, s: 0.96, o: 0, ry: -5 },
-      { at: 0.64, x: 440, y: 10, z: 60, s: 0.96, o: 0, ry: -5 },
-      { at: 0.98, x: 430, y: 10, z: 60, s: 1, o: 1, ry: -5 },
-      { at: 1.55, x: 430, y: 10, z: 60, s: 1, o: 1, ry: -5 },
+      { at: 0.4, x: 500, y: 170, z: 60, s: 0.96, o: 0, ry: -2 },
+      { at: 0.64, x: 500, y: 170, z: 60, s: 0.96, o: 0, ry: -2 },
+      { at: 0.98, x: 500, y: 170, z: 60, s: 1, o: 1, ry: -2 },
+      { at: 1.55, x: 500, y: 170, z: 60, s: 1, o: 1, ry: -2 },
       { at: 1.92, x: 300, y: 20, z: 0, s: 1, o: 0, ry: -8, arc: 30 },
       { at: 3, x: 260, y: 40, z: -260, s: 0.9, o: 0, ry: -8 },
       { at: 8, x: 260, y: 40, z: -260, s: 0.9, o: 0, ry: -8 },
@@ -470,8 +479,8 @@ const PANELS: PanelSpec[] = [
       { at: 0, x: 330, y: 10, z: 60, s: 0.96, o: 0 },
       { at: 2.5, x: 330, y: 10, z: 60, s: 0.96, o: 0 },
       { at: 2.92, x: 330, y: 10, z: 60, s: 1, o: 1 },
-      { at: 3.55, x: 330, y: 10, z: 60, s: 1, o: 1 },
-      { at: 3.62, x: 0, y: -310, z: -200, s: 0.52, o: 0.3, arc: 26 },
+      { at: 3.26, x: 330, y: 10, z: 60, s: 1, o: 1 },
+      { at: 3.66, x: 0, y: -120, z: -100, s: 0.65, o: 0.35, arc: 16 },
       { at: 3.95, x: 0, y: -350, z: -460, s: 0.46, o: 0 },
       { at: 8, x: 0, y: -350, z: -460, s: 0.44, o: 0 },
     ],
@@ -479,10 +488,11 @@ const PANELS: PanelSpec[] = [
   {
     id: "panel-original",
     keys: [
-      { at: 3.45, x: -390, y: 0, z: 20, s: 0.98, o: 0, ry: 4 },
-      { at: 3.82, x: -380, y: 0, z: 40, s: 1, o: 1, ry: 4 },
-      { at: 4.7, x: -380, y: 0, z: 40, s: 1, o: 1, ry: 4 },
-      { at: 5.0, x: -430, y: 10, z: -120, s: 0.9, o: 0, ry: 8 },
+      { at: 3.56, x: -380, y: 0, z: 20, s: 0.65, o: 0, ry: 2 },
+      { at: 3.96, x: -380, y: 0, z: 40, s: 1, o: 1, ry: 2 },
+      { at: 4.32, x: -380, y: 0, z: 40, s: 1, o: 1, ry: 2 },
+      { at: 4.68, x: -80, y: 10, z: 80, s: 0.7, o: 0.8, ry: 0, arc: 18 },
+      { at: 4.94, x: 90, y: 10, z: 160, s: 0.38, o: 0, ry: 0 },
       { at: 8, x: -430, y: 10, z: -120, s: 0.9, o: 0, ry: 8 },
     ],
   },
@@ -491,8 +501,9 @@ const PANELS: PanelSpec[] = [
     keys: [
       { at: 3.55, x: 390, y: 0, z: 60, s: 0.98, o: 0, ry: -4 },
       { at: 3.92, x: 380, y: 0, z: 80, s: 1, o: 1, ry: -4 },
-      { at: 4.75, x: 380, y: 0, z: 80, s: 1, o: 1, ry: -4 },
-      { at: 5.02, x: 430, y: 10, z: -120, s: 0.9, o: 0, ry: -8 },
+      { at: 4.34, x: 380, y: 0, z: 80, s: 1, o: 1, ry: -2 },
+      { at: 4.66, x: 140, y: 10, z: 140, s: 0.8, o: 1, ry: 0, arc: 18 },
+      { at: 4.96, x: 90, y: 10, z: 180, s: 0.55, o: 0, ry: 0 },
       { at: 8, x: 430, y: 10, z: -120, s: 0.9, o: 0, ry: -8 },
     ],
     interactive: { from: 3.7, to: 5.4 },
@@ -532,7 +543,8 @@ const PANELS: PanelSpec[] = [
 const TEMPLATE_SLOT_KEYS: CinemaKey[][] = [
   [
     { at: 0, x: 0, y: 10, z: -840, s: 1, o: 0 },
-    { at: 4.55, x: 60, y: 10, z: 200, s: 0.96, o: 0 },
+    { at: 4.36, x: 380, y: 0, z: 80, s: 0.7, o: 0 },
+    { at: 4.68, x: 140, y: 10, z: 180, s: 0.9, o: 0.55 },
     { at: 5.0, x: 90, y: 10, z: 200, s: 1.04, o: 1, arcZ: 30 },
     { at: 5.6, x: 140, y: 10, z: 60, s: 1.06, ry: -4 },
     { at: 6.05, x: 0, y: 20, z: 130, s: 1.22, ry: 0, arc: 24 },
@@ -572,21 +584,23 @@ export function templateSlot(index: number, selectedIndex: number) {
 export { TEMPLATE_SLOT_KEYS };
 
 /** Content blocks that dock into the document during assembly. */
-export const DOCK_HOLD = 5.72;
-export const DOCK_STEP = 0.09;
+export const DOCK_HOLD = 5.5;
+export const DOCK_STEP = 0.14;
+export const DOCK_TRAVEL = 0.36;
 export const BLOCK_OBJECTS: CinemaObject[] = DOCK_LABELS.map((_, index) => {
   const hold = DOCK_HOLD + index * DOCK_STEP;
-  const land = hold + 0.22;
+  const land = hold + DOCK_TRAVEL;
   const stackY = -170 + index * 72;
-  const dockY = -150 + index * 66;
+  const dockY = -136 + index * 76;
   return {
     id: `block-${index}`,
     keys: [
       { at: 0, x: -462, y: stackY, z: 24, s: 0.92, o: 0 },
-      { at: 5.3, x: -462, y: stackY, z: 24, s: 0.92, o: 0 },
-      { at: 5.56, x: -462, y: stackY, z: 24, s: 0.92, o: 1 },
+      { at: 5.24, x: -462, y: stackY, z: 24, s: 0.92, o: 0 },
+      { at: 5.46, x: -462, y: stackY, z: 24, s: 0.92, o: 1 },
       { at: hold, x: -470, y: stackY, z: 24, s: 0.92, o: 1 },
-      { at: land, x: 110, y: dockY, z: 150, s: 0.42, o: 0, arc: 46 },
+      { at: land, x: 0, y: dockY + 20, z: 150, s: 0.8, o: 1, arc: 26 },
+      { at: land + 0.1, x: 0, y: dockY + 20, z: 140, s: 0.8, o: 0 },
       { at: 6.9, x: 40, y: dockY - 10, z: 150, s: 0.42, o: 0 },
       { at: 8, x: 40, y: dockY - 10, z: 150, s: 0.42, o: 0 },
     ],
@@ -597,15 +611,72 @@ export const OBJECTS: CinemaObject[] = [CORE, MESH, ORB, ...CHIP_OBJECTS, ...CAR
 
 export const OBJECT_BY_ID: ReadonlyMap<string, CinemaObject> = new Map(OBJECTS.map((object) => [object.id, object]));
 
+/** Portrait phones keep the same objects and timeline, with their own readable composition. */
+export const COMPACT_CAMERA_KEYS: CinemaKey[] = [200, 70, 40, 50, 100, 60, 60, 0, 0]
+  .map((y, at) => ({ at, x: 0, y, z: 0, rx: 0, ry: 0 }));
+
+const compactKeys = (points: [number, number, number, number?][]): CinemaKey[] =>
+  points.map(([at, x, y, s = 1]) => ({ at, x, y, z: 0, s }));
+
+const COMPACT_LAYOUTS: Record<string, CinemaKey[]> = {
+  core: compactKeys([[0, 0, 55, .8], [1, 0, 0, .65], [1.95, -116, -110, .4]]),
+  mesh: compactKeys([[0, 0, 0, .85]]),
+  orb: compactKeys([[0, 200, -25, .4]]),
+  'panel-analysis': compactKeys([[0, 0, 250, .9]]),
+  'panel-job': compactKeys([[0, 0, 30]]),
+  'panel-original': compactKeys([[0, 0, -130, .85], [4.32, 0, -130, .85], [4.94, 0, 40, .55]]),
+  'panel-suggestion': compactKeys([[0, 0, 160, .95], [4.34, 0, 160, .95], [4.96, 0, 40, .65]]),
+  'panel-final': compactKeys([[0, 0, 245, .85]]),
+  'intro-final': compactKeys([[0, 0, -300]]),
+  ...Object.fromEntries(CARDS.map((card, index) => {
+    const nodes = [[0, -20], [-145, -125], [-145, 100], [145, -125], [145, 100], [0, 175]];
+    const [nx, ny] = nodes[index]!;
+    const gx = index % 2 ? 116 : -116;
+    const gy = -110 + Math.floor(index / 2) * 150;
+    return [card.id, compactKeys([[0, nx!, ny!, .6], [1, nx!, ny!, .6], [2, gx, gy], [2.8, 0, 30, .65]])];
+  })),
+};
+
+const COMPACT_TEMPLATE_KEYS = compactKeys([[4.36, 0, 160, .65], [4.68, 0, 80, .85], [5, 0, 40], [6, 0, 10], [6.7, 0, -90, .55], [8, 0, -90, .55]]);
+
+/** Reframe before projecting: shrinking a wide desktop world would make phone text illegible. */
+export function sampleCompactPose(id: string, p: number, pose: Required<CinemaPose>, selected = true): Required<CinemaPose> {
+  if (id === 'panel-assembly') return { ...pose, o: 0 };
+  let layout = COMPACT_LAYOUTS[id];
+  if (id.startsWith('tpl-')) {
+    if (!selected) return { ...pose, o: 0 };
+    layout = COMPACT_TEMPLATE_KEYS;
+  }
+  const compact = layout ? samplePose(layout, p) : null;
+  const result = {
+    ...pose,
+    x: compact?.x ?? pose.x,
+    y: compact?.y ?? pose.y,
+    z: Math.max(-80, Math.min(60, pose.z * .3)),
+    rx: 0, ry: 0, rz: 0,
+    s: compact?.s ?? pose.s,
+  };
+  if (id.startsWith('card-')) result.o *= 1 - smoothstep(clamp01((p - 2.35) / .45));
+  if (id.startsWith('chip-')) {
+    const index = CHIPS.findIndex((chip) => chip.id === id);
+    const positions = [[-135, -80], [0, 180], [140, -60]];
+    const [x, y] = positions[index % 3]!;
+    result.x = x!;
+    result.y = y!;
+    result.s = .9;
+    result.o *= 1 - smoothstep(clamp01((p - 1.25) / .65));
+  }
+  if (id.startsWith('block-')) {
+    result.x = pose.x * .38;
+    result.s = pose.s * .72;
+  }
+  if (id === 'orb') result.o *= 1 - smoothstep(clamp01((p - 4.65) / .3));
+  return result;
+}
+
 // ── Connection lines ─────────────────────────────────────────────────────────
 
 const lineOpacity = (values: [number, number][]): ValueKey[] => values.map(([at, o]) => ({ at, o }));
-
-const wireKeys = (from: number, peak: number, to: number): ValueKey[] => [
-  { at: from, o: 0 },
-  { at: from + 0.18, o: peak },
-  { at: to, o: 0 },
-];
 
 export const LINES: CinemaLine[] = [
   ...CHIPS.map((chip, index) => ({
@@ -632,43 +703,13 @@ export const LINES: CinemaLine[] = [
     keys: lineOpacity([[0.55, 0], [0.95, 0.5], [1.75, 0.45], [2.0, 0.14], [2.6, 0.12], [3.2, 0.08], [4.2, 0]]),
     pulse: 1,
   })),
-  ...CARDS.filter((card) => card.id !== "card-summary").map((card, index) => ({
-    id: `l-match-${index}`,
-    from: card.id,
-    to: "panel-job",
-    tone: card.match.tone as LineTone,
-    keys: lineOpacity([[2.72, 0], [3.02, 0.9], [3.62, 0.85], [3.8, 0.12], [3.98, 0]]),
-    fromOffset: { x: 118, y: 0 },
-    toOffset: { x: -216, y: -84 + index * 52 },
-    pulse: 1,
-  })),
-  {
-    id: "l-orb-original",
-    from: "orb",
-    to: "panel-original",
-    tone: "wire",
-    keys: wireKeys(3.62, 0.65, 5.5),
-    fromOffset: { x: -60, y: 0 },
-    toOffset: { x: 150, y: 0 },
-    pulse: 1,
-  },
-  {
-    id: "l-orb-suggestion",
-    from: "orb",
-    to: "panel-suggestion",
-    tone: "wire",
-    keys: wireKeys(3.72, 0.65, 5.5),
-    fromOffset: { x: 60, y: 0 },
-    toOffset: { x: -150, y: 0 },
-    pulse: 1,
-  },
   ...BLOCK_OBJECTS.map((_, index) => ({
     id: `l-block-${index}`,
     from: `block-${index}`,
     to: "selected",
     tone: "wire" as LineTone,
-    keys: lineOpacity([[5.68 + index * 0.09, 0], [5.78 + index * 0.09, 0.5], [5.96 + index * 0.09, 0]]),
-    toOffset: { x: -40, y: -150 + index * 66 },
+    keys: lineOpacity([[DOCK_HOLD + index * DOCK_STEP, 0], [DOCK_HOLD + index * DOCK_STEP + 0.1, 0.8], [DOCK_HOLD + index * DOCK_STEP + DOCK_TRAVEL + 0.1, 0]]),
+    toOffset: { x: 0, y: -136 + index * 76 },
   })),
   ...JOB_ROWS.map((row, index) => ({
     id: `l-doc-action-${index}`,
@@ -685,5 +726,5 @@ export const LINE_OBJECTS: CinemaLine[] = LINES;
 
 /** Docked section count during scene 07 assembly. */
 export function dockedCount(p: number) {
-  return Math.max(0, Math.min(DOCK_LABELS.length, Math.floor((p - (DOCK_HOLD + 0.1)) / DOCK_STEP) + 1));
+  return Math.max(0, Math.min(DOCK_LABELS.length, Math.floor((p - (DOCK_HOLD + DOCK_TRAVEL) + 1e-9) / DOCK_STEP) + 1));
 }

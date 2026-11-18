@@ -1,0 +1,62 @@
+.gallery { position: absolute; inset: 0; z-index: 5; pointer-events: none; color: var(--cg-ink); contain: layout style; --gallery-proof: #17694e; --gallery-proof-bg: #e1f1e8; }
+:global(.dark) .gallery { --gallery-proof: #82e2bb; --gallery-proof-bg: #25463e; }
+.visual, .canvas, .fallback { position: absolute; inset: 0; width: 100%; height: 100%; }
+.visual { touch-action: pan-y; }
+.canvas { z-index: 2; pointer-events: auto; }
+.gallery[data-renderer="css"] .canvas { visibility: hidden; pointer-events: none; }
+.fallback { z-index: 1; perspective: 1500px; background:url('/art/environments-v2/templates-light.webp') center / cover no-repeat; }
+:global(.dark) .fallback { background-image:url('/art/environments-v2/templates-dark.webp'); }
+@media(max-width:599px) {
+  .fallback { background-image:url('/art/environments-v2/templates-light-mobile.webp'); }
+  :global(.dark) .fallback { background-image:url('/art/environments-v2/templates-dark-mobile.webp'); }
+}
+.fallback[data-hidden="1"] { visibility: hidden; pointer-events: none; }
+.fallbackFloor { position: absolute; left: -20%; right: -20%; top: var(--gallery-floor-y, 75%); bottom: -25%; background: linear-gradient(transparent, color-mix(in srgb, var(--cg-accent) 16%, var(--cg-bg))); opacity: var(--gallery-floor, 0); } /* taste-skill-ignore: Requested physical floor, retained in the WebGL fallback. */
+.fallbackFloor::after { content: ""; position: absolute; inset: 0; transform: perspective(650px) rotateX(55deg); transform-origin: 50% 0; background-image: linear-gradient(90deg, color-mix(in srgb, var(--cg-accent) 12%, transparent) 1px, transparent 1px), linear-gradient(color-mix(in srgb, var(--cg-accent) 12%, transparent) 1px, transparent 1px); background-size: 90px 65px; } /* taste-skill-ignore: Perspective floor texture from the approved reference. */
+.fallbackCard { position: absolute; top: 0; left: 0; padding: 5px; border: 1px solid var(--cg-edge-strong); border-radius: 7px; background: var(--cg-glass); transform-origin: center center; pointer-events: auto; box-shadow: 0 12px 30px -20px #0009; } /* taste-skill-ignore: Physical contact shadow on standing paper, explicitly requested. */
+.fallbackCard[aria-pressed="true"] { outline: 2px solid var(--cg-accent); outline-offset: 2px; }
+.fallbackCard img { display: block; width: 100%; height: 100%; background: #fff; object-fit: fill; }
+.paperFace { position:relative; width:100%; height:100%; }
+.sectionCover { position:absolute; background:#fff; pointer-events:none; opacity:0; }
+.fallbackCard .reflection { position: absolute; top: calc(100% + var(--reflection-gap,5px)); left: 0; transform: scaleY(-1); opacity: .16; mask-image: linear-gradient(transparent 50%,#000); pointer-events: none; } /* taste-skill-ignore: Requested floor reflection fading with distance. */
+.gallery[data-mode="preview"] .fallbackCard { padding:0; border:0; outline:0; border-radius:2px; background:#fff; pointer-events:none; }
+.gallery[data-mode="preview"] .fallbackCard img { object-fit:contain; }
+.fallbackPodium { position:absolute; top:0; left:0; z-index:3; opacity:0; border-radius:50%/34%; background:linear-gradient(90deg,#6c447f,#32223e 32%,#814da4 61%,#392647); box-shadow:0 16px 24px -12px #180d2c66; } /* taste-skill-ignore: The user's raised cylindrical dais needs a lit curved side and ground contact. */
+.fallbackPodium::before { content:""; position:absolute; inset:0 0 30%; border-radius:50%; border:2px solid #c18bf0; background:#34283f; }
+.fallbackPodium::after { content:""; position:absolute; left:0; top:95%; width:100%; height:85%; border-radius:50%; background:#9f6dc15c; filter:blur(7px); } /* taste-skill-ignore: Requested dais reflection in the CSS fallback. */
+:global(:root:not(.dark)) .fallbackPodium { background:linear-gradient(90deg,#b6a0cf,#dfcfe9 35%,#bba0d5 68%,#cab1dd); box-shadow:0 16px 24px -12px #51356355; } /* taste-skill-ignore: The requested physical dais keeps its lit front face and contact shadow in the light-mode fallback. */
+:global(:root:not(.dark)) .fallbackPodium::before { background:#ece2f5; border-color:#9b69cf; }
+.galleryFooter { position: absolute; z-index: 4; top: var(--gallery-footer-y, 80%); left: 50%; width: max-content; max-width: calc(100% - 40px); transform: translateX(-50%); text-align: center; pointer-events: auto; opacity: var(--gallery-copy, 0); }
+.galleryMeta { display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 28px; }
+.galleryMeta strong { font-size: 22px; font-weight: 650; line-height: 1.25; }
+.selected { display: inline-flex; align-items: center; gap: 5px; padding: 4px 8px; border-radius: 999px; background: var(--gallery-proof-bg); color: var(--gallery-proof); font-size: 13px; font-weight: 650; line-height: 1.35; }
+.description { margin: 7px auto 11px; max-width: 830px; color: var(--cg-muted); font-size: 14px; line-height: 1.4; }
+.controls { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px; }
+.controls button, .mobileChoice { min-height: 44px; border: 1px solid var(--cg-edge); border-radius: 999px; background: var(--cg-glass); color: var(--cg-ink); font: inherit; cursor: pointer; }
+.arrow { display: grid; place-items: center; width: 44px; padding: 0; flex: none; transition: transform 150ms var(--cg-ease); }
+.arrow:hover { transform: translateY(-2px); }
+.choices { display: flex; align-items: center; gap: 3px; padding: 4px; border-radius: 999px; background: var(--cg-glass); }
+.choices button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 36px; padding: 6px 12px; border: 0; color: var(--cg-muted); font-size: 13px; font-weight: 600; white-space: nowrap; transition: background-color 150ms ease, color 150ms ease; }
+.choices button[aria-pressed="true"] { background: var(--cg-action); color: #fff; }
+.controls button:focus-visible, .mobileChoice:focus-visible { outline: 2px solid var(--cg-accent); outline-offset: 3px; }
+.mobileChoice { display: none; padding: 8px 16px; font-size: 15px; font-weight: 600; min-width: 180px; max-width: 260px; }
+@media (max-width: 1099px) {
+  .choices, .description { display: none; }
+  .mobileChoice { display: block; }
+  .galleryMeta strong { font-size: 21px; }
+}
+@media (max-width: 599px) {
+  .galleryFooter { width: calc(100% - 40px); }
+  .controls { gap: 9px; }
+  .mobileChoice { flex: 1; min-width: 0; max-width: 240px; font-size: 14px; }
+  .galleryMeta strong { font-size: 20px; }
+  .selected { font-size: 13px; }
+}
+@media (max-height: 540px) and (min-width: 600px) {
+  .description, .choices { display: none; }
+  .mobileChoice { display: block; min-width: 190px; font-size: 14px; }
+  .galleryMeta { min-height: 24px; }
+  .galleryMeta strong { font-size: 18px; }
+  .controls { margin-top: 6px; }
+}
+@media (prefers-reduced-motion: reduce) { .controls button { transition: none; } }

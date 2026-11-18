@@ -5,23 +5,37 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import {
-  ArrowDown, ArrowUpRight, BarChart3, BriefcaseBusiness, Check, ChevronLeft, ChevronRight,
-  Code2, Download, FileText, FolderKanban, GraduationCap, Link2, MousePointer2, Pause, Play, Send,
+  ArrowDown, ArrowUpRight, BarChart3, BriefcaseBusiness, Check,
+  Code2, Download, FileText, FolderKanban, GraduationCap, Link2, Play, Send,
   ShieldCheck, Sparkles, Trophy, UserRound, X, type LucideIcon,
 } from "lucide-react";
 import {
-  CAMERA_KEYS, CARDS, CHAPTERS, CHAPTER_WINDOW, CHIPS, DOCK_LABELS, JOB_ROWS, LINES, MESH_EDGES,
+  CAMERA_KEYS, COMPACT_CAMERA_KEYS, CARDS, CHAPTERS, CHAPTER_WINDOW, CHIPS, JOB_ROWS, LINES, MESH_EDGES,
   MESH_NEURONS, MESH_TONES, MESH_VIEW, MOTION, OBJECTS, RUNWAY, SCENE_CAPTIONS, SCENE_COUNT,
   SCENE_SPAN, TEMPLATES, TEMPLATE_SLOT_KEYS, clamp01, dockedCount, progressForUnit, samplePose,
-  sampleValue, smoothstep, templateSlot, unitForProgress, windowOpacity, type CinemaLine,
-  type CinemaPose, type IconName, type TemplateKey,
+  sampleValue, sampleEvidence, sampleCompactPose, smoothstep, templateSlot, unitForProgress, windowOpacity, type CinemaLine,
+  type CinemaPose, type IconName,
 } from "@/lib/career-cinema";
-import { LOCALE_STORAGE_KEY, STORY_COPY, STORY_LOCALES, type StoryCopy, type StoryLocale, type StoryOutputAction } from "@/lib/story-i18n";
+import { LOCALE_STORAGE_KEY, STORY_COPY, STORY_LOCALES, type StoryCopy, type StoryLocale } from "@/lib/story-i18n";
 import { storyIdentityFrom, type StoryIdentity } from "@/lib/story-identity";
 import { getCurrentUser } from "@/lib/auth";
 import { track } from "@/lib/analytics";
 import { downloadResume } from "@/lib/resume-pdf";
 import { useStoryStore } from "@/store/useStoryStore";
+import { NEURAL_INPUTS, NEURAL_NODES, NEURAL_OUTPUTS, neuralFocus, neuralLayout, sampleNeuralPoints, type NeuralPoint } from "@/lib/career-neural";
+import { alignmentLayout, alignmentState } from "@/lib/career-alignment";
+import { tailoringCenter, tailoringLayout, tailoringState, type TailoringDecision } from "@/lib/career-tailoring";
+import { galleryCenter, galleryLayout, galleryState } from "@/lib/career-gallery";
+import { assemblyState } from "@/lib/career-assembly";
+import { previewState } from "@/lib/career-preview";
+import { HOME_TEMPLATES, homeTemplate, homeTemplateAsset, homeTemplateSvg, type HomeTemplate } from "@/lib/home-templates";
+import { CareerAlignment, type AlignmentHandle } from "./CareerAlignment";
+import { CareerTailoring, type TailoringHandle } from "./CareerTailoring";
+import { CareerTemplateGallery, type TemplateGalleryHandle } from "./CareerTemplateGallery";
+import { CareerAssembly, type AssemblyHandle } from "./CareerAssembly";
+import { CareerResumePreview, type ResumePreviewHandle } from "./CareerResumePreview";
+import { NeuralEvidenceGraph, type NeuralGraphHandle } from "./NeuralEvidenceGraph";
+import { CinemaEnvironment, type CinemaEnvironmentHandle } from "./CinemaEnvironment";
 import styles from "./CareerCinema.module.css";
 
 /** The film renders wherever motion is allowed, phones included: the world
@@ -36,9 +50,10 @@ const worldFit = (width: number, height: number) => {
   const widthFit =
     width >= 2400 ? 1.18
       : width >= 1920 ? 1.1
-        : width <= 479 ? 0.42
-          : width <= 719 ? 0.6
-            : width <= 899 ? 0.68
+        : width <= 359 ? 0.66
+          : width <= 519 ? 0.78
+            : width <= 719 ? 0.5
+            : width <= 899 ? 0.58
               : width <= 999 ? 0.75
                 : width <= 1100 ? 0.82
                   : width <= 1279 ? 0.88
@@ -65,7 +80,7 @@ const NARRATIVE_LAYOUTS = [
   { side: "left", density: "compact" },
   { side: "left", density: "minimal" },
   { side: "left", density: "compact" },
-  { side: "left", density: "none" },
+  { side: "left", density: "minimal" },
 ] as const;
 
 const ICONS: Record<IconName, LucideIcon> = {
@@ -73,25 +88,6 @@ const ICONS: Record<IconName, LucideIcon> = {
   trophy: Trophy, graduation: GraduationCap, sparkles: Sparkles, users: UserRound,
   chart: BarChart3, link: Link2, user: UserRound, download: Download, send: Send, shield: ShieldCheck,
 };
-
-const OUTPUT_ROWS: { icon: IconName; row: StoryOutputAction; action: "download" | "share" | "register" }[] = [
-  { icon: "download", row: "download", action: "download" },
-  { icon: "link", row: "share", action: "share" },
-  { icon: "send", row: "register", action: "register" },
-  { icon: "chart", row: "track", action: "register" },
-];
-
-/**
- * Scene-05 tailored sentence, split so the phrases that come from the user's
- * evidence can be highlighted as word-level diff against the original.
- */
-const SUGGESTION_TEXT: { text: string; fresh?: boolean }[] = [
-  { text: "Developed " },
-  { text: "reusable React components", fresh: true },
-  { text: " for a customer dashboard, " },
-  { text: "improving load performance by 31%", fresh: true },
-  { text: "." },
-];
 
 /** Deterministic phase per object, so float and line pulses never sync up. */
 const PHASE: Record<string, number> = Object.fromEntries(
@@ -125,39 +121,18 @@ function Icon({ name, size }: { name: IconName; size: number }) {
   return <Component size={size} />;
 }
 
-function ResumeSheet({ variant, href, identity, copy }: { variant: TemplateKey; href?: { id: string; name: string }; identity: StoryIdentity; copy: StoryCopy }) {
+function ResumeSheet({ template, identity, decision }: { template: HomeTemplate; identity: StoryIdentity; decision: TailoringDecision }) {
+  const source = useMemo(() => identity.personal || decision === "accepted" ? homeTemplateSvg(template, identity, decision) : homeTemplateAsset(template), [template, identity, decision]);
   return (
-    <div className={`${styles.sheet} ${styles[`sheet--${variant}`]}`}>
-      <header>
+    <div className={`${styles.sheet} ${styles.catalogSheet}`} data-ui data-catalog-template={template.slug}>
+      <header className={styles.srOnly}>
         <span>{identity.name.toUpperCase()}</span>
         <p>Frontend Engineer</p>
-        <small>{identity.personal ? `${identity.email} · Your details · Portfolio` : `${identity.email} · Austin, TX · Portfolio`}</small>
+        <small>{template.name} · {identity.email}</small>
       </header>
-      <section className={styles.dock}>
-        <h4>Professional summary</h4>
-        <p>Frontend engineer building accessible products and thoughtful design systems with React and TypeScript.</p>
-      </section>
-      <section className={styles.dock}>
-        <h4>Work experience</h4>
-        <b>Frontend Engineer <em>2022 — Present</em></b>
-        <ul><li>Improved load performance by 31%.</li><li>Partnered with design and product teams.</li></ul>
-      </section>
-      <section className={styles.dock}>
-        <h4>Selected projects</h4>
-        <b>Customer Dashboard</b>
-        <p>A shared component library with accessible interfaces.</p>
-        <div className={styles.sheetLines}><i /><i /></div>
-      </section>
-      <section className={styles.dock}>
-        <h4>Skills</h4>
-        <div className={styles.sheetSkills}><span>React</span><span>TypeScript</span><span>UI systems</span><span>Git</span></div>
-      </section>
-      <section className={styles.dock}>
-        <h4>Education</h4>
-        <b>BSc in Computer Science</b>
-        <div className={styles.sheetLines}><i /></div>
-      </section>
-      {href ? <span className={styles.tplBadge}>{copy.sheet.selected(href.name)}</span> : null}
+      {/* The selected catalog layout stays identical through the gallery and assembly. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img className={styles.catalogPaper} src={source} width={794} height={1123} alt="" decoding="async" />
     </div>
   );
 }
@@ -200,7 +175,6 @@ function StoryChapters({ locale, copy, onSelect }: { locale: StoryLocale; copy: 
       {copy.chapters.map((chapter, index) => (
         <section key={chapter.title} className={styles.storyChapter} id={`chapter-${index + 1}`} aria-labelledby={`chapter-title-${index}`}>
           <div className={styles.storyChapter__head}>
-            <span className={styles.storyChapter__num}>{copy.pad2(index + 1)}</span>
             <div>
               {index === 0
                 ? <h1 id={`chapter-title-${index}`}>{chapter.title}</h1>
@@ -237,21 +211,23 @@ export function CareerCinema() {
   const root = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const world = useRef<HTMLDivElement>(null);
+  const neuralGraph = useRef<NeuralGraphHandle>(null);
+  const alignment = useRef<AlignmentHandle>(null);
+  const tailoring = useRef<TailoringHandle>(null);
+  const assembly = useRef<AssemblyHandle>(null);
+  const resumePreview = useRef<ResumePreviewHandle>(null);
+  const templateGallery = useRef<TemplateGalleryHandle>(null);
+  const roomBackdrop = useRef<CinemaEnvironmentHandle>(null);
   const objectNodes = useRef(new Map<string, HTMLElement>());
   const lineNodes = useRef(new Map<string, { bar: HTMLElement | null; dot: HTMLElement | null }>());
   const chapterNodes = useRef(new Map<number, HTMLElement>());
   const captionNodes = useRef(new Map<number, HTMLElement>());
   const heroNode = useRef<HTMLDivElement>(null);
-  const galleryNode = useRef<HTMLDivElement>(null);
-  const progressTextNode = useRef<HTMLSpanElement>(null);
-  const assemblyCountNode = useRef<HTMLParagraphElement>(null);
-  const pausedRef = useRef(false);
-  const dockedShown = useRef(-1);
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
   const pointer = useRef({ x: 0, y: 0, cx: 0, cy: 0 });
 
   const activeTemplate = useStoryStore((state) => state.activeTemplate);
-  const setActiveTemplate = useStoryStore((state) => state.setActiveTemplate);
+  const activeCatalogTemplate = useStoryStore((state) => state.activeCatalogTemplate);
+  const setActiveCatalogTemplate = useStoryStore((state) => state.setActiveCatalogTemplate);
   const activeStage = useStoryStore((state) => state.activeStage);
   const locale = useStoryStore((state) => state.locale);
   const setLocale = useStoryStore((state) => state.setLocale);
@@ -269,8 +245,6 @@ export function CareerCinema() {
   const [degraded, setDegraded] = useState(false);
   const [shareState, setShareState] = useState<"idle" | "copied" | "failed">("idle");
   const [playing, setPlaying] = useState(false);
-  /** Visitor-facing motion pause: ambient drift, float and trails stop; scroll stays 1:1. */
-  const [paused, setPaused] = useState(false);
   /** Dev-only scrub override, in scene units; null means "follow the scroll". */
   const [scrubValue, setScrubValue] = useState<number | null>(null);
   const midCtaNode = useRef<HTMLAnchorElement>(null);
@@ -281,12 +255,6 @@ export function CareerCinema() {
 
   /** Clear the share-status timer when the section unmounts. */
   useEffect(() => () => { if (shareTimer.current) clearTimeout(shareTimer.current); }, []);
-
-  /** Pause swaps the stage into its calm mode; CSS freezes the decorative layers. */
-  useEffect(() => {
-    pausedRef.current = paused;
-    if (stage.current) stage.current.dataset.motion = paused ? "paused" : "run";
-  }, [paused]);
 
   /** Deep link (?lang=bn) wins once; otherwise a stored explicit choice is restored. */
   useEffect(() => {
@@ -350,11 +318,11 @@ export function CareerCinema() {
     const unregister = useStoryStore.subscribe((state, previous) => {
       if (state.activeTemplate === previous.activeTemplate) return;
       const index = Math.max(0, TEMPLATES.findIndex((template) => template.id === state.activeTemplate));
-      templateState.current = {
+      Object.assign(templateState.current, {
         from: [...templateState.current.to],
         to: TEMPLATE_IDS.map((_, slot) => templateSlot(slot, index)),
         t: 0,
-      };
+      });
     });
     return unregister;
   }, []);
@@ -399,6 +367,8 @@ export function CareerCinema() {
     let errorCount = 0;
     let qualityEma = 16;
     let qualityFrames = 0;
+    let lastNeuralFocus = -1;
+    let lastAlignmentFocus = -1;
 
     /** Deep links: opening #scene-04 restores the story at chapter 04. */
     const hashScene = () => {
@@ -428,7 +398,7 @@ export function CareerCinema() {
       const travel = Math.max(1, filmHeight - viewport);
       const rectTop = filmTop - window.scrollY;
       const target = unitForProgress(clamp01(-rectTop / travel));
-      const calm = pausedRef.current;
+      const calm = !state.motionEnabled;
       const damping = state.motionEnabled && !calm ? 1 - Math.exp(-elapsed / MOTION.driveTau) : 1;
       if (drive === null) drive = target;
       else drive += (target - drive) * damping;
@@ -452,6 +422,24 @@ export function CareerCinema() {
       }
 
       const p = scrub.current ?? drive;
+      roomBackdrop.current?.update(p);
+      const neural = neuralFocus(p);
+      const aligned = alignmentState(p);
+      const tailored = tailoringState(p);
+      const gallery = galleryState(p);
+      const assembled = assemblyState(p);
+      const preview = previewState(p);
+      const panelFocus = Math.max(aligned.presence, tailored.presence, gallery.presence, assembled.presence, preview.presence);
+      if (Math.abs(panelFocus - lastAlignmentFocus) > .0001) {
+        stageElement.style.setProperty("--alignment-focus", panelFocus.toFixed(4));
+        lastAlignmentFocus = panelFocus;
+      }
+      const originalEvidence = 1 - smoothstep(clamp01(neural / .5));
+      const quietEvidence = Math.max(neural, windowOpacity(p, 1.82, 8.15, .28));
+      if (Math.abs(quietEvidence - lastNeuralFocus) > .0001) {
+        stageElement.style.setProperty("--neural-focus", quietEvidence.toFixed(4));
+        lastNeuralFocus = quietEvidence;
+      }
       // Scroll-linked exit: over the final scene unit the film hands off to the
       // reading zone — the world scales back and the chrome fades with it.
       // Scene 8 rests on p = 7, so the resting poses stay untouched.
@@ -468,41 +456,49 @@ export function CareerCinema() {
       pointer.current.cy += (pointer.current.y - pointer.current.cy) * pointerBlend;
 
       if (inFilm) {
-        const pose = samplePose(CAMERA_KEYS, p);
-        const breatheY = calm ? 0 : Math.sin(time * 0.00028) * 7;
-        const breatheX = calm ? 0 : Math.sin(time * 0.00021) * 4;
-        const rx = calm ? pose.rx : pose.rx - pointer.current.cy * 2.2 + Math.sin(time * 0.00016) * 0.5;
-        const ry = calm ? pose.ry : pose.ry + pointer.current.cx * 2.8 + Math.sin(time * 0.00019) * 0.7;
-        const driftX = calm ? 0 : pointer.current.cx * 18;
-        const driftY = calm ? 0 : pointer.current.cy * 12;
+        const compact = window.innerWidth <= 519;
+        const pose = samplePose(compact ? COMPACT_CAMERA_KEYS : CAMERA_KEYS, p);
+        const breatheY = calm ? 0 : Math.sin(time * 0.00028) * 2;
+        const breatheX = calm ? 0 : Math.sin(time * 0.00021) * 1.5;
+        const rx = calm ? pose.rx : pose.rx - pointer.current.cy * 0.8;
+        const ry = calm ? pose.ry : pose.ry + pointer.current.cx * 1.2;
+        const driftX = calm ? 0 : pointer.current.cx * 8;
+        const driftY = calm ? 0 : pointer.current.cy * 5;
         worldElement.style.transform =
           `scale(${(worldFit(window.innerWidth, window.innerHeight) * (1 - 0.12 * exitE)).toFixed(4)})` +
           ` translate3d(${(pose.x + breatheX + driftX).toFixed(2)}px, ${(pose.y + breatheY + driftY - exitE * 26).toFixed(2)}px, ${pose.z.toFixed(2)}px)` +
           ` rotateX(${rx.toFixed(3)}deg) rotateY(${ry.toFixed(3)}deg)`;
 
         const poses = new Map<string, Required<CinemaPose>>();
+        const evidence = sampleEvidence(p);
         const dockCount = dockedCount(p);
         const docked = String(dockCount);
         const selected = selectedId();
-        // The assembly panel repeats its progress line for the eye and for
-        // assistive tech (aria-hidden), synced to the blocks that have landed.
-        if (assemblyCountNode.current && dockedShown.current !== dockCount) {
-          dockedShown.current = dockCount;
-          assemblyCountNode.current.textContent = copyRef.current.assembly.docked(dockCount);
-        }
 
         for (const object of OBJECTS) {
           const isTemplate = object.id.startsWith("tpl-");
-          const objectPose = isTemplate ? templatePose(object.id, p) : samplePose(object.keys, p);
+          const authoredPose = isTemplate ? templatePose(object.id, p) : samplePose(object.keys, p);
+          const objectPose = compact ? sampleCompactPose(object.id, p, authoredPose, object.id === selected) : authoredPose;
           if (object.float && !calm) objectPose.y += Math.sin(time * 0.00055 + (PHASE[object.id] ?? 0)) * object.float;
           poses.set(object.id, objectPose);
           const node = objectNodes.current.get(object.id);
           if (!node) continue;
-          const visible = objectPose.o > 0.015;
+          const graphEvidence = CHIP_BY_ID.has(object.id) || CARD_BY_ID.has(object.id) || ["mesh", "core", "panel-analysis", "panel-job"].includes(object.id);
+          const replacedAlignment = p >= 2.2 && p <= 4.05 && (CARD_BY_ID.has(object.id) || CHIP_BY_ID.has(object.id) || object.id === "panel-job");
+          const nativeTailoring = object.id === "panel-original" || object.id === "panel-suggestion";
+          const orbHandoff = object.id === "orb" ? 0 : 1;
+          const nativeAssembly = object.id === "panel-assembly" || object.id.startsWith("block-");
+          const galleryHandoff = isTemplate || object.id === "intro-final" || object.id === "panel-final" ? 0 : 1;
+          const renderedOpacity = replacedAlignment || nativeTailoring || nativeAssembly ? 0 : objectPose.o * (graphEvidence ? originalEvidence : 1) * orbHandoff * galleryHandoff;
+          const visible = renderedOpacity > 0.005;
           if (node.style.visibility !== (visible ? "visible" : "hidden")) node.style.visibility = visible ? "visible" : "hidden";
           if (!visible) continue;
           node.style.transform = transformFor(objectPose);
-          node.style.opacity = objectPose.o.toFixed(3);
+          node.style.opacity = renderedOpacity.toFixed(4);
+          if (CARD_BY_ID.has(object.id)) {
+            node.style.setProperty("--card-form", evidence.form.toFixed(4));
+            node.style.setProperty("--card-match", evidence.match.toFixed(4));
+          }
           if (object.bands) {
             let band = object.bands[0]!.name;
             for (const mark of object.bands) if (p >= mark.at) band = mark.name;
@@ -524,6 +520,56 @@ export function CareerCinema() {
           }
         }
 
+        if (neural > .001 || aligned.presence > .001 || tailored.presence > .001 || gallery.presence > .001 || assembled.presence > .001 || preview.presence > .001) {
+          // Project the existing world anchors once. The same chips, mesh points
+          // and outputs then travel into the flat, readable neural composition.
+          const matrix = new DOMMatrix(worldElement.style.transform);
+          const project = (pose: Required<CinemaPose>) => {
+            const point = new DOMPoint(pose.x, pose.y, pose.z).matrixTransform(matrix);
+            const perspective = 1700 / (1700 - point.z);
+            return {
+              x: window.innerWidth / 2 + point.x * perspective,
+              y: viewport * .46 + (point.y + viewport * .04) * perspective,
+            };
+          };
+          const mesh = poses.get("mesh")!;
+          const matchLayout = alignmentLayout(window.innerWidth, viewport);
+          const matchPoint = (id: string) => matchLayout.cards.find((card) => card.id === id) ?? matchLayout.cards[0]!;
+          const incoming = new Map<string, NeuralPoint>();
+          const departure = smoothstep(clamp01((p - 2) / .4));
+          const anchors = NEURAL_NODES.map((node, index) => {
+            if (node.layer === 0) return project(poses.get(NEURAL_INPUTS[node.row]!.id)!);
+            if (node.layer === 4) return p > 2 ? matchPoint(NEURAL_OUTPUTS[node.row]!) : project(poses.get(NEURAL_OUTPUTS[node.row]!)!);
+            const neuron = MESH_NEURONS[(index * 3) % MESH_NEURONS.length]!;
+            const origin = project({
+              ...mesh,
+              x: mesh.x + (neuron.x - MESH_VIEW.w / 2) * 1240 / MESH_VIEW.w * mesh.s,
+              y: mesh.y + (neuron.y - MESH_VIEW.h / 2) * 930 / MESH_VIEW.h * mesh.s,
+            });
+            const destination = p > 2 ? matchPoint(NEURAL_OUTPUTS[node.row % NEURAL_OUTPUTS.length]!) : project(poses.get(NEURAL_OUTPUTS[node.row % NEURAL_OUTPUTS.length]!)!);
+            return { x: origin.x + (destination.x - origin.x) * departure, y: origin.y + (destination.y - origin.y) * departure };
+          });
+          neuralGraph.current?.update(p, window.innerWidth, viewport, anchors, calm);
+          if (neural > .001) {
+            const points = sampleNeuralPoints(p, neuralLayout(window.innerWidth, viewport).points, anchors);
+            NEURAL_NODES.forEach((node, index) => { if (node.layer === 4) incoming.set(NEURAL_OUTPUTS[node.row]!, points[index]!); });
+          }
+          const tailoringView = tailoringLayout(window.innerWidth, viewport);
+          alignment.current?.update(p, window.innerWidth, viewport, incoming, { evidence: tailoringView.ports.evidence, job: tailoringCenter(tailoringView.suggestion) }, calm);
+          const galleryView = galleryLayout(window.innerWidth, viewport);
+          tailoring.current?.update(p, window.innerWidth, viewport, { core: galleryView.floor, document: galleryCenter(galleryView.frame), documentRect: galleryView.frame });
+          templateGallery.current?.update(p, window.innerWidth, viewport, calm);
+          assembly.current?.update(p, window.innerWidth, viewport, templateGallery.current?.getRegions());
+          resumePreview.current?.update(p, window.innerWidth, viewport);
+        } else {
+          neuralGraph.current?.update(p, window.innerWidth, viewport, [], calm);
+          alignment.current?.update(p, window.innerWidth, viewport, new Map(), undefined, calm);
+          tailoring.current?.update(p, window.innerWidth, viewport, undefined);
+          templateGallery.current?.update(p, window.innerWidth, viewport, calm);
+          assembly.current?.update(p, window.innerWidth, viewport);
+          resumePreview.current?.update(p, window.innerWidth, viewport);
+        }
+
         lineNodes.current.forEach((entry, id) => {
           const line = LINE_LOOKUP.get(id);
           const bar = entry.bar;
@@ -536,17 +582,25 @@ export function CareerCinema() {
           const fromPose = poses.get(line.from === "selected" ? selected : line.from);
           const toPose = poses.get(line.to === "selected" ? selected : line.to);
           if (!fromPose || !toPose) return;
-          const x1 = fromPose.x + (line.fromOffset?.x ?? 0);
-          const y1 = fromPose.y + (line.fromOffset?.y ?? 0);
-          const x2 = toPose.x + (line.toOffset?.x ?? 0);
-          const y2 = toPose.y + (line.toOffset?.y ?? 0);
+          const opacity = value.o * Math.min(fromPose.o, toPose.o) * originalEvidence * (1 - aligned.presence) * (1 - tailored.presence) * (1 - gallery.arrive) * (1 - assembled.presence) * (1 - preview.presence);
+          if (opacity <= .02) {
+            bar.style.visibility = "hidden";
+            if (entry.dot) entry.dot.style.visibility = "hidden";
+            return;
+          }
+          const portraitBridge = compact && line.from === "orb";
+          const portraitEndY = line.to === "panel-original" ? 80 : -180;
+          const x1 = fromPose.x + (portraitBridge ? 0 : line.fromOffset?.x ?? 0);
+          const y1 = fromPose.y + (portraitBridge ? 0 : line.fromOffset?.y ?? 0);
+          const x2 = toPose.x + (portraitBridge ? 170 : line.toOffset?.x ?? 0);
+          const y2 = toPose.y + (portraitBridge ? portraitEndY : line.toOffset?.y ?? 0);
           const dx = x2 - x1;
           const dy = y2 - y1;
           const length = Math.max(1, Math.hypot(dx, dy));
           const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
           const z = (fromPose.z + toPose.z) / 2 - 16;
           bar.style.visibility = "visible";
-          bar.style.opacity = value.o.toFixed(3);
+          bar.style.opacity = opacity.toFixed(3);
           bar.style.transform = `translate3d(${x1.toFixed(2)}px, ${y1.toFixed(2)}px, ${z.toFixed(2)}px) rotate(${angle.toFixed(2)}deg) scaleX(${length.toFixed(2)})`;
           if (entry.dot && line.pulse) {
             if (calm) {
@@ -556,14 +610,14 @@ export function CareerCinema() {
             const cycle = (time * 0.00028 + (PHASE[id] ?? 0) * 0.159) % 1;
             const eased = smoothstep(clamp01(cycle));
             entry.dot.style.visibility = "visible";
-            entry.dot.style.opacity = (Math.sin(Math.PI * cycle) * Math.min(1, value.o * 1.4)).toFixed(3);
+            entry.dot.style.opacity = (Math.sin(Math.PI * cycle) * Math.min(1, opacity * 1.4)).toFixed(3);
             entry.dot.style.transform = `translate3d(${(x1 + dx * eased).toFixed(2)}px, ${(y1 + dy * eased).toFixed(2)}px, ${(z + 12).toFixed(2)}px)`;
           }
         });
       }
 
       chapterNodes.current.forEach((node, index) => {
-        const value = windowOpacity(p, index - CHAPTER_WINDOW.pad, index + CHAPTER_WINDOW.pad, CHAPTER_WINDOW.fade) * chromeFade;
+        const value = index === 7 ? preview.copy : windowOpacity(p, index - CHAPTER_WINDOW.pad, index + CHAPTER_WINDOW.pad, CHAPTER_WINDOW.fade) * chromeFade;
         node.style.opacity = value.toFixed(3);
         node.style.visibility = value > 0.02 ? "visible" : "hidden";
         const inert = value < 0.4;
@@ -576,21 +630,14 @@ export function CareerCinema() {
       captionNodes.current.forEach((node, index) => {
         const caption = SCENE_CAPTIONS[index];
         if (!caption) return;
-        const value = windowOpacity(p, caption.at - 0.3, caption.at + 0.3, 0.18) * chromeFade;
+        const value = caption.at === 3 || caption.at === 4 || caption.at === 5 || caption.at >= 6.2 ? 0 : windowOpacity(p, caption.at - 0.3, caption.at + 0.3, 0.18) * chromeFade * (1 - neural);
         node.style.opacity = value.toFixed(3);
         node.style.visibility = value > 0.02 ? "visible" : "hidden";
       });
-      if (galleryNode.current) {
-        const value = windowOpacity(p, 4.55, 5.65, 0.22) * chromeFade;
-        galleryNode.current.style.opacity = value.toFixed(3);
-        galleryNode.current.style.visibility = value > 0.02 ? "visible" : "hidden";
-        const inert = value < 0.4;
-        if (galleryNode.current.inert !== inert) galleryNode.current.inert = inert;
-      }
       if (midCtaNode.current) {
         // Keep scene one focused on its hero action. The persistent shortcut
         // joins after the first transition, then leaves with the cinema chrome.
-        const value = smoothstep(clamp01((p - 0.72) / 0.28)) * chromeFade;
+        const value = smoothstep(clamp01((p - 0.72) / 0.28)) * chromeFade * (viewport <= 540 ? 1 - Math.max(neural, panelFocus) : 1) * (window.innerWidth < 1100 ? 1 - preview.arrive : 1);
         midCtaNode.current.style.opacity = value.toFixed(3);
         midCtaNode.current.style.visibility = value > 0.02 ? "visible" : "hidden";
         const inert = value < 0.4;
@@ -600,9 +647,6 @@ export function CareerCinema() {
       if (sceneIndex !== lastScene) {
         lastScene = sceneIndex;
         stageElement.dataset.scene = String(sceneIndex);
-        if (progressTextNode.current) {
-          progressTextNode.current.textContent = `${copyRef.current.pad2(sceneIndex + 1)} / ${copyRef.current.pad2(SCENE_COUNT)}`;
-        }
         track({ name: "career_story_scene_view", properties: { scene: sceneIndex + 1, title: copyRef.current.chapters[sceneIndex]?.title ?? "" } });
         if (state.activeStage !== sceneIndex) state.setActiveStage(sceneIndex);
       }
@@ -697,17 +741,9 @@ export function CareerCinema() {
     jumpTo(index);
   };
 
-  const chooseTemplate = (id: TemplateKey, source: "sheet" | "dots" | "arrows" | "keyboard") => {
-    setActiveTemplate(id);
-    track({ name: "career_story_template_select", properties: { template: id, source } });
-  };
-
-  const stepTemplate = (delta: number, source: "arrows" | "keyboard") =>
-    chooseTemplate(TEMPLATES[(selectedIndex + delta + TEMPLATES.length) % TEMPLATES.length]!.id, source);
-
-  const onGalleryKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "ArrowLeft") { event.preventDefault(); stepTemplate(-1, "keyboard"); }
-    else if (event.key === "ArrowRight") { event.preventDefault(); stepTemplate(1, "keyboard"); }
+  const chooseCatalogTemplate = (id: string) => {
+    setActiveCatalogTemplate(homeTemplate(id).slug);
+    track({ name: "career_story_template_select", properties: { template: id, source: "gallery" } });
   };
 
   const chooseLocale = (next: StoryLocale) => {
@@ -778,36 +814,7 @@ export function CareerCinema() {
     }
   };
 
-  const togglePause = () => {
-    setPaused((current) => {
-      track({ name: "career_story_motion", properties: { action: current ? "resume" : "pause" } });
-      return !current;
-    });
-  };
-
-  const onGalleryTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-    const touch = event.touches[0];
-    if (touch) touchStart.current = { x: touch.clientX, y: touch.clientY };
-  };
-
-  /** Mobile carousel: a horizontal swipe steps to the neighbouring presentation. */
-  const onGalleryTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
-    const start = touchStart.current;
-    touchStart.current = null;
-    const touch = event.changedTouches[0];
-    if (!start || !touch) return;
-    const dx = touch.clientX - start.x;
-    const dy = touch.clientY - start.y;
-    if (Math.abs(dx) < 44 || Math.abs(dx) < Math.abs(dy)) return;
-    stepTemplate(dx < 0 ? 1 : -1, "arrows");
-  };
-
-  const selected = TEMPLATES[selectedIndex]!;
-  const reviewStatus = suggestion === "pending"
-    ? copy.tailor.statusPending
-    : suggestion === "accepted"
-      ? copy.tailor.statusAccepted
-      : copy.tailor.statusRejected;
+  const selected = homeTemplate(activeCatalogTemplate);
 
   const contentFor = (id: string): ReactNode => {
     if (id === "core") {
@@ -857,7 +864,7 @@ export function CareerCinema() {
       return (
         <div className={styles.cardStack}>
           <div className={styles.node}><span className={styles.nodeBody}><Icon name={card.icon} size={34} /></span><span className={styles.nodeName}>{card.title}</span></div>
-          <div className={styles.cardFace}>
+          <div className={styles.cardFace} data-ui>
             <div className={styles.cardHead}>
               <span className={styles.iconTile}><Icon name={card.icon} size={20} /></span>
               <div><h3>{card.title}</h3><p>{card.note}</p></div>
@@ -870,7 +877,8 @@ export function CareerCinema() {
     }
     if (id.startsWith("tpl-")) {
       const index = TEMPLATE_IDS.indexOf(id);
-      const template = TEMPLATES[index]!;
+      const catalogIndex = HOME_TEMPLATES.findIndex((template) => template.slug === selected.slug);
+      const template = HOME_TEMPLATES[(catalogIndex + index - selectedIndex + HOME_TEMPLATES.length) % HOME_TEMPLATES.length]!;
       return (
         <div className={styles.sheetClip}>
           <button
@@ -878,22 +886,17 @@ export function CareerCinema() {
             className={styles.tplButton}
             aria-pressed={selectedIndex === index}
             aria-label={copy.gallery.select(template.name)}
-            onClick={() => chooseTemplate(template.id, "sheet")}
+            onClick={() => chooseCatalogTemplate(template.slug)}
           >
-            <ResumeSheet variant={template.id} href={template} identity={identity} copy={copy} />
-            <MousePointer2 size={38} className={styles.tplCursor} aria-hidden="true" />
+            <ResumeSheet template={template} identity={identity} decision={suggestion} />
           </button>
         </div>
       );
     }
-    if (id.startsWith("block-")) {
-      const index = Number(id.slice("block-".length));
-      const block = DOCK_LABELS[index]!;
-      return <div className={styles.block}><Icon name={block.icon} size={17} />{block.label}<Check size={14} /></div>;
-    }
+    if (id.startsWith("block-")) return null;
     if (id === "panel-analysis") {
       return (
-        <div className={`${styles.panel} ${styles.analysis}`}>
+        <div className={`${styles.panel} ${styles.analysis}`} data-ui>
           <h3>{copy.analysis.title}</h3>
           {copy.analysis.checklist.map((label) => <p key={label}><Check size={16} />{label}</p>)}
           <Progress label="100%" />
@@ -903,7 +906,7 @@ export function CareerCinema() {
     }
     if (id === "panel-job") {
       return (
-        <div className={`${styles.panel} ${styles.jobPanel}`}>
+        <div className={`${styles.panel} ${styles.jobPanel}`} data-ui>
           <div className={styles.jobHead}><h3>{copy.job.title}</h3><span className={styles.jobChip}>Frontend Engineer</span></div>
           {JOB_ROWS.map((row) => (
             <div key={row.requirement} className={styles.jobRow}>
@@ -917,82 +920,13 @@ export function CareerCinema() {
       );
     }
     if (id === "panel-original") {
-      return (
-        <div className={`${styles.panel} ${styles.tailor}`} data-panel="original">
-          <small className={styles.kicker}>{copy.tailor.kickerOriginal}</small>
-          <h3>{copy.tailor.titleOriginal}</h3>
-          <blockquote>Worked on frontend development tasks and fixed bugs.</blockquote>
-          <p className={styles.tailorNote}><Link2 size={14} /> {copy.tailor.evidence}</p>
-        </div>
-      );
+      return null;
     }
     if (id === "panel-suggestion") {
-      return (
-        <div className={`${styles.panel} ${styles.tailor}`} data-panel="suggestion">
-          {suggestion === "accepted" && <span className={styles.acceptChip}><Check size={12} /> {copy.tailor.acceptChip}</span>}
-          <small className={styles.kicker}>{copy.tailor.kickerSuggestion}</small>
-          <h3>{copy.tailor.titleSuggestion}</h3>
-          <blockquote>
-            {SUGGESTION_TEXT.map((part, index) => part.fresh
-              ? <mark key={index} className={styles.diffNew}>{part.text}</mark>
-              : <span key={index}>{part.text}</span>)}
-          </blockquote>
-          <p className={styles.diffLegend}><Sparkles size={12} /> {copy.tailor.legend}</p>
-          <div className={styles.reviewActions}>
-            <button type="button" aria-pressed={suggestion === "rejected"} onClick={() => decide("rejected")}>{suggestion === "rejected" ? copy.tailor.rejectKept : copy.tailor.reject}</button>
-            <button type="button" aria-pressed={suggestion === "accepted"} onClick={() => decide("accepted")}>{suggestion === "accepted" ? copy.tailor.accepted : copy.tailor.accept}</button>
-          </div>
-          <p className={styles.reviewStatus} aria-live="polite">{reviewStatus}</p>
-        </div>
-      );
+      return null;
     }
-    if (id === "panel-assembly") {
-      return (
-        <div className={`${styles.panel} ${styles.assembly}`}>
-          <h3>{copy.assembly.title}</h3>
-          {copy.assembly.steps.map((label) => <p key={label}><Check size={16} />{label}</p>)}
-          <Progress label={copy.assembly.progress} />
-          <p className={styles.assemblyCount} aria-hidden="true" ref={assemblyCountNode}>{copy.assembly.docked(0)}</p>
-          <small>{copy.assembly.note(selected.name)}</small>
-        </div>
-      );
-    }
-    if (id === "panel-final") {
-      return (
-        <div className={`${styles.panel} ${styles.finalPanel}`}>
-          <h3>{copy.finalPanel.title}</h3>
-          {OUTPUT_ROWS.map((row) => (
-            <button key={row.row} type="button" className={styles.outputRow} onClick={() => runOutput(row.action)}>
-              <Icon name={row.icon} size={18} />
-              <span>{copy.finalPanel.rows[row.row]}</span>
-              <Check size={14} />
-            </button>
-          ))}
-          <p aria-live="polite">
-            {shareState === "copied"
-              ? copy.finalPanel.statusCopied
-              : shareState === "failed"
-                ? copy.finalPanel.statusFailed
-                : identity.personal
-                  ? copy.finalPanel.statusPersonal(identity.firstName)
-                  : copy.finalPanel.statusIdle}
-          </p>
-          <div className={styles.fileRow} aria-hidden="true">
-            <i>PDF</i><i>DOC</i><i>in</i>
-          </div>
-        </div>
-      );
-    }
-    if (id === "intro-final") {
-      return (
-        <div className={styles.finalIntro}>
-          <span className={styles.finalSeal}><Check size={14} /> {copy.final.seal}</span>
-          <h3>{copy.final.headingTop}<br />{copy.final.headingBottom}</h3>
-          <p>{copy.final.body}</p>
-          <Link href="/register" className={styles.finalCta} onClick={() => track({ name: "career_story_cta_click", properties: { placement: "final" } })}>{copy.final.cta} <ArrowUpRight size={16} /></Link>
-        </div>
-      );
-    }
+    if (id === "panel-assembly") return null;
+    if (id === "panel-final" || id === "intro-final") return null;
     return null;
   };
 
@@ -1010,17 +944,15 @@ export function CareerCinema() {
     <div className={styles.cinema} ref={root} lang={locale}>
       <div className={styles.film} style={{ "--runway": RUNWAY } as CSSProperties}>
         <div className={styles.stage} ref={stage} data-scene="0" data-review={suggestion}>
+          <CinemaEnvironment ref={roomBackdrop}/>
           <div className={styles.floor} aria-hidden="true" />
           <div className={styles.ambience} aria-hidden="true"><i /><i /><i /></div>
           <div className={styles.bokeh} aria-hidden="true"><i /><i /><i /><i /><i /><i /></div>
-          <div className={styles.trails} aria-hidden="true"><i /><i /><i /></div>
           <div className={styles.particles} aria-hidden="true">
             {PARTICLES.map((particle, index) => (
               <i key={index} style={{ "--particle-x": `${particle.x}%`, "--particle-y": `${particle.y}%`, "--particle-size": `${particle.size}px`, "--particle-delay": `${particle.delay}s`, "--particle-duration": `${particle.duration}s` } as CSSProperties} />
             ))}
           </div>
-          <div className={styles.beam} aria-hidden="true"><i /><i /></div>
-          <div className={styles.pedestal} aria-hidden="true"><i /></div>
 
           <div className={styles.world} ref={world} style={CAMERA0}>
             <div className={styles.lines} aria-hidden="true">
@@ -1040,6 +972,7 @@ export function CareerCinema() {
                   className={styles.obj}
                   ref={(node) => registerObject(object.id, node)}
                   style={POSE0[object.id]}
+                  data-object={object.id}
                   data-tone={tone}
                   data-chip={CHIP_INDEX.get(object.id)}
                   inert={object.interactive ? !(0 >= object.interactive.from && 0 <= object.interactive.to) : undefined}
@@ -1050,6 +983,12 @@ export function CareerCinema() {
             })}
           </div>
 
+          <NeuralEvidenceGraph ref={neuralGraph} locale={locale} />
+          <CareerAlignment ref={alignment} copy={copy} />
+          <CareerTailoring ref={tailoring} copy={copy} decision={suggestion} onDecide={decide} />
+          <CareerTemplateGallery ref={templateGallery} copy={copy} selected={activeCatalogTemplate} onChoose={chooseCatalogTemplate} identity={identity} decision={suggestion} />
+          <CareerAssembly ref={assembly} copy={copy} selected={activeCatalogTemplate} />
+          <CareerResumePreview ref={resumePreview} copy={copy} selected={activeCatalogTemplate} identity={identity} decision={suggestion} shareState={shareState} onOutput={runOutput} onChangeTemplate={() => jumpTo(5)} />
           <div className={styles.vignette} aria-hidden="true" />
 
           <div className={styles.overlay}>
@@ -1067,14 +1006,13 @@ export function CareerCinema() {
               return (
                 <div
                   key={index}
-                  className={`${styles.chapter} ${sideClass} ${densityClass}`}
+                  className={`${styles.chapter} ${sideClass} ${densityClass} ${index === 2 ? styles.chapterNeural : index >= 3 ? styles.chapterAlignment : ""} ${index === 4 ? styles.chapterTailoring : index >= 5 ? styles.chapterGallery : ""}`}
+                  data-chapter={index}
                   ref={(node) => { if (node) chapterNodes.current.set(index, node); else chapterNodes.current.delete(index); }}
                   style={{ opacity: index === 0 ? 1 : 0, visibility: index === 0 ? "visible" : "hidden" }}
                   inert={index !== 0}
                 >
-                  <span className={styles.chapterBadge}>{copy.pad2(index + 1)}</span>
                   <div className={styles.chapterCopy}>
-                    <span className={styles.chapterEyebrow}>{narrative.eyebrow}</span>
                     {index === 0
                       ? <h1>{narrative.title}</h1>
                       : <h2>{narrative.title}</h2>}
@@ -1125,63 +1063,6 @@ export function CareerCinema() {
             >
               <Sparkles size={14} /> {copy.hero.primary} <ArrowUpRight size={14} />
             </Link>
-
-            <div
-              className={styles.galleryBar}
-              ref={galleryNode}
-              style={{ opacity: 0, visibility: "hidden" }}
-              inert
-              onKeyDown={onGalleryKeyDown}
-              onTouchStart={onGalleryTouchStart}
-              onTouchEnd={onGalleryTouchEnd}
-            >
-              <button type="button" aria-label={copy.gallery.previous} onClick={() => stepTemplate(-1, "arrows")}><ChevronLeft size={18} /></button>
-              <div className={styles.galleryMeta} aria-live="polite">
-                <strong>{selected.name}</strong>
-                <span>{copy.templateDescription(selected.id)}</span>
-                <em className={styles.galleryPick}>{copy.gallery.pick}</em>
-                <div className={styles.galleryDots}>
-                  {TEMPLATES.map((template, index) => (
-                    <button
-                      key={template.id}
-                      type="button"
-                      aria-pressed={index === selectedIndex}
-                      aria-label={copy.gallery.select(template.name)}
-                      onClick={() => chooseTemplate(template.id, "dots")}
-                    >
-                      <i data-on={index === selectedIndex ? "" : undefined} />
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <button type="button" aria-label={copy.gallery.next} onClick={() => stepTemplate(1, "arrows")}><ChevronRight size={18} /></button>
-            </div>
-
-            <div className={styles.metaRow}>
-              <span className={styles.metaLeft}>
-                <span className={styles.progressCount} ref={progressTextNode}>{copy.pad2(1)} / {copy.pad2(SCENE_COUNT)}</span>
-                <LocaleSwitch locale={locale} copy={copy} onSelect={chooseLocale} />
-              </span>
-              <span className={styles.metaRight}>
-                <button
-                  type="button"
-                  className={styles.motionToggle}
-                  aria-pressed={paused}
-                  onClick={togglePause}
-                >
-                  {paused ? <Play size={13} /> : <Pause size={13} />}
-                  <span className={styles.motionLabel}>{paused ? copy.resumeMotion : copy.pauseMotion}</span>
-                </button>
-                <a
-                  href="#static-zone"
-                  className={styles.metaSkip}
-                  aria-label={copy.skipStory}
-                  onClick={() => track({ name: "career_story_skip", properties: { scene: activeStage + 1 } })}
-                >
-                  <span className={styles.metaSkipText}>{copy.skipStory}</span> <ArrowDown size={13} />
-                </a>
-              </span>
-            </div>
 
             <div className={styles.scrubber}>
               <strong>{scrubValue === null ? "live" : `p ${scrubValue.toFixed(2)}`}</strong>

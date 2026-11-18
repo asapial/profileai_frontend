@@ -9,7 +9,7 @@
  * runway), waits for the damped camera to settle, then writes a JPEG and a DOM
  * probe so drift is visible in the log. For pass/fail checks use regression.mjs.
  */
-import { mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
 import { spawn } from "node:child_process";
 import { join, resolve } from "node:path";
 
@@ -42,6 +42,7 @@ const scenes = all("scene").map(Number).filter((n) => Number.isFinite(n));
 const chromePath = opt("chrome", "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe");
 const port = Number(opt("port", 9413));
 const profile = join(outDir, ".chrome-profile");
+const sceneDistances = JSON.parse(readFileSync(new URL('../../src/lib/career-cinema.ts', import.meta.url), 'utf8').match(/SCENE_DISTANCES = (\[[^\]]+\])/)[1]);
 
 mkdirSync(outDir, { recursive: true });
 rmSync(profile, { recursive: true, force: true });
@@ -120,12 +121,13 @@ function send(method, params = {}, useSession = true) {
   });
 }
 
-const { targetId } = await send("Target.createTarget", { url: "about:blank" }, false);
+const { targetId } = await send("Target.createTarget", { url: "about:blank", newWindow: true }, false);
 const attached = await send("Target.attachToTarget", { targetId, flatten: true }, false);
 session = attached.sessionId;
 
 await send("Page.enable");
 await send("Runtime.enable");
+await send("Page.bringToFront");
 await send("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: width < 620 });
 await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-color-scheme", value: theme }, { name: "prefers-reduced-motion", value: "no-preference" }] });
 
@@ -196,14 +198,14 @@ for (const scene of scenes) {
       const film = document.querySelector('[class*="__film"]');
       const travel = film.offsetHeight - window.innerHeight;
       // Mirrors SCENE_DISTANCES / progressForUnit() in src/lib/career-cinema.ts.
-      const distances = [1.2, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 1.0];
+      const distances = ${JSON.stringify(sceneDistances)};
       const unit = ${scene} - 1;
       const index = Math.min(distances.length - 1, Math.floor(unit));
       let start = 0;
       for (let i = 0; i < index; i += 1) start += distances[i];
       const total = distances.reduce((sum, step) => sum + step, 0);
       const progress = (start + (unit - index) * distances[index]) / total;
-      const top = Math.round(progress * travel);
+      const top = Math.round(film.getBoundingClientRect().top + scrollY + progress * travel);
       window.scrollTo({ top, behavior: "instant" });
       return JSON.stringify({ top, travel });
     })()`,
@@ -226,8 +228,7 @@ for (const scene of scenes) {
         t: (n.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 22)
       })).filter((x) => x.t),
       chapter: (() => {
-        const nodes = Array.from(document.querySelectorAll('[class*="__chapter"]'))
-          .filter((node) => node.querySelector('[class*="__chapterBadge"]'));
+        const nodes = Array.from(document.querySelectorAll('[data-chapter]'));
         const visible = nodes.find((n) => Number(n.style.opacity || 0) > 0.5);
         return visible ? visible.textContent.replace(/\\s+/g, ' ').slice(0, 70) : null;
       })(),

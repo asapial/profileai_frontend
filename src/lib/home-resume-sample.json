@@ -1,0 +1,20 @@
+{
+  "firstName": "Alex",
+  "lastName": "Morgan",
+  "email": "alex@example.com",
+  "location": "Austin, TX",
+  "website": "Portfolio",
+  "headline": "Frontend Engineer",
+  "summary": "Frontend engineer building accessible products and thoughtful design systems with React and TypeScript.",
+  "skills": ["React", "TypeScript", "UI systems", "Git"],
+  "experience": [{
+    "role": "Frontend Engineer",
+    "company": "",
+    "from": "2022",
+    "to": "",
+    "current": true,
+    "bullets": ["Worked on frontend development tasks and fixed bugs.", "Improved load performance by 31%.", "Partnered with design and product teams."]
+  }],
+  "projects": [{ "title": "Customer Dashboard", "description": "A shared component library with accessible interfaces, built with React and TypeScript.", "techStack": ["React", "TypeScript", "UI systems"] }],
+  "education": [{ "degree": "BSc", "field": "Computer Science", "school": "", "from": "", "to": "" }]
+}

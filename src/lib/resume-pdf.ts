@@ -83,7 +83,7 @@ const parsedLength = (text: string) => {
 };
 
 export function buildResumePdf(lines: ResumePdfLine[] = RESUME_PDF_LINES): Blob {
-  const page = { w: 612, h: 792, margin: 56 };
+  const page = { w: 210 * 72 / 25.4, h: 297 * 72 / 25.4, margin: 56 };
   const ops: string[] = [];
   let y = page.h - page.margin;
   let drewHeaderRule = false;

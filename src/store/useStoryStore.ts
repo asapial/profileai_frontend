@@ -11,6 +11,7 @@ type StoryState = {
   activeStage: number;
   activeShowcaseTab: ShowcaseTab;
   activeTemplate: TemplateKey;
+  activeCatalogTemplate: string;
   theme: StoryTheme;
   motionEnabled: boolean;
   docked: boolean;
@@ -19,6 +20,7 @@ type StoryState = {
   setActiveStage: (activeStage: number) => void;
   setActiveShowcaseTab: (activeShowcaseTab: ShowcaseTab) => void;
   setActiveTemplate: (activeTemplate: TemplateKey) => void;
+  setActiveCatalogTemplate: (activeCatalogTemplate: string) => void;
   setTheme: (theme: StoryTheme) => void;
   setMotionEnabled: (motionEnabled: boolean) => void;
   setDocked: (docked: boolean) => void;
@@ -30,6 +32,7 @@ export const useStoryStore = create<StoryState>((set) => ({
   activeStage: 0,
   activeShowcaseTab: "resume",
   activeTemplate: "editorial",
+  activeCatalogTemplate: "orbit",
   theme: "light",
   motionEnabled: true,
   docked: false,
@@ -38,6 +41,7 @@ export const useStoryStore = create<StoryState>((set) => ({
   setActiveStage: (activeStage) => set({ activeStage }),
   setActiveShowcaseTab: (activeShowcaseTab) => set({ activeShowcaseTab }),
   setActiveTemplate: (activeTemplate) => set({ activeTemplate }),
+  setActiveCatalogTemplate: (activeCatalogTemplate) => set({ activeCatalogTemplate }),
   setTheme: (theme) => set({ theme }),
   setMotionEnabled: (motionEnabled) => set({ motionEnabled }),
   setDocked: (docked) => set({ docked }),

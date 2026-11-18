@@ -1,0 +1,4 @@
+.environment { position:absolute; inset:0; pointer-events:none; }
+.room { position:absolute; inset:0; background-position:50% 55%; }
+/* Only a quiet ink field; the actual reflective room remains visible at full strength. */
+.environment::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,var(--cg-bg),transparent 20%,transparent 45%,var(--cg-bg)); opacity:.65; } /* taste-skill-ignore: Readable ink and the user-approved continuous 3D room. */

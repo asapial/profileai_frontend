@@ -32,7 +32,7 @@ function templateMeta(template: FeaturedTemplate, documentType: "RESUME" | "CV")
 }
 
 /** Lightweight shortlist kept on the device — no account required to compare designs. */
-function useShortlist() {
+export function useShortlist() {
   const [saved, setSaved] = useState<string[]>([]);
 
   useEffect(() => {

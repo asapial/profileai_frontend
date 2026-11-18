@@ -1,6 +1,10 @@
 "use client";
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import Link from "next/link";
+import { ArrowUpRight, MessagesSquare } from "lucide-react";
+import styles from "./ReadingSections.module.css";
+import { SectionEnvironment, sectionEnvironmentClass } from "./SectionEnvironment";
 
 const faqs = [
   ["What can I do on the Free plan?", "You can save up to 15 applications each month and use 3 alignment analyses, 2 tailored summaries, and 5 application drafts. No card is required to begin."],
@@ -13,17 +17,19 @@ const faqs = [
 
 export function FaqSection() {
   return (
-    <section className="static-section faq-section" aria-labelledby="faq-title">
-      <p className="static-kicker">FAQ</p>
-      <h2 id="faq-title">Frequently asked <em>questions.</em></h2>
-      <Accordion type="single" collapsible className="faq-list">
+    <section className={`${styles.section} ${sectionEnvironmentClass} static-section faq-section`} aria-labelledby="faq-title" data-reading-section="faq">
+      <SectionEnvironment kind="faq"/>
+      <div className={styles.faqLayout}>
+      <div><h2 id="faq-title" className={styles.heading}>Questions,<br/>answered.</h2><p className={styles.lede}>A little clarity before your next move.</p><div className={styles.helpCard}><span className={styles.iconTile}><MessagesSquare size={25} aria-hidden/></span><div><p>Something else on your mind?</p><Link href="/help">Visit the help center <ArrowUpRight size={18} aria-hidden/></Link></div></div></div>
+      <Accordion type="single" collapsible defaultValue="item-0" className={`${styles.faqList} faq-list`}>
         {faqs.map(([question, answer], index) => (
-          <AccordionItem value={`item-${index}`} key={question} className="faq-item">
-            <AccordionTrigger className="faq-trigger">{question}</AccordionTrigger>
-            <AccordionContent className="faq-answer">{answer}</AccordionContent>
+          <AccordionItem value={`item-${index}`} key={question} className={`${styles.faqItem} faq-item`}>
+            <AccordionTrigger className={`${styles.faqTrigger} faq-trigger`}><span>{question}</span><span className={styles.faqIndicator} aria-hidden/></AccordionTrigger>
+            <AccordionContent className={`${styles.faqAnswer} faq-answer`}>{answer}</AccordionContent>
           </AccordionItem>
         ))}
       </Accordion>
+      </div>
     </section>
   );
 }

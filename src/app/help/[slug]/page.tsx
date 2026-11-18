@@ -9,6 +9,7 @@ import {
   HELP_CATEGORIES,
 } from "../data";
 import { getHelpArticles } from "../published";
+import { BillingHelpArticle } from "@/components/public/BillingHelpArticle";
 
 type RouteParams = { slug: string };
 
@@ -47,6 +48,10 @@ export default async function HelpArticlePage({
 
   const related = articles.filter(item => item.slug !== article.slug && item.category === article.category).slice(0, 3);
   const category = HELP_CATEGORIES.find((c) => c.id === article.category);
+
+  if (slug === "cancel-or-refund") {
+    return <BillingHelpArticle article={article} category={category?.label ?? article.category} related={related} />;
+  }
 
   return (
     <>

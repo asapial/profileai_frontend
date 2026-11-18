@@ -31,7 +31,7 @@ type StaticPlan = {
   selfServe: boolean;
 };
 
-const PLANS: StaticPlan[] = [
+export const PLANS: StaticPlan[] = [
   {
     id: "free",
     name: "Free",
@@ -95,7 +95,7 @@ const PLANS: StaticPlan[] = [
 ];
 
 // Reusable comparison rows shown below the cards.
-const COMPARISON = [
+export const COMPARISON = [
   { row: "Resume versions", free: "2", pro: "10", business: "Unlimited" },
   { row: "Alignment analyses / month", free: "2", pro: "25", business: "75" },
   { row: "Tailored resumes / month", free: "1", pro: "15", business: "50" },
@@ -107,7 +107,7 @@ const COMPARISON = [
   { row: "Career analytics", free: false, pro: "Basic", business: "Advanced" },
 ];
 
-const FAQS = [
+export const FAQS = [
   {
     q: "Can I switch plans later?",
     a: "Yes. You can change or cancel your plan from billing settings. Your current access remains available until the paid period ends.",

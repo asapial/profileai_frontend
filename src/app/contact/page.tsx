@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Navbar1 } from "@/components/navbar1";
-import { Footer } from "@/components/layout/Footer";
+import { PublicPageShell } from "@/components/public/PublicPageShell";
 import { ContactPageClient } from "./ContactPageClient";
 
 export const metadata: Metadata = {
@@ -10,12 +9,8 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <>
-      <Navbar1 />
-      <main id="main" className="studio-public-page">
-        <ContactPageClient />
-      </main>
-      <Footer />
-    </>
+    <PublicPageShell page="contact">
+      <ContactPageClient />
+    </PublicPageShell>
   );
 }

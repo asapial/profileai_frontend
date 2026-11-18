@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { PublicInfoPage } from "@/components/PublicInfoPage";
+import { LegalPage } from "@/components/public/LegalPage";
 import { env } from "@/lib/env";
 import {
   PUBLIC_PAGE_CONTENT,
@@ -106,6 +107,10 @@ export default async function PublicContentPage({
   const page = await loadPage(slug);
 
   if (!page) notFound();
+
+  if (slug === "privacy" || slug === "terms") {
+    return <LegalPage page={page} definition={PUBLIC_PAGE_CONTENT[slug]} />;
+  }
 
   return (
     <PublicInfoPage

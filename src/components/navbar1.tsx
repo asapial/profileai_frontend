@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { getCurrentUser, logout } from "@/lib/auth";
+import brandStyles from "@/components/public/PublicBrand.module.css";
 
 interface MenuItem {
   title: string;
@@ -33,6 +34,7 @@ interface MenuItem {
 }
 interface Navbar1Props {
   className?: string;
+  mobileMenuClassName?: string;
   logo?: {
     url: string;
     src: string;
@@ -74,6 +76,7 @@ function UserAvatar({ name, avatarUrl }: { name: string; avatarUrl?: string | nu
 
 export function Navbar1({
   className,
+  mobileMenuClassName,
   logo,
   menu,
   auth = {
@@ -130,7 +133,7 @@ export function Navbar1({
       onClick={() => setOpen(false)}
       className="studio-nav-link"
     >
-      {item.title}
+      <span>{item.title}</span>
     </Link>
   ));
 
@@ -140,24 +143,24 @@ export function Navbar1({
     : "";
 
   return (
-    <header className={cn("studio-nav studio-nav-premium", className)}>
+    <header className={cn("studio-nav studio-nav-premium", brandStyles.header, className)} data-site-header>
       <a className="studio-skip" href="#main">
         Skip to content
       </a>
-      <div className="studio-container studio-nav-shell flex items-center justify-between gap-5">
+      <div className={cn("studio-container flex items-center justify-between gap-5", brandStyles.navFrame)}>
         <Link
           href={logo?.url || "/"}
           className="studio-brand"
           aria-label={`${logo?.alt || "ProfileAI"} home`}
         >
-          <Image src="/brand/profileai-mark.svg" alt="" width={40} height={40} className="studio-logo-mark" priority />
+          <span className={brandStyles.logoMount}><Image src="/brand/profileai-mark.svg" alt="" width={40} height={40} className="studio-logo-mark" priority /></span>
           <span>{logo?.title || "ProfileAI"}</span>
         </Link>
         <nav aria-label="Main navigation" className="studio-nav-links hidden items-center lg:flex">
           {navLinks}
         </nav>
         <div className="flex items-center gap-3">
-          <ModeToggleCompact />
+          <ModeToggleCompact className={brandStyles.navTheme} />
 
           {/* Desktop auth section */}
           {isLoggedIn ? (
@@ -200,7 +203,7 @@ export function Navbar1({
               <Link href={auth.login.url} className="studio-text-link flex whitespace-nowrap">
                 {auth.login.title}
               </Link>
-              <Link href={auth.signup.url} className="studio-button hidden sm:flex">
+              <Link href={auth.signup.url} className={cn(brandStyles.registerButton, "hidden sm:flex")}>
                 {auth.signup.title}
                 <ArrowUpRight size={15} />
               </Link>
@@ -219,7 +222,7 @@ export function Navbar1({
                 <Menu size={18} />
               </Button>
             </SheetTrigger>
-            <SheetContent className="studio-mobile-nav">
+            <SheetContent className={cn("studio-mobile-nav", brandStyles.mobileMenu, mobileMenuClassName)}>
               <SheetHeader>
                 <SheetTitle>Your next chapter</SheetTitle>
               </SheetHeader>
@@ -255,7 +258,7 @@ export function Navbar1({
                     </Link>
                     <Link
                       onClick={() => setOpen(false)}
-                      className="studio-button"
+                      className={brandStyles.registerButton}
                       href={auth.signup.url}
                     >
                       {auth.signup.title}

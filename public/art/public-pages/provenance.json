@@ -1,0 +1,178 @@
+{
+  "method": "Built-in image_gen, UI-free physical scene artwork based on the user-approved page mockups.",
+  "preparation": "WebP conversion and a separate right-side mobile crop. No controls or policy text are baked into these backgrounds.",
+  "prompts": [
+    {
+      "kind": "help",
+      "theme": "dark",
+      "prompt": "Use case: product-mockup. Asset type: real website hero BACKGROUND PLATE with no interface. Use the supplied approved UI design as a reference for the physical 3D scene ONLY. Create ONE standalone very wide panoramic scene (3:1 aspect, 3072x1024), never a comparison board or split screen. This is the DARK THEME variant of the help page. A highly realistic physical support library: three upright paper guidebooks with simple legible covers Resume guide, AI writing, Export; an open loose-leaf folio with a violet bookmark lying on a polished grey stone desk; a few restrained books in an arched teal alcove and vertical fluting. All main objects clustered on the RIGHT HALF, with soft contact shadows and delicate desk-floor reflection.\nComposition: camera front-on at shallow architectural perspective, wall-to-floor horizon visible, physical props on right between 58% and 92% of frame width. Keep the LEFT 48% a quiet empty wall area of nearly uniform deep ink charcoal where real HTML headline and buttons will later be overlaid. No title, UI, navigation, caption, buttons, watermark, inset frame or website text anywhere. Tiny realistic paper ink is decorative only. Keep all important objects away from top/bottom edges. Floor occupies bottom 23%, visibly reflective but not a mirror doubled object.\nMaterials and light: bevels, real paper thickness, tactile stone/leather/linen, soft directional studio light, physically plausible contact shadows, grounded proportions. Dark ink-navy/charcoal room, restrained teal or plum rim light according to the subject, off-white papers. Match the approved reference's art quality. No flat gradients, nebulous blobs or fake 2D object shadows. The paired theme uses the identical camera and objects."
+    },
+    {
+      "kind": "help",
+      "theme": "light",
+      "prompt": "Use case: product-mockup. Asset type: real website hero BACKGROUND PLATE with no interface. Use the supplied approved UI design as a reference for the physical 3D scene ONLY. Create ONE standalone very wide panoramic scene (3:1 aspect, 3072x1024), never a comparison board or split screen. This is the LIGHT THEME variant of the help page. A highly realistic physical support library: three upright paper guidebooks with simple legible covers Resume guide, AI writing, Export; an open loose-leaf folio with a violet bookmark lying on a polished grey stone desk; a few restrained books in an arched teal alcove and vertical fluting. All main objects clustered on the RIGHT HALF, with soft contact shadows and delicate desk-floor reflection.\nComposition: camera front-on at shallow architectural perspective, wall-to-floor horizon visible, physical props on right between 58% and 92% of frame width. Keep the LEFT 48% a quiet empty wall area of nearly uniform pearl-white where real HTML headline and buttons will later be overlaid. No title, UI, navigation, caption, buttons, watermark, inset frame or website text anywhere. Tiny realistic paper ink is decorative only. Keep all important objects away from top/bottom edges. Floor occupies bottom 23%, visibly reflective but not a mirror doubled object.\nMaterials and light: bevels, real paper thickness, tactile stone/leather/linen, soft directional studio light, physically plausible contact shadows, grounded proportions. Bright pearl room, soft daylight, subtle mint or mauve according to the subject; clean white paper, depth through daylight and material contrast. Match the approved reference's art quality. No flat gradients, nebulous blobs or fake 2D object shadows. The paired theme uses the identical camera and objects."
+    },
+    {
+      "kind": "privacy",
+      "theme": "dark",
+      "prompt": "Use case: product-mockup. Asset type: real website hero BACKGROUND PLATE with no interface. Use the supplied approved UI design as a reference for the physical 3D scene ONLY. Create ONE standalone very wide panoramic scene (3:1 aspect, 3072x1024), never a comparison board or split screen. This is the DARK THEME variant of the privacy page. A highly realistic deep-teal leather document folder holding layered white A4 policy papers, an embossed discreet P on its flap and small brushed-metal clasp. The folder stands on a low curved pale stone shelf/plinth in a teal arched alcove with subtle fluting. Main object on RIGHT HALF. Soft contact shadows and a restrained physically correct floor reflection. No giant padlock or shield.\nComposition: camera front-on at shallow architectural perspective, wall-to-floor horizon visible, physical props on right between 58% and 92% of frame width. Keep the LEFT 48% a quiet empty wall area of nearly uniform deep ink charcoal where real HTML headline and buttons will later be overlaid. No title, UI, navigation, caption, buttons, watermark, inset frame or website text anywhere. Tiny realistic paper ink is decorative only. Keep all important objects away from top/bottom edges. Floor occupies bottom 23%, visibly reflective but not a mirror doubled object.\nMaterials and light: bevels, real paper thickness, tactile stone/leather/linen, soft directional studio light, physically plausible contact shadows, grounded proportions. Dark ink-navy/charcoal room, restrained teal or plum rim light according to the subject, off-white papers. Match the approved reference's art quality. No flat gradients, nebulous blobs or fake 2D object shadows. The paired theme uses the identical camera and objects."
+    },
+    {
+      "kind": "privacy",
+      "theme": "light",
+      "prompt": "Use case: product-mockup. Asset type: real website hero BACKGROUND PLATE with no interface. Use the supplied approved UI design as a reference for the physical 3D scene ONLY. Create ONE standalone very wide panoramic scene (3:1 aspect, 3072x1024), never a comparison board or split screen. This is the LIGHT THEME variant of the privacy page. A highly realistic deep-teal leather document folder holding layered white A4 policy papers, an embossed discreet P on its flap and small brushed-metal clasp. The folder stands on a low curved pale stone shelf/plinth in a teal arched alcove with subtle fluting. Main object on RIGHT HALF. Soft contact shadows and a restrained physically correct floor reflection. No giant padlock or shield.\nComposition: camera front-on at shallow architectural perspective, wall-to-floor horizon visible, physical props on right between 58% and 92% of frame width. Keep the LEFT 48% a quiet empty wall area of nearly uniform pearl-white where real HTML headline and buttons will later be overlaid. No title, UI, navigation, caption, buttons, watermark, inset frame or website text anywhere. Tiny realistic paper ink is decorative only. Keep all important objects away from top/bottom edges. Floor occupies bottom 23%, visibly reflective but not a mirror doubled object.\nMaterials and light: bevels, real paper thickness, tactile stone/leather/linen, soft directional studio light, physically plausible contact shadows, grounded proportions. Bright pearl room, soft daylight, subtle mint or mauve according to the subject; clean white paper, depth through daylight and material contrast. Match the approved reference's art quality. No flat gradients, nebulous blobs or fake 2D object shadows. The paired theme uses the identical camera and objects."
+    },
+    {
+      "kind": "terms",
+      "theme": "dark",
+      "prompt": "Use case: product-mockup. Asset type: real website hero BACKGROUND PLATE with no interface. Use the supplied approved UI design as a reference for the physical 3D scene ONLY. Create ONE standalone very wide panoramic scene (3:1 aspect, 3072x1024), never a comparison board or split screen. This is the DARK THEME variant of the terms page. A highly realistic dark plum linen legal folio with a small embossed P, next to white A4 pages with one naturally folded lower corner. Both stand on a low stepped rectangular stone plinth in a muted mauve architectural studio with a circular arch recess and fluted wall. Objects clustered on RIGHT HALF. Soft contact shadows, clear physical floor horizon and restrained reflection. No gavel, courthouse, badge or scales of justice.\nComposition: camera front-on at shallow architectural perspective, wall-to-floor horizon visible, physical props on right between 58% and 92% of frame width. Keep the LEFT 48% a quiet empty wall area of nearly uniform deep ink charcoal where real HTML headline and buttons will later be overlaid. No title, UI, navigation, caption, buttons, watermark, inset frame or website text anywhere. Tiny realistic paper ink is decorative only. Keep all important objects away from top/bottom edges. Floor occupies bottom 23%, visibly reflective but not a mirror doubled object.\nMaterials and light: bevels, real paper thickness, tactile stone/leather/linen, soft directional studio light, physically plausible contact shadows, grounded proportions. Dark ink-navy/charcoal room, restrained teal or plum rim light according to the subject, off-white papers. Match the approved reference's art quality. No flat gradients, nebulous blobs or fake 2D object shadows. The paired theme uses the identical camera and objects."
+    },
+    {
+      "kind": "terms",
+      "theme": "light",
+      "prompt": "Use case: product-mockup. Asset type: real website hero BACKGROUND PLATE with no interface. Use the supplied approved UI design as a reference for the physical 3D scene ONLY. Create ONE standalone very wide panoramic scene (3:1 aspect, 3072x1024), never a comparison board or split screen. This is the LIGHT THEME variant of the terms page. A highly realistic dark plum linen legal folio with a small embossed P, next to white A4 pages with one naturally folded lower corner. Both stand on a low stepped rectangular stone plinth in a muted mauve architectural studio with a circular arch recess and fluted wall. Objects clustered on RIGHT HALF. Soft contact shadows, clear physical floor horizon and restrained reflection. No gavel, courthouse, badge or scales of justice.\nComposition: camera front-on at shallow architectural perspective, wall-to-floor horizon visible, physical props on right between 58% and 92% of frame width. Keep the LEFT 48% a quiet empty wall area of nearly uniform pearl-white where real HTML headline and buttons will later be overlaid. No title, UI, navigation, caption, buttons, watermark, inset frame or website text anywhere. Tiny realistic paper ink is decorative only. Keep all important objects away from top/bottom edges. Floor occupies bottom 23%, visibly reflective but not a mirror doubled object.\nMaterials and light: bevels, real paper thickness, tactile stone/leather/linen, soft directional studio light, physically plausible contact shadows, grounded proportions. Bright pearl room, soft daylight, subtle mint or mauve according to the subject; clean white paper, depth through daylight and material contrast. Match the approved reference's art quality. No flat gradients, nebulous blobs or fake 2D object shadows. The paired theme uses the identical camera and objects."
+    },
+    {
+      "kind": "templates",
+      "theme": "dark",
+      "prompt": "Use case: product-mockup. Asset type: a UI-free physical website room background for the approved ProfileAI templates page in dark mode. Reference image is ONLY art direction. Create ONE standalone wide landscape architectural render, 2:1 aspect, about 2400x1200. Not a comparison, no panels, no border. Remove ALL website UI: no text, logo, header, controls, documents, price cards, paper sheets, floating object or foreground plinth. Real native website content will be overlaid later.\nStudio in subtle lilac/aubergine: a large recessed circular arch centered in the back wall, graceful curved wall at the sides, deep vertical fluting along far edges, subtle lilac grazing light. It must match the approved gallery room's sculptural depth.\nPhysical floor is a MAJOR part of this image, bottom 42%, polished stone with fine perspective seams, soft authentic reflections of the architecture, visible wall-floor horizon at 58% image height. Camera shallow front-on architectural perspective, grounded material, realistic bevels and soft contact lighting. Empty level foreground space for three HTML product exhibits, clear center. Keep upper-left region very quiet for a large real headline. Deep ink room, atmospheric gentle directional blue/plum rim light, readable depth and visible floor, no blown out neon. No abstract blobs, fog hiding the floor, fake 2D gradient art, toy look or baked UI."
+    },
+    {
+      "kind": "templates",
+      "theme": "light",
+      "prompt": "Use case: product-mockup. Asset type: a UI-free physical website room background for the approved ProfileAI templates page in light mode. Reference image is ONLY art direction. Create ONE standalone wide landscape architectural render, 2:1 aspect, about 2400x1200. Not a comparison, no panels, no border. Remove ALL website UI: no text, logo, header, controls, documents, price cards, paper sheets, floating object or foreground plinth. Real native website content will be overlaid later.\nStudio in subtle lilac/aubergine: a large recessed circular arch centered in the back wall, graceful curved wall at the sides, deep vertical fluting along far edges, subtle lilac grazing light. It must match the approved gallery room's sculptural depth.\nPhysical floor is a MAJOR part of this image, bottom 42%, polished stone with fine perspective seams, soft authentic reflections of the architecture, visible wall-floor horizon at 58% image height. Camera shallow front-on architectural perspective, grounded material, realistic bevels and soft contact lighting. Empty level foreground space for three HTML product exhibits, clear center. Keep upper-left region very quiet for a large real headline. Pearl light room, soft daylight, subtle lilac/ice-blue stone, gentle real shadows and very clear material depth. No abstract blobs, fog hiding the floor, fake 2D gradient art, toy look or baked UI."
+    },
+    {
+      "kind": "pricing",
+      "theme": "dark",
+      "prompt": "Use case: product-mockup. Asset type: a UI-free physical website room background for the approved ProfileAI pricing page in dark mode. Reference image is ONLY art direction. Create ONE standalone wide landscape architectural render, 2:1 aspect, about 2400x1200. Not a comparison, no panels, no border. Remove ALL website UI: no text, logo, header, controls, documents, price cards, paper sheets, floating object or foreground plinth. Real native website content will be overlaid later.\nStudio in blue/graphite: restrained arched recesses at the left and right back wall, fine deep vertical fluting near the far sides, quiet central wall. The color family is slate blue with a small hint of violet light.\nPhysical floor is a MAJOR part of this image, bottom 42%, polished stone with fine perspective seams, soft authentic reflections of the architecture, visible wall-floor horizon at 58% image height. Camera shallow front-on architectural perspective, grounded material, realistic bevels and soft contact lighting. Empty level foreground space for three HTML product exhibits, clear center. Keep upper-left region very quiet for a large real headline. Deep ink room, atmospheric gentle directional blue/plum rim light, readable depth and visible floor, no blown out neon. No abstract blobs, fog hiding the floor, fake 2D gradient art, toy look or baked UI."
+    },
+    {
+      "kind": "pricing",
+      "theme": "light",
+      "prompt": "Use case: product-mockup. Asset type: a UI-free physical website room background for the approved ProfileAI pricing page in light mode. Reference image is ONLY art direction. Create ONE standalone wide landscape architectural render, 2:1 aspect, about 2400x1200. Not a comparison, no panels, no border. Remove ALL website UI: no text, logo, header, controls, documents, price cards, paper sheets, floating object or foreground plinth. Real native website content will be overlaid later.\nStudio in blue/graphite: restrained arched recesses at the left and right back wall, fine deep vertical fluting near the far sides, quiet central wall. The color family is slate blue with a small hint of violet light.\nPhysical floor is a MAJOR part of this image, bottom 42%, polished stone with fine perspective seams, soft authentic reflections of the architecture, visible wall-floor horizon at 58% image height. Camera shallow front-on architectural perspective, grounded material, realistic bevels and soft contact lighting. Empty level foreground space for three HTML product exhibits, clear center. Keep upper-left region very quiet for a large real headline. Pearl light room, soft daylight, subtle lilac/ice-blue stone, gentle real shadows and very clear material depth. No abstract blobs, fog hiding the floor, fake 2D gradient art, toy look or baked UI."
+    }
+  ],
+  "assets": [
+    {
+      "file": "help-dark.webp",
+      "width": 1920,
+      "height": 640,
+      "bytes": 63520
+    },
+    {
+      "file": "help-dark-mobile.webp",
+      "width": 900,
+      "height": 588,
+      "bytes": 46634
+    },
+    {
+      "file": "help-light.webp",
+      "width": 1920,
+      "height": 640,
+      "bytes": 68412
+    },
+    {
+      "file": "help-light-mobile.webp",
+      "width": 900,
+      "height": 588,
+      "bytes": 50510
+    },
+    {
+      "file": "privacy-dark.webp",
+      "width": 1920,
+      "height": 640,
+      "bytes": 42246
+    },
+    {
+      "file": "privacy-dark-mobile.webp",
+      "width": 900,
+      "height": 588,
+      "bytes": 33452
+    },
+    {
+      "file": "privacy-light.webp",
+      "width": 1920,
+      "height": 640,
+      "bytes": 45678
+    },
+    {
+      "file": "privacy-light-mobile.webp",
+      "width": 900,
+      "height": 588,
+      "bytes": 36664
+    },
+    {
+      "file": "terms-dark.webp",
+      "width": 1920,
+      "height": 640,
+      "bytes": 55074
+    },
+    {
+      "file": "terms-dark-mobile.webp",
+      "width": 900,
+      "height": 588,
+      "bytes": 40362
+    },
+    {
+      "file": "terms-light.webp",
+      "width": 1920,
+      "height": 640,
+      "bytes": 57682
+    },
+    {
+      "file": "terms-light-mobile.webp",
+      "width": 900,
+      "height": 588,
+      "bytes": 44198
+    },
+    {
+      "file": "templates-dark.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 45138
+    },
+    {
+      "file": "templates-dark-mobile.webp",
+      "width": 900,
+      "height": 882,
+      "bytes": 23900
+    },
+    {
+      "file": "templates-light.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 65064
+    },
+    {
+      "file": "templates-light-mobile.webp",
+      "width": 900,
+      "height": 882,
+      "bytes": 33902
+    },
+    {
+      "file": "pricing-dark.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 41348
+    },
+    {
+      "file": "pricing-dark-mobile.webp",
+      "width": 900,
+      "height": 882,
+      "bytes": 23390
+    },
+    {
+      "file": "pricing-light.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 49142
+    },
+    {
+      "file": "pricing-light-mobile.webp",
+      "width": 900,
+      "height": 882,
+      "bytes": 28002
+    }
+  ]
+}

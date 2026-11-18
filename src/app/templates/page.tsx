@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
-import { Navbar1 } from "@/components/navbar1";
-import { Footer } from "@/components/layout/Footer";
-import { TemplateGallerySection } from "@/components/home/TemplateGallerySection";
+import { PublicPageShell } from "@/components/public/PublicPageShell";
+import { PublicTemplates } from "@/components/public/PublicTemplates";
 import { fetchPublicTemplates } from "@/lib/api";
 export const metadata = {
   title: "Template collection — ProfileAI",
@@ -25,12 +24,6 @@ export default async function TemplatesPage({
     /* Gallery has an explicit unavailable state. */
   }
   return (
-    <div className="studio-public-page template-showcase-page">
-      <Navbar1 />
-      <main id="main">
-        <TemplateGallerySection templates={templates} full />
-      </main>
-      <Footer />
-    </div>
+    <PublicPageShell page="templates"><PublicTemplates templates={templates} /></PublicPageShell>
   );
 }

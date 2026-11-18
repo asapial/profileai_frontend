@@ -29,8 +29,10 @@ function matches(pathname: string, prefix: string) {
 
 export function RouteVisuals() {
   const pathname = usePathname() || "/";
+  // These pages own their physical rooms. Mounting the older ambient scene
+  // behind an opaque page wastes rendering work and mixes two art directions.
+  if (["/templates", "/pricing", "/howitworks", "/help", "/privacy", "/terms", "/contact", "/help/cancel-or-refund", "/login", "/register", "/forgot-password", "/verify-email", "/reset-password"].includes(pathname)) return null;
   const decorative =
-    pathname === "/" ||
     matches(pathname, "/dashboard") ||
     matches(pathname, "/admin") ||
     AUTH_PREFIXES.some((prefix) => matches(pathname, prefix)) ||

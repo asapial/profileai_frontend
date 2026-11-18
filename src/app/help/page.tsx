@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { Footer } from "@/components/layout/Footer";
-import { Navbar1 } from "@/components/navbar1";
-import { HelpCenter } from "./HelpCenter";
+import { PublicPageShell } from "@/components/public/PublicPageShell";
+import { PublicHelpCenter } from "@/components/public/PublicHelpCenter";
 import { HELP_CATEGORIES } from "./data";
 import { getHelpArticles } from "./published";
 
@@ -24,12 +23,6 @@ export default async function HelpPage() {
     if (!categories.some(category => category.id === article.category)) categories.push({ id: article.category, label: article.category, description: "Published guides" });
   }
   return (
-    <>
-      <Navbar1 />
-      <main id="main" className="studio-public-page">
-        <HelpCenter articles={articles} categories={categories} />
-      </main>
-      <Footer />
-    </>
+    <PublicPageShell page="help"><PublicHelpCenter articles={articles} categories={categories} /></PublicPageShell>
   );
 }

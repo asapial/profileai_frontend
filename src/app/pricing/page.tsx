@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { PricingClient } from "./PricingClient";
+import { PublicPageShell } from "@/components/public/PublicPageShell";
+import { PublicPricing } from "@/components/public/PublicPricing";
 
 export const metadata: Metadata = {
   title: "Pricing — ProfileAI",
@@ -18,14 +17,10 @@ export const metadata: Metadata = {
 
 export default function PricingPage() {
   return (
-    <>
-      <Navbar />
-      <main id="main" className="studio-public-page">
+    <PublicPageShell page="pricing">
         <Suspense fallback={null}>
-          <PricingClient />
+          <PublicPricing />
         </Suspense>
-      </main>
-      <Footer />
-    </>
+    </PublicPageShell>
   );
 }

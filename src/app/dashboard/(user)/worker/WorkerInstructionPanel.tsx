@@ -136,7 +136,7 @@ export function WorkerInstructionPanel({ consents, listings }: { consents: Conse
           <div>
             <h2 className="flex items-center gap-2 font-semibold tracking-tight"><Globe2 className="size-4 text-primary" /> Browser instructions</h2>
             <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-              Tell the worker which visible pages to search or read. It opens the dedicated local browser, never your everyday browser.
+              Tell the worker which visible pages to search or read. It uses the Chrome session you connect or its separate worker browser.
             </p>
           </div>
           <span className="hidden rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-500/20 sm:inline dark:text-emerald-300">Consent required</span>
@@ -230,6 +230,7 @@ export function WorkerInstructionPanel({ consents, listings }: { consents: Conse
                     onChange={event => setMaxPages(Math.max(1, Math.min(pageLimit, Math.floor(Number(event.target.value)) || 1)))}
                   />
                   {!scrollReady ? <p className="text-xs text-muted-foreground">One page until Scroll is enabled.</p> : null}
+                  <p className="text-xs text-muted-foreground">The search page and each opened job page count toward this limit.</p>
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="worker-search-results">Max results</Label>
